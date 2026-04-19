@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plataforma de Tutoría BRB — BRB Estrategia & Procesos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500;700&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#1B3A6B;--azul-medio:#2E6DA4;--azul-claro:#E8F0FB;
+  --acento:#C9860A;--acento-claro:#FDF3E0;
+  --gris-fondo:#F4F3F0;--gris-borde:#D8D5CE;--gris-texto:#5A5750;
+  --negro:#1A1917;--blanco:#FAFAF8;
+  --verde:#1A6B3C;--verde-claro:#E8F5EE;
+  --rojo:#8B1A1A;--rojo-claro:#FDEAEA;
+  --violeta:#4A1A6B;--violeta-claro:#F0E8FB;--violeta-medio:#6B3A9B;
+  --radio:6px;--sombra:0 2px 12px rgba(27,58,107,0.10);--sombra-h:0 6px 24px rgba(27,58,107,0.18);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Syne',sans-serif;background:var(--gris-fondo);color:var(--negro);min-height:100vh;}
+
+/* OVERLAYS */
+.overlay-pantalla{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#1a0d3e 0%,#2d1b69 60%,#1e1a8a 100%);display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
+.overlay-pantalla.oculto{display:none;}
+.overlay-box{background:var(--blanco);border-radius:10px;box-shadow:0 24px 80px rgba(0,0,0,0.4);width:100%;overflow:hidden;}
+.overlay-box-sm{max-width:440px;}
+.overlay-box-md{max-width:540px;}
+.overlay-header{padding:20px 26px 16px;border-bottom:3px solid var(--acento);}
+.overlay-header-v{background:var(--violeta);}
+.overlay-logo{font-family:'DM Serif Display',serif;color:white;font-size:1.2rem;margin-bottom:3px;}
+.overlay-sub{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--acento);letter-spacing:0.1em;text-transform:uppercase;}
+.overlay-body{padding:22px 26px;}
+.overlay-footer{padding:12px 26px;background:var(--gris-fondo);border-top:1px solid var(--gris-borde);font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--gris-texto);text-align:center;line-height:1.6;}
+
+/* PROV TABS */
+.prov-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px;}
+.prov-tab{padding:9px 6px;border:1.5px solid var(--gris-borde);border-radius:var(--radio);background:var(--blanco);font-family:'DM Mono',monospace;font-size:0.7rem;font-weight:700;cursor:pointer;text-align:center;transition:all 0.15s;color:var(--gris-texto);}
+.prov-tab.activo{border-color:var(--violeta);background:var(--violeta);color:white;}
+.prov-tab .pt-nombre{font-size:0.75rem;display:block;margin-bottom:2px;}
+.prov-tab .pt-tag{font-size:0.56rem;padding:1px 5px;border-radius:2px;display:inline-block;}
+.prov-tab.activo .pt-tag{background:var(--acento);color:white;}
+.prov-tab:not(.activo) .pt-tag{background:var(--gris-borde);color:var(--gris-texto);}
+.pt-gratis{background:#c6f0d4!important;color:#1A6B3C!important;}
+.prov-tab.activo .pt-gratis{background:#27ae60!important;color:white!important;}
+.prov-inst{display:none;background:var(--gris-fondo);border:1px solid var(--gris-borde);border-radius:var(--radio);padding:14px;margin-bottom:14px;}
+.prov-inst.visible{display:block;}
+.pi-titulo{font-family:'DM Mono',monospace;font-size:0.63rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--azul);margin-bottom:8px;font-weight:700;}
+.pi-paso{display:flex;gap:9px;align-items:flex-start;margin-bottom:7px;font-size:0.76rem;color:var(--gris-texto);line-height:1.5;}
+.pi-num{background:var(--azul);color:white;border-radius:50%;width:19px;height:19px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:0.62rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.pi-link{display:inline-block;margin-top:8px;background:var(--azul);color:white;padding:6px 13px;border-radius:4px;font-family:'DM Mono',monospace;font-size:0.66rem;text-decoration:none;}
+.pi-costo{margin-top:7px;background:white;border:1px solid var(--gris-borde);border-left:3px solid var(--acento);padding:6px 11px;font-family:'DM Mono',monospace;font-size:0.66rem;color:var(--negro);border-radius:3px;}
+
+/* CAMPOS */
+.campo{margin-bottom:12px;}
+.campo label{display:block;font-size:0.67rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--azul);margin-bottom:4px;}
+.campo label span{color:var(--acento);font-weight:400;text-transform:none;letter-spacing:0;font-size:0.65rem;}
+input[type="text"],input[type="date"],input[type="email"],input[type="tel"],input[type="password"],select,textarea{width:100%;font-family:'Syne',sans-serif;font-size:0.83rem;color:var(--negro);background:var(--blanco);border:1.5px solid var(--gris-borde);border-radius:var(--radio);padding:7px 10px;outline:none;transition:border-color 0.15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--violeta);}
+textarea{resize:vertical;min-height:70px;line-height:1.5;}
+.campo-fila{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.campo-fila-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+hr.sep{border:none;border-top:1px dashed var(--gris-borde);margin:13px 0;}
+.err-msg{display:none;background:var(--rojo-claro);border:1px solid var(--rojo);border-radius:var(--radio);padding:9px 13px;font-size:0.76rem;color:var(--rojo);margin-top:10px;line-height:1.5;}
+.err-msg.visible{display:block;}
+
+/* BTNS */
+.btn-p{background:var(--violeta);color:white;border:none;border-radius:var(--radio);padding:10px 18px;font-family:'Syne',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer;transition:background 0.15s;display:inline-flex;align-items:center;gap:6px;}
+.btn-p:hover{background:var(--violeta-medio);}
+.btn-p:disabled{opacity:0.6;cursor:not-allowed;}
+.btn-p.full{width:100%;justify-content:center;}
+.btn-s{background:transparent;color:var(--gris-texto);border:1.5px solid var(--gris-borde);border-radius:var(--radio);padding:8px 14px;font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.btn-s:hover{border-color:var(--azul);color:var(--azul);}
+.btn-danger{background:transparent;color:var(--rojo);border:1.5px solid var(--rojo);border-radius:var(--radio);padding:7px 13px;font-family:'DM Mono',monospace;font-size:0.65rem;font-weight:700;cursor:pointer;transition:all 0.15s;}
+.btn-danger:hover{background:var(--rojo-claro);}
+.btn-sm{padding:5px 10px;font-size:0.63rem;font-family:'DM Mono',monospace;font-weight:700;border:1.5px solid;border-radius:4px;cursor:pointer;transition:all 0.15s;}
+.btn-sm-v{background:var(--violeta);border-color:var(--violeta);color:white;}
+.btn-sm-v:hover{background:var(--violeta-medio);}
+.btn-sm-s{background:transparent;border-color:var(--gris-borde);color:var(--gris-texto);}
+.btn-sm-s:hover{border-color:var(--azul);color:var(--azul);}
+.btn-sm-a{background:var(--acento);border-color:var(--acento);color:white;}
+.btn-sm-a:hover{background:#a86e08;}
+.btn-sm-r{background:transparent;border-color:var(--rojo);color:var(--rojo);}
+.btn-sm-r:hover{background:var(--rojo-claro);}
+.login-spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;display:none;}
+.btn-p.cargando .login-spinner{display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* HEADER */
+header{background:var(--violeta);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--acento);flex-wrap:wrap;gap:8px;}
+.h-titulo{font-family:'DM Serif Display',serif;color:white;font-size:1.15rem;}
+.h-sub{font-family:'DM Mono',monospace;color:rgba(255,255,255,0.5);font-size:0.57rem;letter-spacing:0.07em;text-transform:uppercase;margin-top:1px;}
+.h-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.h-session{font-family:'DM Mono',monospace;font-size:0.62rem;color:rgba(255,255,255,0.75);}
+.h-session strong{color:var(--acento);}
+.btn-logout{background:transparent;border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.55);font-family:'DM Mono',monospace;font-size:0.58rem;padding:3px 9px;border-radius:3px;cursor:pointer;transition:all 0.15s;}
+.btn-logout:hover{border-color:#e57373;color:#e57373;}
+
+/* NAV */
+.plat-nav{background:white;border-bottom:2px solid var(--gris-borde);padding:0 22px;display:flex;overflow-x:auto;}
+.nav-tab{padding:10px 15px;font-family:'DM Mono',monospace;font-size:0.65rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;border:none;background:transparent;color:var(--gris-texto);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.15s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
+.nav-tab:hover{color:var(--violeta);background:var(--violeta-claro);}
+.nav-tab.activo{color:var(--violeta);border-bottom-color:var(--violeta);}
+.nav-badge{background:var(--violeta);color:white;border-radius:10px;padding:1px 6px;font-size:0.56rem;font-weight:700;}
+
+/* LAYOUT */
+.plat-wrap{max-width:1180px;margin:0 auto;padding:18px 14px 56px;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.stat-card{background:white;border:1px solid var(--gris-borde);border-radius:var(--radio);padding:14px 16px;border-top:3px solid var(--violeta);box-shadow:var(--sombra);}
+.stat-num{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--violeta);line-height:1;}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.07em;text-transform:uppercase;color:var(--gris-texto);margin-top:3px;}
+.stat-card.v{border-top-color:var(--verde);}.stat-card.v .stat-num{color:var(--verde);}
+.stat-card.a{border-top-color:var(--acento);}.stat-card.a .stat-num{color:var(--acento);}
+.stat-card.r{border-top-color:var(--rojo);}.stat-card.r .stat-num{color:var(--rojo);}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;}
+.dash-panel{background:white;border:1px solid var(--gris-borde);border-radius:var(--radio);overflow:hidden;box-shadow:var(--sombra);}
+.dash-panel-header{padding:10px 14px;background:var(--gris-fondo);border-bottom:1px solid var(--gris-borde);font-family:'DM Mono',monospace;font-size:0.63rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--azul);font-weight:700;}
+.ul-item{padding:10px 14px;border-bottom:1px solid var(--gris-borde);display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;cursor:pointer;transition:background 0.15s;}
+.ul-item:hover{background:var(--violeta-claro);}
+.ul-item:last-child{border-bottom:none;}
+.ul-nombre{font-size:0.82rem;font-weight:700;color:var(--negro);}
+.ul-meta{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--gris-texto);}
+.acc-card{padding:13px 14px;border-bottom:1px solid var(--gris-borde);cursor:pointer;transition:background 0.15s;display:flex;align-items:center;gap:11px;}
+.acc-card:hover{background:var(--violeta-claro);}
+.acc-card:last-child{border-bottom:none;}
+.acc-icon{font-size:1.3rem;flex-shrink:0;}
+.acc-titulo{font-size:0.82rem;font-weight:700;color:var(--azul);}
+.acc-desc{font-size:0.7rem;color:var(--gris-texto);margin-top:2px;}
+
+/* LEGAJOS */
+.toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.toolbar input,.toolbar select{font-family:'Syne',sans-serif;font-size:0.8rem;padding:7px 11px;border:1.5px solid var(--gris-borde);border-radius:var(--radio);outline:none;background:white;}
+.toolbar input{flex:1;min-width:160px;}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--violeta);}
+.legajo-card{background:white;border:1px solid var(--gris-borde);border-radius:var(--radio);padding:12px 14px;display:grid;grid-template-columns:36px 1fr auto auto auto;gap:11px;align-items:center;cursor:pointer;transition:all 0.15s;box-shadow:var(--sombra);margin-bottom:7px;}
+.legajo-card:hover{border-color:var(--violeta);background:var(--violeta-claro);}
+.leg-av{width:36px;height:36px;border-radius:50%;background:var(--violeta);color:white;font-family:'DM Serif Display',serif;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.leg-info .leg-nombre{font-size:0.86rem;font-weight:700;color:var(--negro);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.leg-info .leg-meta{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--gris-texto);margin-top:2px;}
+.leg-est{font-family:'DM Mono',monospace;font-size:0.6rem;font-weight:700;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+.leg-est.activo{background:var(--verde-claro);color:var(--verde);border:1px solid #9edcbe;}
+.leg-est.seguimiento{background:#fff3cd;color:#856404;border:1px solid #ffc107;}
+.leg-est.derivado{background:var(--violeta-claro);color:var(--violeta);border:1px solid rgba(74,26,107,0.3);}
+.leg-est.cerrado{background:var(--gris-fondo);color:var(--gris-texto);border:1px solid var(--gris-borde);}
+.leg-int{font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--gris-texto);text-align:right;}
+.btn-del-sm{background:transparent;border:none;color:var(--gris-borde);cursor:pointer;font-size:0.8rem;padding:3px 5px;border-radius:3px;transition:color 0.15s;}
+.btn-del-sm:hover{color:var(--rojo);}
+.vacio{text-align:center;padding:44px 20px;color:var(--gris-texto);}
+.vacio-i{font-size:2.2rem;opacity:0.2;margin-bottom:10px;}
+.vacio-t{font-size:0.82rem;opacity:0.6;margin-bottom:14px;}
+
+/* DETALLE LEGAJO */
+.det-header{display:flex;align-items:flex-start;gap:14px;background:white;border:1px solid var(--gris-borde);border-radius:var(--radio);padding:18px;margin-bottom:14px;box-shadow:var(--sombra);}
+.det-av{width:52px;height:52px;border-radius:50%;background:var(--violeta);color:white;font-family:'DM Serif Display',serif;font-size:1.4rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.det-info{flex:1;}
+.det-nombre{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--azul);margin-bottom:4px;}
+.det-meta{font-family:'DM Mono',monospace;font-size:0.63rem;color:var(--gris-texto);display:flex;gap:12px;flex-wrap:wrap;}
+.det-acciones{display:flex;gap:7px;flex-wrap:wrap;align-items:flex-start;flex-shrink:0;}
+.det-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.det-panel{background:white;border:1px solid var(--gris-borde);border-radius:var(--radio);overflow:hidden;box-shadow:var(--sombra);}
+.det-panel-h{padding:10px 14px;background:var(--gris-fondo);border-bottom:1px solid var(--gris-borde);font-family:'DM Mono',monospace;font-size:0.63rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--azul);font-weight:700;}
+.det-panel-b{padding:14px;}
+.df{margin-bottom:9px;}
+.df label{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.07em;text-transform:uppercase;color:var(--gris-texto);display:block;margin-bottom:2px;}
+.df .v{font-size:0.82rem;color:var(--negro);line-height:1.5;}
+.df .v.vacio{color:var(--gris-borde);font-style:italic;}
+
+/* HISTORIAL */
+.hist-panel{background:white;border:1px solid var(--gris-borde);border-radius:var(--radio);overflow:hidden;box-shadow:var(--sombra);margin-bottom:14px;}
+.hist-h{padding:10px 14px;background:var(--gris-fondo);border-bottom:1px solid var(--gris-borde);font-family:'DM Mono',monospace;font-size:0.63rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--azul);font-weight:700;display:flex;align-items:center;justify-content:space-between;}
+.int-item{padding:12px 14px;border-bottom:1px solid var(--gris-borde);display:grid;grid-template-columns:48px 1fr auto;gap:11px;align-items:start;}
+.int-item:last-child{border-bottom:none;}
+.int-fecha{text-align:center;}
+.int-dia{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--violeta);line-height:1;}
+.int-mes{font-family:'DM Mono',monospace;font-size:0.55rem;text-transform:uppercase;color:var(--gris-texto);}
+.int-anio{font-family:'DM Mono',monospace;font-size:0.52rem;color:var(--gris-borde);}
+.int-cont{}
+.int-tipo-badge{font-family:'DM Mono',monospace;font-size:0.6rem;font-weight:700;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:5px;}
+.t-entrevista{background:#e8f0fb;color:var(--azul);}
+.t-familia{background:#fff3cd;color:#856404;}
+.t-derivacion{background:var(--violeta-claro);color:var(--violeta);}
+.t-observacion{background:var(--gris-fondo);color:var(--gris-texto);}
+.t-acuerdo{background:var(--verde-claro);color:var(--verde);}
+.t-plan-grupal{background:#fdeaea;color:var(--rojo);}
+.t-ia{background:#f0e8fb;color:var(--violeta-medio);}
+.int-desc{font-size:0.79rem;color:var(--negro);line-height:1.6;margin-bottom:3px;}
+.int-resp{font-size:0.74rem;color:var(--gris-texto);font-style:italic;line-height:1.5;}
+.int-prox{font-size:0.7rem;color:var(--verde);font-weight:600;margin-top:3px;}
+.int-del-btn{background:transparent;border:none;color:var(--gris-borde);cursor:pointer;font-size:0.73rem;padding:2px 4px;transition:color 0.15s;flex-shrink:0;align-self:flex-start;}
+.int-del-btn:hover{color:var(--rojo);}
+.hist-vacio{padding:26px;text-align:center;color:var(--gris-texto);font-size:0.78rem;opacity:0.6;}
+
+/* IA PANEL */
+.ia-panel{background:white;border:1px solid var(--gris-borde);border-radius:var(--radio);overflow:hidden;box-shadow:var(--sombra);margin-bottom:14px;}
+.ia-panel-h{padding:10px 14px;background:linear-gradient(90deg,var(--violeta),var(--violeta-medio));font-family:'DM Mono',monospace;font-size:0.63rem;letter-spacing:0.08em;text-transform:uppercase;color:white;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
+.ia-panel-b{padding:14px;display:none;}
+.ia-panel-b.visible{display:block;}
+.ia-tools{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.ia-tool{padding:9px 7px;border:1.5px solid var(--violeta-claro);border-radius:var(--radio);background:var(--violeta-claro);color:var(--violeta);font-family:'Syne',sans-serif;font-size:0.74rem;font-weight:700;cursor:pointer;transition:all 0.15s;text-align:center;}
+.ia-tool:hover,.ia-tool.activo{background:var(--violeta);color:white;border-color:var(--violeta);}
+.ia-form-area{display:none;}
+.ia-form-area.visible{display:block;}
+.ia-load{display:none;align-items:center;justify-content:center;gap:10px;padding:18px;font-size:0.78rem;color:var(--gris-texto);}
+.ia-load.visible{display:flex;}
+.ia-spin{width:18px;height:18px;border:2px solid var(--gris-borde);border-top-color:var(--violeta);border-radius:50%;animation:girar 0.7s linear infinite;}
+@keyframes girar{to{transform:rotate(360deg);}}
+.ia-res{display:none;font-family:'DM Mono',monospace;font-size:0.73rem;line-height:1.72;color:var(--negro);white-space:pre-wrap;background:#f9f8f5;border:1px solid var(--gris-borde);border-radius:var(--radio);padding:13px;max-height:380px;overflow-y:auto;margin-top:11px;}
+.ia-res.visible{display:block;}
+.ia-acc{display:none;gap:6px;margin-top:9px;flex-wrap:wrap;}
+.ia-acc.visible{display:flex;}
+.aviso-p{background:#fff8e8;border:1.5px solid #e8c070;border-radius:var(--radio);padding:9px 13px;font-size:0.73rem;color:#7a5200;line-height:1.6;margin-bottom:12px;}
+.aviso-p strong{color:var(--acento);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:none;align-items:center;justify-content:center;padding:14px;}
+.modal-overlay.visible{display:flex;}
+.modal-box{background:white;border-radius:10px;box-shadow:0 24px 80px rgba(0,0,0,0.3);width:100%;max-width:620px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;}
+.modal-box-sm{max-width:380px;}
+.modal-h{background:var(--violeta);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.modal-titulo{font-family:'DM Serif Display',serif;color:white;font-size:1rem;}
+.modal-close{background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);font-family:'DM Mono',monospace;font-size:0.62rem;padding:3px 9px;border-radius:3px;cursor:pointer;}
+.modal-close:hover{background:rgba(255,255,255,0.1);color:white;}
+.modal-b{padding:18px;overflow-y:auto;flex:1;}
+.modal-f{padding:11px 18px;background:var(--gris-fondo);border-top:1px solid var(--gris-borde);display:flex;gap:8px;flex-shrink:0;}
+
+/* FOOTER */
+footer{background:#0a0d1a;color:rgba(255,255,255,0.55);padding:24px 22px 18px;border-top:3px solid var(--acento);}
+.f-marca{font-family:'DM Serif Display',serif;color:white;font-size:1rem;margin-bottom:3px;}
+.f-sub{font-family:'DM Mono',monospace;font-size:0.57rem;color:var(--acento);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px;}
+.f-norm-t{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:7px;}
+.f-norm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.norm-i{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:4px;padding:9px 11px;}
+.norm-ref{font-family:'DM Mono',monospace;font-size:0.6rem;font-weight:700;color:var(--acento);margin-bottom:3px;}
+.norm-desc{font-size:0.68rem;color:rgba(255,255,255,0.5);line-height:1.4;}
+.f-bottom{border-top:1px solid rgba(255,255,255,0.05);padding-top:12px;font-family:'DM Mono',monospace;font-size:0.57rem;color:rgba(255,255,255,0.28);text-align:center;line-height:1.7;}
+
+/* RESPONSIVE */
+@media(max-width:860px){
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .dash-grid{grid-template-columns:1fr;}
+  .det-grid{grid-template-columns:1fr;}
+  .ia-tools{grid-template-columns:repeat(2,1fr);}
+  .f-norm-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:580px){
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .legajo-card{grid-template-columns:32px 1fr auto;}
+  .leg-int{display:none;}
+  .plat-wrap{padding:11px 10px 40px;}
+  header{padding:10px 13px;}
+  .campo-fila,.campo-fila-3{grid-template-columns:1fr;}
+  .ia-tools{grid-template-columns:1fr 1fr;}
+  .f-norm-grid{grid-template-columns:1fr;}
+  footer{padding:18px 14px 14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- PANTALLA 1: API KEY -->
+<div class="overlay-pantalla" id="pantalla-apikey">
+  <div class="overlay-box overlay-box-md">
+    <div class="overlay-header overlay-header-v">
+      <div class="overlay-logo">Plataforma de Tutoría BRB</div>
+      <div class="overlay-sub">Paso 1 de 2 — Asistente IA (opcional)</div>
+    </div>
+    <div class="overlay-body">
+      <p style="font-size:0.82rem;color:var(--azul);font-weight:700;margin-bottom:5px;">Configurá el asistente IA</p>
+      <p style="font-size:0.76rem;color:var(--gris-texto);margin-bottom:16px;line-height:1.55;">El asistente IA es <strong>opcional</strong>. Podés registrar y gestionar legajos sin él. Solo es necesario para generar guías de entrevista, textos para familias e informes automáticos.</p>
+      <div class="prov-tabs">
+        <button class="prov-tab activo" onclick="selProv('gemini',this)"><span class="pt-nombre">Gemini</span><span class="pt-tag pt-gratis">GRATIS</span></button>
+        <button class="prov-tab" onclick="selProv('openai',this)"><span class="pt-nombre">ChatGPT</span><span class="pt-tag">PAGO</span></button>
+        <button class="prov-tab" onclick="selProv('anthropic',this)"><span class="pt-nombre">Claude</span><span class="pt-tag">PAGO</span></button>
+      </div>
+      <div class="prov-inst visible" id="inst-gemini">
+        <div class="pi-titulo">Cómo obtener tu API Key de Gemini — GRATIS</div>
+        <div class="pi-paso"><div class="pi-num">1</div><div>Ir a Google AI Studio (botón abajo).</div></div>
+        <div class="pi-paso"><div class="pi-num">2</div><div>Iniciá sesión con tu cuenta Google.</div></div>
+        <div class="pi-paso"><div class="pi-num">3</div><div>Clic en <strong>"Get API Key" → "Create API key"</strong>.</div></div>
+        <div class="pi-paso"><div class="pi-num">4</div><div>Copiá la key (empieza con "AIza...") y pegala abajo.</div></div>
+        <a class="pi-link" href="https://aistudio.google.com/apikey" target="_blank">🔑 Ir a Google AI Studio →</a>
+        <div class="pi-costo">Gratis · Sin tarjeta · Límite generoso para uso profesional</div>
+      </div>
+      <div class="prov-inst" id="inst-openai">
+        <div class="pi-titulo">API Key de ChatGPT (OpenAI)</div>
+        <div class="pi-paso"><div class="pi-num">1</div><div>Ir a OpenAI Platform e iniciar sesión.</div></div>
+        <div class="pi-paso"><div class="pi-num">2</div><div><strong>"API Keys" → "Create new secret key"</strong>.</div></div>
+        <div class="pi-paso"><div class="pi-num">3</div><div>Copiá la key (empieza con "sk-...") y pegala abajo.</div></div>
+        <a class="pi-link" href="https://platform.openai.com/api-keys" target="_blank">🔑 Ir a OpenAI Platform →</a>
+        <div class="pi-costo">~$0.00015 USD por consulta · Requiere tarjeta</div>
+      </div>
+      <div class="prov-inst" id="inst-anthropic">
+        <div class="pi-titulo">API Key de Claude (Anthropic)</div>
+        <div class="pi-paso"><div class="pi-num">1</div><div>Ir a Anthropic Console e iniciar sesión.</div></div>
+        <div class="pi-paso"><div class="pi-num">2</div><div><strong>"API Keys" → "Create Key"</strong>.</div></div>
+        <div class="pi-paso"><div class="pi-num">3</div><div>Copiá la key (empieza con "sk-ant-...") y pegala abajo.</div></div>
+        <a class="pi-link" href="https://console.anthropic.com" target="_blank">🔑 Ir a Anthropic Console →</a>
+        <div class="pi-costo">~$0.0003 USD por consulta · Requiere tarjeta</div>
+      </div>
+      <div class="campo">
+        <label>API Key <span>— dejá vacío si no querés usar IA ahora</span></label>
+        <input type="password" id="apikey-input" placeholder="Opcional — pegá tu API Key aquí..." onkeydown="if(event.key==='Enter') confirmarApiKey()">
+      </div>
+      <button class="btn-p full" onclick="confirmarApiKey()"><div class="login-spinner"></div><span>Continuar →</span></button>
+    </div>
+    <div class="overlay-footer">BRB Estrategia &amp; Procesos · Soberanía Técnica Ediciones · Boris Rodríguez Barrera<br>Tu API Key no se almacena — solo se usa en esta sesión.</div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="overlay-pantalla oculto" id="login-overlay">
+  <div class="overlay-box overlay-box-sm">
+    <div class="overlay-header overlay-header-v">
+      <div class="overlay-logo">Plataforma de Tutoría BRB</div>
+      <div class="overlay-sub">Paso 2 de 2 — Licencia POT</div>
+    </div>
+    <div class="overlay-body">
+      <p style="font-size:0.88rem;font-weight:700;color:var(--azul);margin-bottom:5px;">Ingresá con tu licencia</p>
+      <p style="font-size:0.76rem;color:var(--gris-texto);margin-bottom:16px;line-height:1.5;">Acceso exclusivo para Profesores Orientadores Tutores (POT) con licencia BRB activa.</p>
+      <div class="campo"><label>Email</label><input type="email" id="login-email" placeholder="tu@email.com"></div>
+      <div class="campo"><label>Clave de licencia</label><input type="password" id="login-clave" placeholder="BRB-TUT-XXXX-XXXX" onkeydown="if(event.key==='Enter') verificarLicencia()"></div>
+      <button class="btn-p full" id="login-btn" onclick="verificarLicencia()" style="margin-top:4px;">
+        <div class="login-spinner"></div>
+        <span class="login-btn-txt">Ingresar</span>
+      </button>
+      <div class="err-msg" id="login-error"></div>
+    </div>
+    <div class="overlay-footer">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos<br>bbbarrera1986@gmail.com · +54 297 517-6351 · Puerto Madryn, Chubut</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div><div class="h-titulo">Plataforma de Tutoría BRB</div><div class="h-sub">BRB Estrategia &amp; Procesos · Registro Digital Operativo POT · Chubut</div></div>
+  <div class="h-right" id="session-wrap"></div>
+</header>
+
+<!-- NAV -->
+<div class="plat-nav">
+  <button class="nav-tab activo" onclick="ir('dashboard',this)">🏠 Inicio</button>
+  <button class="nav-tab" onclick="ir('legajos',this)">📁 Legajos <span class="nav-badge" id="badge-total">0</span></button>
+</div>
+
+<!-- CONTENIDO -->
+<div class="plat-wrap">
+
+  <!-- DASHBOARD -->
+  <div id="sec-dashboard">
+    <div class="stats-row">
+      <div class="stat-card v"><div class="stat-num" id="st-act">0</div><div class="stat-lbl">Activos</div></div>
+      <div class="stat-card a"><div class="stat-num" id="st-seg">0</div><div class="stat-lbl">En seguimiento</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-der">0</div><div class="stat-lbl">Derivados</div></div>
+      <div class="stat-card r"><div class="stat-num" id="st-tot">0</div><div class="stat-lbl">Total legajos</div></div>
+    </div>
+    <div class="dash-grid">
+      <div class="dash-panel">
+        <div class="dash-panel-header">Últimos legajos modificados</div>
+        <div id="dash-ultimos"></div>
+      </div>
+      <div class="dash-panel">
+        <div class="dash-panel-header">Acciones rápidas</div>
+        <div class="acc-card" onclick="abrirNuevoLegajo()"><div class="acc-icon">➕</div><div><div class="acc-titulo">Nuevo legajo</div><div class="acc-desc">Crear ficha de estudiante</div></div></div>
+        <div class="acc-card" onclick="ir('legajos',document.querySelectorAll('.nav-tab')[1])"><div class="acc-icon">📁</div><div><div class="acc-titulo">Ver todos los legajos</div><div class="acc-desc">Buscar y filtrar</div></div></div>
+        <div class="acc-card" onclick="exportarTodo()"><div class="acc-icon">⬇</div><div><div class="acc-titulo">Exportar todos</div><div class="acc-desc">Descargar legajos completos</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGAJOS -->
+  <div id="sec-legajos" style="display:none;">
+    <div class="toolbar">
+      <input type="text" id="leg-buscar" placeholder="🔍 Buscar por nombre o curso..." oninput="renderLegajos()">
+      <select id="leg-filtro" onchange="renderLegajos()">
+        <option value="">Todos los estados</option>
+        <option value="activo">Activo</option>
+        <option value="seguimiento">En seguimiento</option>
+        <option value="derivado">Derivado</option>
+        <option value="cerrado">Cerrado</option>
+      </select>
+      <button class="btn-p" onclick="abrirNuevoLegajo()">➕ Nuevo legajo</button>
+    </div>
+    <div id="legajos-lista"></div>
+  </div>
+
+  <!-- DETALLE LEGAJO -->
+  <div id="sec-detalle" style="display:none;">
+    <div class="det-header" id="det-header"></div>
+    <div class="det-grid">
+      <div class="det-panel"><div class="det-panel-h">Datos generales</div><div class="det-panel-b" id="det-datos"></div></div>
+      <div class="det-panel"><div class="det-panel-h">Reseña inicial / Anamnesis pedagógica</div><div class="det-panel-b" id="det-reseña"></div></div>
+    </div>
+    <div class="hist-panel">
+      <div class="hist-h">
+        <span>Historial de intervenciones</span>
+        <button class="btn-p" style="font-size:0.68rem;padding:5px 12px;" onclick="abrirModalInt()">+ Nueva intervención</button>
+      </div>
+      <div id="hist-lista"></div>
+    </div>
+    <div class="ia-panel">
+      <div class="ia-panel-h" onclick="toggleIA()"><span>🤖 Herramientas IA — Asistente del tutor</span><span id="ia-icon">▼</span></div>
+      <div class="ia-panel-b" id="ia-body">
+        <div class="aviso-p"><strong>⚠ Criterio profesional:</strong> El asistente IA genera contenido orientativo. El criterio final es siempre del Profesor Orientador Tutor. No ingresés información que no sea estrictamente pedagógica.</div>
+        <div class="ia-tools">
+          <button class="ia-tool" onclick="selTool('entrevista',this)">🎤 Guía entrevista</button>
+          <button class="ia-tool" onclick="selTool('familia',this)">👨‍👩‍👧 Texto familia</button>
+          <button class="ia-tool" onclick="selTool('informe',this)">📋 Informe institucional</button>
+          <button class="ia-tool" onclick="selTool('grupal',this)">👥 Plan tutoría grupal</button>
+          <button class="ia-tool" onclick="selTool('socioemocional',this)">💚 Act. socioemocional</button>
+          <button class="ia-tool" onclick="selTool('estrategias',this)">📚 Estrategias de estudio</button>
+        </div>
+        <div class="ia-form-area" id="ia-form"></div>
+        <div class="ia-load" id="ia-load"><div class="ia-spin"></div><span>Generando con IA...</span></div>
+        <div class="ia-res" id="ia-res"></div>
+        <div class="ia-acc" id="ia-acc">
+          <button class="btn-sm btn-sm-s" onclick="copiarIA()">📋 Copiar</button>
+          <button class="btn-sm btn-sm-v" onclick="guardarIA()">💾 Guardar en historial</button>
+          <button class="btn-sm btn-sm-r" onclick="limpiarIA()">✕ Limpiar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL NUEVO LEGAJO -->
+<div class="modal-overlay" id="modal-legajo">
+  <div class="modal-box" style="max-width:680px;">
+    <div class="modal-h"><div class="modal-titulo">Nuevo legajo de estudiante</div><button class="modal-close" onclick="cerrarModal('modal-legajo')">✕ Cerrar</button></div>
+    <div class="modal-b">
+      <div class="aviso-p" style="margin-bottom:14px;"><strong>🔒 Privacidad:</strong> Esta información se almacena únicamente en este dispositivo y no se transmite a ningún servidor externo. Conforme a la Ley 25.326 de Protección de Datos Personales de la República Argentina.</div>
+      <div class="campo-fila">
+        <div class="campo"><label>Nombre</label><input type="text" id="nl-nombre" placeholder="Nombre del estudiante"></div>
+        <div class="campo"><label>Apellido</label><input type="text" id="nl-apellido" placeholder="Apellido"></div>
+      </div>
+      <div class="campo-fila-3">
+        <div class="campo"><label>Curso</label><input type="text" id="nl-curso" placeholder="Ej: 4° A"></div>
+        <div class="campo"><label>Año</label><select id="nl-anio"><option>1° Año</option><option>2° Año</option><option>3° Año</option><option selected>4° Año</option><option>5° Año</option><option>6° Año</option><option>7° Año</option></select></div>
+        <div class="campo"><label>Modalidad</label><select id="nl-modalidad"><option>Secundaria Técnica</option><option>Bachillerato Común</option></select></div>
+      </div>
+      <div class="campo-fila">
+        <div class="campo"><label>Fecha de nacimiento <span>— opcional</span></label><input type="date" id="nl-fnac"></div>
+        <div class="campo"><label>N° Legajo institucional <span>— opcional</span></label><input type="text" id="nl-nleg" placeholder="N° del legajo institucional"></div>
+      </div>
+      <div class="campo-fila">
+        <div class="campo"><label>Familiar de referencia</label><input type="text" id="nl-fam" placeholder="Nombre del familiar"></div>
+        <div class="campo"><label>Contacto familiar</label><input type="text" id="nl-tel" placeholder="Teléfono o email"></div>
+      </div>
+      <hr class="sep">
+      <div class="campo"><label>Motivo de apertura</label><select id="nl-motivo"><option value="primer-encuentro">Primer encuentro — inicio del ciclo lectivo</option><option value="preexistente">Caso preexistente — se incorpora al sistema</option><option value="derivacion-docente">Derivación desde docente</option><option value="derivacion-directivos">Derivación desde directivos</option><option value="solicitud-familia">Solicitud de la familia</option><option value="solicitud-estudiante">Solicitud del propio estudiante</option><option value="seguimiento-preventivo">Seguimiento preventivo</option></select></div>
+      <div class="campo-fila">
+        <div class="campo"><label>Situación académica inicial</label><select id="nl-sit"><option>Rendimiento satisfactorio</option><option>Con áreas a fortalecer</option><option selected>Bajo rendimiento en algunas materias</option><option>Bajo rendimiento generalizado</option><option>En riesgo de repitencia</option><option>Repitente del año anterior</option></select></div>
+        <div class="campo"><label>Situación de asistencia</label><select id="nl-asis"><option>Regular (menos del 15%)</option><option selected>Irregular (15-30%)</option><option>Crítica (más del 30%)</option><option>Sin datos aún</option></select></div>
+      </div>
+      <div class="campo-fila">
+        <div class="campo"><label>Estado inicial</label><select id="nl-estado"><option value="activo">Activo</option><option value="seguimiento">En seguimiento</option><option value="derivado">Derivado</option></select></div>
+      </div>
+      <div class="campo"><label>Fortalezas observadas <span>— opcional</span></label><textarea id="nl-fort" placeholder="Ej: Buen vínculo con pares, interés en materias técnicas, puntual cuando asiste..."></textarea></div>
+      <div class="campo"><label>Reseña inicial / Anamnesis pedagógica</label><textarea id="nl-reseña" placeholder="Describí la situación al momento de apertura del legajo. Contexto académico, familiar conocido, comportamiento observado, motivos que llevan a la intervención..." style="min-height:100px;"></textarea></div>
+      <div class="campo"><label>Observaciones adicionales <span>— opcional</span></label><textarea id="nl-obs" placeholder="Información complementaria relevante..."></textarea></div>
+    </div>
+    <div class="modal-f">
+      <button class="btn-p" onclick="guardarLegajo()">💾 Crear legajo</button>
+      <button class="btn-s" onclick="cerrarModal('modal-legajo')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVA INTERVENCIÓN -->
+<div class="modal-overlay" id="modal-int">
+  <div class="modal-box">
+    <div class="modal-h"><div class="modal-titulo">Registrar intervención</div><button class="modal-close" onclick="cerrarModal('modal-int')">✕ Cerrar</button></div>
+    <div class="modal-b">
+      <div class="campo-fila">
+        <div class="campo"><label>Fecha</label><input type="date" id="int-fecha"></div>
+        <div class="campo"><label>Tipo</label><select id="int-tipo"><option value="entrevista">Entrevista individual</option><option value="familia">Contacto con familia</option><option value="derivacion">Derivación a equipo externo</option><option value="observacion">Observación / Seguimiento</option><option value="acuerdo">Acuerdo pedagógico</option><option value="plan-grupal">Tutoría grupal</option></select></div>
+      </div>
+      <div class="campo"><label>Descripción de la intervención</label><textarea id="int-desc" placeholder="Describí qué se hizo, cómo se desarrolló..." style="min-height:85px;"></textarea></div>
+      <div class="campo"><label>Respuesta del estudiante / Resultado <span>— opcional</span></label><textarea id="int-resp" placeholder="Cómo respondió, qué surgió..."></textarea></div>
+      <div class="campo"><label>Próximo paso acordado <span>— opcional</span></label><input type="text" id="int-prox" placeholder="Ej: Entrevista en 2 semanas, contactar familia, derivar a OATE..."></div>
+    </div>
+    <div class="modal-f">
+      <button class="btn-p" onclick="guardarIntervencion()">💾 Guardar</button>
+      <button class="btn-s" onclick="cerrarModal('modal-int')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CAMBIAR ESTADO -->
+<div class="modal-overlay" id="modal-estado">
+  <div class="modal-box modal-box-sm">
+    <div class="modal-h"><div class="modal-titulo">Cambiar estado</div><button class="modal-close" onclick="cerrarModal('modal-estado')">✕</button></div>
+    <div class="modal-b">
+      <div class="campo"><label>Estado del legajo</label><select id="est-sel" style="width:100%;"><option value="activo">Activo</option><option value="seguimiento">En seguimiento</option><option value="derivado">Derivado</option><option value="cerrado">Cerrado</option></select></div>
+    </div>
+    <div class="modal-f">
+      <button class="btn-p" onclick="guardarEstado()">Guardar</button>
+      <button class="btn-s" onclick="cerrarModal('modal-estado')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="f-marca">BRB Estrategia &amp; Procesos · Soberanía Técnica Ediciones</div>
+  <div class="f-sub">Plataforma de Tutoría BRB v1.0 · Registro Digital Operativo POT · Chubut · Argentina · 2026</div>
+  <div class="f-norm-t">Marco normativo que enmarca esta herramienta</div>
+  <div class="f-norm-grid">
+    <div class="norm-i"><div class="norm-ref">Decreto 146/08 — Chubut</div><div class="norm-desc">Regula la designación, evaluación y rol del Profesor Orientador Tutor (POT) en escuelas secundarias. Establece el módulo de 80 minutos semanales por curso.</div></div>
+    <div class="norm-i"><div class="norm-ref">Resolución ME 29/2024 — Chubut</div><div class="norm-desc">Fortalece las trayectorias escolares mediante visión integral. Actualiza los apoyos para ingreso, permanencia y egreso en secundarias de Chubut.</div></div>
+    <div class="norm-i"><div class="norm-ref">Ley 26.206 — Educación Nacional</div><div class="norm-desc">Art. 32: establece la tutoría como dispositivo para acompañar las trayectorias escolares de los jóvenes en el nivel secundario obligatorio.</div></div>
+    <div class="norm-i"><div class="norm-ref">OATE — Chubut · Región II</div><div class="norm-desc">Orientación y Apoyo a las Trayectorias Escolares. Marco provincial para intervenciones tutoriales en Puerto Madryn. coordinacion.oate@chubut.edu.ar</div></div>
+    <div class="norm-i"><div class="norm-ref">Ley 25.326 — Datos Personales</div><div class="norm-desc">Los datos de estudiantes se almacenan exclusivamente en el dispositivo del tutor y no se transmiten a servidores externos. Conforme a esta ley.</div></div>
+    <div class="norm-i"><div class="norm-ref">Res. CFE 93/09 — Nación</div><div class="norm-desc">Orientaciones para la organización pedagógica e institucional de la educación secundaria obligatoria. Marco para intervenciones de acompañamiento a trayectorias.</div></div>
+  </div>
+  <div class="f-bottom">Boris Rodríguez Barrera · ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351 · Puerto Madryn, Chubut, Argentina<br>Esta herramienta es un registro digital de apoyo operativo. No reemplaza el criterio profesional del POT ni los protocolos institucionales vigentes.</div>
+</footer>
+
+<script>
+const SUPA_URL  = 'https://mjxtbtkhdsgzgvakgdrw.supabase.co';
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1qeHRidGtoZHNnemd2YWtnZHJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyMTc4OTcsImV4cCI6MjA5MTc5Mzg5N30.Q-Sg6aKScnOXlAyzY7hzfKUPUXJwf5teh3fMhTF-CeM';
+let provActual='gemini',apiKey='',sesion=null,legajoId=null,iaTool=null;
+
+// STORAGE
+const getLegs=()=>JSON.parse(localStorage.getItem('brb_tut_legajos')||'[]');
+const setLegs=a=>localStorage.setItem('brb_tut_legajos',JSON.stringify(a));
+const getLeg=id=>getLegs().find(l=>l.id===id)||null;
+
+// PROV
+function selProv(p,btn){
+  provActual=p;
+  document.querySelectorAll('.prov-tab').forEach(b=>b.classList.remove('activo'));btn.classList.add('activo');
+  document.querySelectorAll('.prov-inst').forEach(d=>d.classList.remove('visible'));
+  document.getElementById('inst-'+p).classList.add('visible');
+  document.getElementById('apikey-input').placeholder={gemini:'AIza...',openai:'sk-...',anthropic:'sk-ant-...'}[p];
+}
+function confirmarApiKey(){
+  apiKey=document.getElementById('apikey-input').value.trim();
+  document.getElementById('pantalla-apikey').classList.add('oculto');
+  document.getElementById('login-overlay').classList.remove('oculto');
+}
+
+// NAV
+function ir(id,btn){
+  ['dashboard','legajos','detalle'].forEach(s=>document.getElementById('sec-'+s).style.display=s===id?'block':'none');
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('activo'));
+  if(btn)btn.classList.add('activo');
+  if(id==='dashboard'){stats();dashUltimos();}
+  if(id==='legajos')renderLegajos();
+}
+
+// STATS
+function stats(){
+  const l=getLegs();
+  document.getElementById('st-tot').textContent=l.length;
+  document.getElementById('st-act').textContent=l.filter(x=>x.estado==='activo').length;
+  document.getElementById('st-seg').textContent=l.filter(x=>x.estado==='seguimiento').length;
+  document.getElementById('st-der').textContent=l.filter(x=>x.estado==='derivado').length;
+  document.getElementById('badge-total').textContent=l.length;
+}
+function estLabel(e){return{activo:'Activo',seguimiento:'Seguimiento',derivado:'Derivado',cerrado:'Cerrado'}[e]||e;}
+function motivoLabel(m){return{
+  'primer-encuentro':'Primer encuentro','preexistente':'Caso preexistente',
+  'derivacion-docente':'Derivación docente','derivacion-directivos':'Derivación directivos',
+  'solicitud-familia':'Solicitud familia','solicitud-estudiante':'Solicitud estudiante',
+  'seguimiento-preventivo':'Seguimiento preventivo'}[m]||m;}
+function tipoLabel(t){return{entrevista:'Entrevista individual',familia:'Contacto familia',derivacion:'Derivación',observacion:'Observación',acuerdo:'Acuerdo pedagógico','plan-grupal':'Tutoría grupal',ia:'Generado con IA'}[t]||t;}
+
+function dashUltimos(){
+  const l=getLegs().slice(0,5);
+  const d=document.getElementById('dash-ultimos');
+  if(!d)return;
+  d.innerHTML=l.length===0?'<div style="padding:18px;text-align:center;font-size:0.78rem;color:var(--gris-texto);opacity:0.6;">No hay legajos aún.</div>':
+    l.map(x=>`<div class="ul-item" onclick="abrirLegajo(${x.id})"><div><div class="ul-nombre">${x.apellido}, ${x.nombre}</div><div style="font-family:\'DM Mono\',monospace;font-size:0.58rem;color:var(--gris-texto);">${x.anio} · ${x.curso}</div></div><span class="leg-est ${x.estado}" style="font-size:0.58rem;">${estLabel(x.estado)}</span></div>`).join('');
+}
+
+// LEGAJOS LIST
+function renderLegajos(){
+  const buscar=document.getElementById('leg-buscar')?.value.toLowerCase()||'';
+  const filtro=document.getElementById('leg-filtro')?.value||'';
+  const legs=getLegs().filter(l=>{
+    const mb=!buscar||(l.nombre+' '+l.apellido+' '+l.curso).toLowerCase().includes(buscar);
+    return mb&&(!filtro||l.estado===filtro);
+  });
+  const el=document.getElementById('legajos-lista');
+  if(!el)return;
+  if(legs.length===0){el.innerHTML=`<div class="vacio"><div class="vacio-i">📁</div><div class="vacio-t">${getLegs().length===0?'No hay legajos aún.':'Sin resultados.'}</div><button class="btn-p" onclick="abrirNuevoLegajo()">➕ Crear primer legajo</button></div>`;return;}
+  el.innerHTML=legs.map(l=>`
+    <div class="legajo-card" onclick="abrirLegajo(${l.id})">
+      <div class="leg-av">${(l.nombre[0]||'?').toUpperCase()}</div>
+      <div class="leg-info"><div class="leg-nombre">${l.apellido}, ${l.nombre}</div><div class="leg-meta">${l.anio} · ${l.curso} · ${l.modalidad} · ${l.fechaAp}</div></div>
+      <div class="leg-est ${l.estado}">${estLabel(l.estado)}</div>
+      <div class="leg-int">${l.intervenciones?.length||0} int.</div>
+      <button class="btn-del-sm" onclick="event.stopPropagation();eliminarLeg(${l.id})" title="Eliminar">🗑</button>
+    </div>`).join('');
+}
+
+// NUEVO LEGAJO
+function abrirNuevoLegajo(){document.getElementById('modal-legajo').classList.add('visible');}
+function guardarLegajo(){
+  const n=document.getElementById('nl-nombre').value.trim();
+  const a=document.getElementById('nl-apellido').value.trim();
+  if(!n||!a){alert('Ingresá nombre y apellido.');return;}
+  const l={id:Date.now(),nombre:n,apellido:a,
+    curso:document.getElementById('nl-curso').value.trim(),
+    anio:document.getElementById('nl-anio').value,
+    modalidad:document.getElementById('nl-modalidad').value,
+    fnac:document.getElementById('nl-fnac').value,
+    nleg:document.getElementById('nl-nleg').value.trim(),
+    fam:document.getElementById('nl-fam').value.trim(),
+    tel:document.getElementById('nl-tel').value.trim(),
+    motivo:document.getElementById('nl-motivo').value,
+    sit:document.getElementById('nl-sit').value,
+    asis:document.getElementById('nl-asis').value,
+    estado:document.getElementById('nl-estado').value,
+    fort:document.getElementById('nl-fort').value.trim(),
+    reseña:document.getElementById('nl-reseña').value.trim(),
+    obs:document.getElementById('nl-obs').value.trim(),
+    fechaAp:new Date().toLocaleDateString('es-AR'),
+    intervenciones:[]};
+  const legs=getLegs();legs.unshift(l);setLegs(legs);
+  cerrarModal('modal-legajo');stats();dashUltimos();
+  abrirLegajo(l.id);
+  ['nl-nombre','nl-apellido','nl-curso','nl-nleg','nl-fam','nl-tel','nl-fort','nl-reseña','nl-obs'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+}
+
+// ABRIR LEGAJO
+function abrirLegajo(id){
+  legajoId=id;const l=getLeg(id);if(!l)return;
+  limpiarIA();
+  document.getElementById('sec-dashboard').style.display='none';
+  document.getElementById('sec-legajos').style.display='none';
+  document.getElementById('sec-detalle').style.display='block';
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('activo'));
+
+  const edad=l.fnac?calcEdad(l.fnac):'—';
+  document.getElementById('det-header').innerHTML=`
+    <div class="det-av">${(l.nombre[0]||'?').toUpperCase()}</div>
+    <div class="det-info">
+      <div class="det-nombre">${l.apellido}, ${l.nombre}</div>
+      <div class="det-meta"><span>📚 ${l.anio} · ${l.curso}</span><span>🏫 ${l.modalidad}</span><span>📅 Apertura: ${l.fechaAp}</span><span>📋 ${l.intervenciones?.length||0} intervenciones</span></div>
+    </div>
+    <div class="det-acciones">
+      <button class="btn-s" style="font-size:0.68rem;padding:6px 12px;" onclick="volverALista()">← Volver</button>
+      <button class="btn-sm btn-sm-v" onclick="abrirModalEstado()">Estado: ${estLabel(l.estado)}</button>
+      <button class="btn-sm btn-sm-a" onclick="exportarLeg(${id})">⬇ Exportar</button>
+      <button class="btn-danger" style="font-size:0.62rem;padding:5px 10px;" onclick="eliminarLeg(${id},true)">🗑 Eliminar</button>
+    </div>`;
+
+  document.getElementById('det-datos').innerHTML=`
+    <div class="df"><label>Nombre completo</label><div class="v">${l.apellido}, ${l.nombre}</div></div>
+    <div class="df"><label>Año / Curso / Modalidad</label><div class="v">${l.anio} · ${l.curso} · ${l.modalidad}</div></div>
+    <div class="df"><label>Edad</label><div class="v">${edad}${l.fnac?' ('+l.fnac+')':''}</div></div>
+    <div class="df"><label>N° Legajo institucional</label><div class="v ${!l.nleg?'vacio':''}">${l.nleg||'No especificado'}</div></div>
+    <div class="df"><label>Familiar de referencia</label><div class="v ${!l.fam?'vacio':''}">${l.fam||'No especificado'}</div></div>
+    <div class="df"><label>Contacto familiar</label><div class="v ${!l.tel?'vacio':''}">${l.tel||'—'}</div></div>
+    <div class="df"><label>Motivo de apertura</label><div class="v">${motivoLabel(l.motivo)}</div></div>
+    <div class="df"><label>Situación académica inicial</label><div class="v">${l.sit}</div></div>
+    <div class="df"><label>Asistencia</label><div class="v">${l.asis}</div></div>
+    ${l.fort?`<div class="df"><label>Fortalezas</label><div class="v">${l.fort}</div></div>`:''}
+    ${l.obs?`<div class="df"><label>Observaciones</label><div class="v">${l.obs}</div></div>`:''}`;
+
+  document.getElementById('det-reseña').innerHTML=`
+    <div class="v ${!l.reseña?'vacio':''}" style="line-height:1.7;">${l.reseña||'No se registró reseña inicial.'}</div>`;
+
+  renderHistorial(l);
+}
+
+function calcEdad(f){
+  const h=new Date(),n=new Date(f);let e=h.getFullYear()-n.getFullYear();
+  if(h.getMonth()<n.getMonth()||(h.getMonth()===n.getMonth()&&h.getDate()<n.getDate()))e--;
+  return e+' años';
+}
+
+function volverALista(){
+  document.getElementById('sec-detalle').style.display='none';
+  document.getElementById('sec-legajos').style.display='block';
+  document.querySelectorAll('.nav-tab')[1].classList.add('activo');
+  renderLegajos();
+}
+
+// HISTORIAL
+function renderHistorial(l){
+  const el=document.getElementById('hist-lista');if(!el)return;
+  const inv=(l.intervenciones||[]).slice().reverse();
+  if(inv.length===0){el.innerHTML='<div class="hist-vacio">Sin intervenciones registradas. Registrá la primera.</div>';return;}
+  el.innerHTML=inv.map(i=>{
+    const d=new Date(i.fecha+'T12:00:00');
+    return `<div class="int-item">
+      <div class="int-fecha"><div class="int-dia">${d.getDate().toString().padStart(2,'0')}</div><div class="int-mes">${d.toLocaleString('es-AR',{month:'short'}).toUpperCase()}</div><div class="int-anio">${d.getFullYear()}</div></div>
+      <div class="int-cont">
+        <div class="int-tipo-badge t-${i.tipo}">${tipoLabel(i.tipo)}</div>
+        <div class="int-desc">${i.desc||''}</div>
+        ${i.resp?`<div class="int-resp">💬 ${i.resp}</div>`:''}
+        ${i.prox?`<div class="int-prox">→ ${i.prox}</div>`:''}
+      </div>
+      <button class="int-del-btn" onclick="eliminarInt(${l.id},${i.id})" title="Eliminar">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// MODAL INTERVENCIÓN
+function abrirModalInt(){
+  document.getElementById('int-fecha').value=new Date().toISOString().slice(0,10);
+  document.getElementById('modal-int').classList.add('visible');
+}
+function guardarIntervencion(){
+  const desc=document.getElementById('int-desc').value.trim();
+  if(!desc){alert('Describí la intervención.');return;}
+  const legs=getLegs();const idx=legs.findIndex(l=>l.id===legajoId);if(idx<0)return;
+  legs[idx].intervenciones=legs[idx].intervenciones||[];
+  legs[idx].intervenciones.push({
+    id:Date.now(),
+    fecha:document.getElementById('int-fecha').value,
+    tipo:document.getElementById('int-tipo').value,
+    desc,
+    resp:document.getElementById('int-resp').value.trim(),
+    prox:document.getElementById('int-prox').value.trim()
+  });
+  setLegs(legs);cerrarModal('modal-int');
+  abrirLegajo(legajoId);
+  ['int-desc','int-resp'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('int-prox').value='';
+}
+function eliminarInt(lid,iid){
+  if(!confirm('¿Eliminar esta intervención?'))return;
+  const legs=getLegs();const idx=legs.findIndex(l=>l.id===lid);if(idx<0)return;
+  legs[idx].intervenciones=(legs[idx].intervenciones||[]).filter(i=>i.id!==iid);
+  setLegs(legs);abrirLegajo(lid);
+}
+
+// ESTADO
+function abrirModalEstado(){
+  const l=getLeg(legajoId);if(!l)return;
+  document.getElementById('est-sel').value=l.estado;
+  document.getElementById('modal-estado').classList.add('visible');
+}
+function guardarEstado(){
+  const legs=getLegs();const idx=legs.findIndex(l=>l.id===legajoId);if(idx<0)return;
+  legs[idx].estado=document.getElementById('est-sel').value;
+  setLegs(legs);cerrarModal('modal-estado');abrirLegajo(legajoId);stats();
+}
+
+// ELIMINAR
+function eliminarLeg(id,volver=false){
+  if(!confirm('¿Eliminar este legajo y todo su historial? Esta acción no se puede deshacer.'))return;
+  setLegs(getLegs().filter(l=>l.id!==id));stats();
+  if(volver)volverALista(); else renderLegajos();
+}
+
+// EXPORTAR
+function exportarLeg(id){
+  const l=getLeg(id)||getLegs().find(x=>x.id===id);if(!l)return;
+  const sep='='.repeat(60);
+  const inv=(l.intervenciones||[]).map(i=>`\n--- ${i.fecha} | ${tipoLabel(i.tipo)} ---\n${i.desc}\n${i.resp?'Respuesta: '+i.resp:''}\n${i.prox?'Próximo: '+i.prox:''}`).join('\n');
+  const txt=`${sep}\nLEGAJO DE TUTORIA BRB\n${sep}\nEstudiante: ${l.apellido}, ${l.nombre}\nCurso: ${l.anio} - ${l.curso} - ${l.modalidad}\nFecha apertura: ${l.fechaAp} | Estado: ${estLabel(l.estado)}\nFamiliar: ${l.fam||'—'} | Contacto: ${l.tel||'—'}\nMotivo: ${motivoLabel(l.motivo)}\nSituacion academica: ${l.sit}\nAsistencia: ${l.asis}\n\nFORTALEZAS:\n${l.fort||'No registradas'}\n\nRESENA INICIAL:\n${l.reseña||'No registrada'}\n\nOBSERVACIONES:\n${l.obs||'—'}\n\n${sep}\nHISTORIAL (${(l.intervenciones||[]).length} intervenciones)\n${sep}${inv}\n\n${sep}\nBRB Estrategia & Procesos | Soberania Tecnica Ediciones\nBoris Rodriguez Barrera | ORCID: 0009-0004-6583-6439\nbbbarrera1986@gmail.com | +54 297 517-6351 | Puerto Madryn, Chubut\n${sep}`;
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`legajo_${l.apellido}_${l.nombre}.txt`;a.click();
+  URL.revokeObjectURL(url);
+}
+function exportarTodo(){
+  const l=getLegs();if(!l.length){alert('No hay legajos.');return;}
+  l.forEach(x=>exportarLeg(x.id));
+}
+
+// IA
+function toggleIA(){
+  const b=document.getElementById('ia-body');const ic=document.getElementById('ia-icon');
+  const v=b.classList.toggle('visible');ic.textContent=v?'▲':'▼';
+}
+function selTool(tool,btn){
+  iaTool=tool;
+  document.querySelectorAll('.ia-tool').forEach(b=>b.classList.remove('activo'));btn.classList.add('activo');
+  limpiarIA(false);
+  const forms={
+    entrevista:`<div class="campo" style="margin-top:10px;"><label>Objetivo específico <span>— opcional</span></label><input type="text" id="ia1" placeholder="Ej: Identificar causas del bajo rendimiento reciente"></div><div class="campo"><label>Contexto adicional</label><textarea id="ia2" placeholder="Información relevante no registrada en el legajo..." style="min-height:55px;"></textarea></div><button class="btn-p" style="width:100%;margin-top:6px;" onclick="generarIA()">⚡ Generar guía de entrevista</button>`,
+    familia:`<div class="campo" style="margin-top:10px;"><label>Motivo del contacto</label><select id="ia1"><option>Bajo rendimiento — citación</option><option>Inasistencias reiteradas</option><option>Conflicto de convivencia</option><option>Riesgo de repitencia</option><option>Logro positivo</option><option>Derivación a equipo externo</option></select></div><div class="campo"><label>Formato</label><select id="ia2"><option>Nota formal escrita</option><option>Mensaje de WhatsApp</option><option>Correo electrónico</option></select></div><button class="btn-p" style="width:100%;margin-top:6px;" onclick="generarIA()">⚡ Generar texto para familia</button>`,
+    informe:`<div class="campo" style="margin-top:10px;"><label>Período</label><select id="ia1"><option>1° Trimestre</option><option>2° Trimestre</option><option>3° Trimestre</option><option>Ciclo completo</option></select></div><div class="campo"><label>Destinatario</label><select id="ia2"><option>Equipo directivo</option><option>Equipo OATE</option><option>Orientación escolar</option><option>Archivo institucional</option></select></div><button class="btn-p" style="width:100%;margin-top:6px;" onclick="generarIA()">⚡ Generar informe</button>`,
+    grupal:`<div class="campo" style="margin-top:10px;"><label>Eje de la tutoría</label><input type="text" id="ia1" placeholder="Ej: Estrategias de estudio para el período de exámenes"></div><div class="campo"><label>Momento del año</label><select id="ia2"><option>Inicio del ciclo</option><option>Mitad del ciclo</option><option>Pre-examen</option><option>Cierre del ciclo</option></select></div><button class="btn-p" style="width:100%;margin-top:6px;" onclick="generarIA()">⚡ Generar plan grupal</button>`,
+    socioemocional:`<div class="campo" style="margin-top:10px;"><label>Eje temático</label><select id="ia1"><option>Convivencia y normas</option><option>Identidad y autoconocimiento</option><option>Proyecto de vida</option><option>Resolución de conflictos</option><option>Gestión emocional</option><option>Comunicación asertiva</option></select></div><div class="campo"><label>Duración</label><select id="ia2"><option>40 minutos</option><option selected>80 minutos</option></select></div><button class="btn-p" style="width:100%;margin-top:6px;" onclick="generarIA()">⚡ Generar actividad</button>`,
+    estrategias:`<div class="campo" style="margin-top:10px;"><label>Área de dificultad <span>— opcional</span></label><input type="text" id="ia1" placeholder="Ej: Comprensión lectora, matemática, organización del tiempo"></div><div class="campo"><label>Observación adicional</label><textarea id="ia2" placeholder="Contexto sobre hábitos de estudio..." style="min-height:50px;"></textarea></div><button class="btn-p" style="width:100%;margin-top:6px;" onclick="generarIA()">⚡ Generar estrategias</button>`
+  };
+  const f=document.getElementById('ia-form');
+  f.innerHTML=forms[tool]||'';f.classList.add('visible');
+}
+
+function limpiarIA(resetTools=true){
+  const r=document.getElementById('ia-res'),a=document.getElementById('ia-acc'),f=document.getElementById('ia-form'),l=document.getElementById('ia-load');
+  if(r){r.textContent='';r.classList.remove('visible');}
+  if(a)a.classList.remove('visible');
+  if(f){f.innerHTML='';f.classList.remove('visible');}
+  if(l)l.classList.remove('visible');
+  if(resetTools){document.querySelectorAll('.ia-tool').forEach(b=>b.classList.remove('activo'));iaTool=null;}
+}
+
+async function generarIA(){
+  if(!legajoId||!iaTool)return;
+  const l=getLeg(legajoId);if(!l)return;
+  if(!apiKey){alert('No configuraste una API Key. Cerrá sesión e ingresala en la pantalla inicial.');return;}
+  const i1=document.getElementById('ia1')?.value||'';
+  const i2=document.getElementById('ia2')?.value||'';
+  const ctx=`Estudiante: ${l.apellido}, ${l.nombre} | Curso: ${l.anio} ${l.curso} ${l.modalidad} | Situación académica: ${l.sit} | Asistencia: ${l.asis} | Motivo apertura: ${motivoLabel(l.motivo)} | Intervenciones previas: ${(l.intervenciones||[]).length} | Reseña: ${l.reseña||'No registrada'} | Fortalezas: ${l.fort||'No registradas'}`;
+  const prompts={
+    entrevista:`Sos experto en orientación pedagógica y tutoría para nivel secundario en Argentina (Chubut, Decreto 146/08 POT). Generá guía estructurada para entrevista individual.\n\nCONTEXTO PEDAGÓGICO DEL ESTUDIANTE:\n${ctx}\n\nOBJETIVO: ${i1||'Seguimiento general'}\nCONTEXTO ADICIONAL: ${i2||'No especificado'}\n\nTexto plano. Sin markdown. Estructura: 1.APERTURA(5min) 2.EXPLORACIÓN(15min) 3.PROFUNDIZACIÓN(10min) 4.ACUERDOS(5min) 5.REGISTRO POST-ENTREVISTA. Preguntas abiertas, sin juicios. Nota al pie: "Guía orientativa. Criterio profesional del tutor es siempre prioritario."`,
+    familia:`Experto en comunicación institucional para tutores POT en Chubut (Argentina). Generá texto de comunicación con la familia.\n\nCONTEXTO: ${ctx}\nMOTIVO: ${i1}\nFORMATO: ${i2}\n\nTexto plano. Dejar [COMPLETAR] para datos específicos. Tono respetuoso y accesible. Acción concreta requerida. Sin tecnicismos.`,
+    informe:`Experto en documentación pedagógica para POT de secundaria en Chubut (Decreto 146/08, Res. ME 29/2024). Generá informe de trayectoria.\n\nCONTEXTO: ${ctx}\nPERÍODO: ${i1}\nDESTINATARIO: ${i2}\n\nTexto plano. Sin nombre del estudiante. Dejar [COMPLETAR] para datos. Estructura: datos caso, situación académica, asistencia, intervenciones, evolución, recomendaciones. Al pie: "Informe de carácter pedagógico."`,
+    grupal:`Experto en diseño de tutoría grupal para secundaria técnica en Chubut (POT, Decreto 146/08). Plan de 80 minutos.\n\nGRUPO: ${l.anio} ${l.curso} ${l.modalidad}\nEJE: ${i1}\nMOMENTO: ${i2}\n\nTexto plano. Estructura: datos sesión, objetivo, inicio(15min), desarrollo(45min), cierre(15min), recursos, indicadores.`,
+    socioemocional:`Experto en actividades socioemocionales para tutoría grupal en secundaria (Chubut, Argentina). Secuencia de actividades.\n\nGRUPO: ${l.anio} ${l.curso}\nEJE: ${i1}\nDURACIÓN: ${i2}\n\nTexto plano. Apertura, desarrollo con consignas paso a paso, puesta en común, cierre. Apropiado para adolescentes. Materiales accesibles.`,
+    estrategias:`Experto en estrategias de aprendizaje para adolescentes en escuela secundaria técnica Argentina. Estrategias personalizadas.\n\nCONTEXTO: ${ctx}\nÁREA: ${i1||'General'}\nOBSERVACIÓN: ${i2||'No especificada'}\n\nTexto plano. Mínimo 6 estrategias concretas con pasos específicos. Recursos gratuitos cuando corresponda. Al pie: "El tutor puede adaptar según su criterio profesional."`
+  };
+  const r=document.getElementById('ia-res'),ld=document.getElementById('ia-load'),ac=document.getElementById('ia-acc');
+  r.classList.remove('visible');ac.classList.remove('visible');ld.classList.add('visible');
+  try{
+    let txt='';
+    if(provActual==='gemini')txt=await llamarGemini(prompts[iaTool]);
+    else if(provActual==='openai')txt=await llamarOpenAI(prompts[iaTool]);
+    else txt=await llamarAnthropic(prompts[iaTool]);
+    ld.classList.remove('visible');r.textContent=txt;r.classList.add('visible');ac.classList.add('visible');
+  }catch(e){ld.classList.remove('visible');r.textContent='Error: '+e.message;r.classList.add('visible');}
+}
+
+function copiarIA(){
+  navigator.clipboard.writeText(document.getElementById('ia-res').textContent).then(()=>{
+    const b=document.querySelector('.ia-acc .btn-sm-s');if(b){b.textContent='✓ Copiado';setTimeout(()=>b.textContent='📋 Copiar',2000);}
+  });
+}
+function guardarIA(){
+  const txt=document.getElementById('ia-res').textContent;
+  if(!txt||!legajoId)return;
+  const legs=getLegs();const idx=legs.findIndex(l=>l.id===legajoId);if(idx<0)return;
+  legs[idx].intervenciones=legs[idx].intervenciones||[];
+  legs[idx].intervenciones.push({id:Date.now(),fecha:new Date().toISOString().slice(0,10),tipo:'ia',desc:`[IA: ${iaTool}] ${txt.slice(0,200)}...`,resp:'',prox:''});
+  setLegs(legs);renderHistorial(legs[idx]);
+  const b=document.querySelector('.ia-acc .btn-sm-v');if(b){b.textContent='✓ Guardado';setTimeout(()=>b.textContent='💾 Guardar en historial',2000);}
+}
+
+// APIS
+async function llamarGemini(p){
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:p}]}]})});
+  const d=await r.json();if(!r.ok)throw new Error(d?.error?.message||'Error Gemini');
+  return d?.candidates?.[0]?.content?.parts?.[0]?.text||'';
+}
+async function llamarOpenAI(p){
+  const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:3000,messages:[{role:'user',content:p}]})});
+  const d=await r.json();if(!r.ok)throw new Error(d?.error?.message||'Error OpenAI');
+  return d?.choices?.[0]?.message?.content||'';
+}
+async function llamarAnthropic(p){
+  const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:p}]})});
+  const d=await r.json();if(!r.ok)throw new Error(d?.error?.message||'Error Claude');
+  return d?.content?.[0]?.text||'';
+}
+
+// MODAL
+function cerrarModal(id){document.getElementById(id).classList.remove('visible');}
+
+// LOGIN SUPABASE
+function genHuella(){
+  const raw=[navigator.userAgent,navigator.language,screen.width+'x'+screen.height,screen.colorDepth,new Date().getTimezoneOffset(),navigator.hardwareConcurrency||''].join('|');
+  let h=0;for(let i=0;i<raw.length;i++){const c=raw.charCodeAt(i);h=((h<<5)-h)+c;h=h&h;}
+  return 'POT-'+Math.abs(h).toString(36).toUpperCase();
+}
+async function verificarLicencia(){
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
+  const clave=document.getElementById('login-clave').value.trim().toUpperCase();
+  const errDiv=document.getElementById('login-error');
+  const btn=document.getElementById('login-btn');
+  errDiv.classList.remove('visible');
+  if(!email){errDiv.textContent='Ingresá tu email.';errDiv.classList.add('visible');return;}
+  if(!clave){errDiv.textContent='Ingresá tu clave.';errDiv.classList.add('visible');return;}
+  btn.disabled=true;btn.classList.add('cargando');
+  btn.querySelector('.login-btn-txt').textContent='Verificando...';
+  try{
+    const huella=genHuella();
+    const res=await fetch(`${SUPA_URL}/rest/v1/licencias_tutores?email=eq.${encodeURIComponent(email)}&select=*`,
+      {headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`,'Content-Type':'application/json'}});
+    if(!res.ok)throw new Error('Error de conexión.');
+    const data=await res.json();
+    if(!data||data.length===0){errDiv.textContent='Email no registrado. Contactá a BRB Estrategia & Procesos.';errDiv.classList.add('visible');return;}
+    const u=data[0];
+    if(u.clave.toUpperCase()!==clave){errDiv.textContent='Clave incorrecta.';errDiv.classList.add('visible');return;}
+    if(!u.activa){errDiv.textContent='Licencia desactivada. Contactá a BRB.';errDiv.classList.add('visible');return;}
+    const hoy=new Date().toISOString().slice(0,10);
+    if(hoy>new Date(u.fecha_vencimiento).toISOString().slice(0,10)){errDiv.textContent='Licencia vencida. Contactá a BRB.';errDiv.classList.add('visible');return;}
+    if(u.dispositivo_id&&u.dispositivo_id!==huella){errDiv.textContent='Licencia registrada en otro dispositivo.';errDiv.classList.add('visible');return;}
+    if(!u.dispositivo_id){
+      await fetch(`${SUPA_URL}/rest/v1/licencias_tutores?id=eq.${u.id}`,
+        {method:'PATCH',headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`,'Content-Type':'application/json','Prefer':'return=minimal'},
+        body:JSON.stringify({dispositivo_id:huella})});
+    }
+    sesion={nombre:u.nombre||email,email:u.email};
+    document.getElementById('session-wrap').innerHTML=`
+      <span class="h-session"><strong>${sesion.nombre}</strong> · POT</span>
+      <button class="btn-logout" onclick="cerrarSesion()">Cerrar sesión</button>`;
+    document.getElementById('login-overlay').classList.add('oculto');
+    stats();dashUltimos();
+  }catch(e){errDiv.textContent='Error de conexión. Verificá tu internet.';errDiv.classList.add('visible');}
+  finally{btn.disabled=false;btn.classList.remove('cargando');btn.querySelector('.login-btn-txt').textContent='Ingresar';}
+}
+function cerrarSesion(){
+  sesion=null;
+  document.getElementById('session-wrap').innerHTML='';
+  document.getElementById('login-email').value='';
+  document.getElementById('login-clave').value='';
+  document.getElementById('login-overlay').classList.remove('oculto');
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  stats();
+  document.getElementById('int-fecha')&&(document.getElementById('int-fecha').value=new Date().toISOString().slice(0,10));
+});
+</script>
+</body>
+</html>
