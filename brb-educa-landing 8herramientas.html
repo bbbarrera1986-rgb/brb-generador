@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRB-Educa — Ecosistema de Inteligencia Artificial para la Educación Argentina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --negro: #0a0a0a;
+  --negro-suave: #111111;
+  --gris-oscuro: #1a1a1a;
+  --gris-medio: #2a2a2a;
+  --gris-borde: #333333;
+  --gris-texto: #888888;
+  --blanco: #f5f0e8;
+  --blanco-puro: #ffffff;
+  --oro: #c9a84c;
+  --oro-claro: #e8c96d;
+  --oro-oscuro: #8a6f2e;
+  --verde: #2d8a57;
+  --verde-claro: #3dab6d;
+  --violeta: #4a1a6b;
+  --violeta-claro: #7b3fa0;
+  --azul: #1a4a7a;
+  --azul-claro: #2e75b6;
+  --rojo: #8a2020;
+  --rojo-claro: #c0392b;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Lato', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--negro);
+  color: var(--blanco);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 3rem;
+  background: rgba(10,10,10,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--gris-borde);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.nav-logo-icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
+
+.nav-logo-text {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--blanco);
+  letter-spacing: 0.02em;
+}
+
+.nav-logo-text span {
+  color: var(--oro);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--gris-texto);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--oro); }
+
+.nav-cta {
+  background: var(--oro);
+  color: var(--negro) !important;
+  padding: 0.5rem 1.25rem;
+  font-weight: 700 !important;
+  border-radius: 2px;
+}
+
+.nav-cta:hover { background: var(--oro-claro) !important; color: var(--negro) !important; }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8rem 3rem 4rem;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 60% 40%, rgba(201,168,76,0.06) 0%, transparent 70%),
+              radial-gradient(ellipse 50% 40% at 20% 80%, rgba(45,138,87,0.04) 0%, transparent 60%);
+}
+
+.hero-grid-lines {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--oro);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--oro);
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6vw, 5.5rem);
+  font-weight: 900;
+  line-height: 1.05;
+  color: var(--blanco);
+  margin-bottom: 1rem;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--oro);
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--gris-texto);
+  max-width: 600px;
+  margin-bottom: 2.5rem;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.hero-stat-num {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--oro);
+  line-height: 1;
+}
+
+.hero-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gris-texto);
+  margin-top: 0.3rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: var(--oro);
+  color: var(--negro);
+  padding: 0.9rem 2rem;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+}
+
+.btn-primary:hover { background: var(--oro-claro); transform: translateY(-1px); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--blanco);
+  padding: 0.9rem 2rem;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.9rem;
+  border: 1px solid var(--gris-borde);
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover { border-color: var(--oro); color: var(--oro); }
+
+.hero-scroll {
+  position: absolute;
+  bottom: 2rem;
+  left: 3rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gris-texto);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hero-scroll::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--gris-texto);
+  animation: scrollLine 2s infinite;
+}
+
+@keyframes scrollLine {
+  0%, 100% { opacity: 0.3; } 50% { opacity: 1; }
+}
+
+/* ── SECCIÓN GENÉRICA ── */
+section {
+  position: relative;
+  z-index: 1;
+}
+
+.sec-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--oro);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sec-label::before {
+  content: '';
+  display: block;
+  width: 30px;
+  height: 1px;
+  background: var(--oro);
+}
+
+.sec-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--blanco);
+  margin-bottom: 1rem;
+}
+
+.sec-title em { color: var(--oro); font-style: italic; }
+
+.sec-lead {
+  font-size: 1rem;
+  color: var(--gris-texto);
+  max-width: 600px;
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+/* ── VS SECTION ── */
+.vs-section {
+  padding: 6rem 3rem;
+  background: var(--negro-suave);
+  border-top: 1px solid var(--gris-borde);
+}
+
+.vs-header {
+  max-width: 1200px;
+  margin: 0 auto 4rem;
+}
+
+.vs-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  gap: 0;
+  align-items: start;
+}
+
+.vs-col-header {
+  padding: 1.5rem 2rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border-bottom: 2px solid;
+  margin-bottom: 1rem;
+}
+
+.vs-col-header.generico {
+  color: var(--gris-texto);
+  border-color: var(--gris-borde);
+}
+
+.vs-col-header.brb {
+  color: var(--oro);
+  border-color: var(--oro);
+}
+
+.vs-separator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 1rem;
+  gap: 0.5rem;
+}
+
+.vs-vs {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--gris-borde);
+}
+
+.vs-line {
+  width: 1px;
+  height: 100%;
+  min-height: 400px;
+  background: var(--gris-borde);
+}
+
+.vs-item {
+  padding: 1.2rem 2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.vs-item.generico { color: var(--gris-texto); }
+.vs-item.brb { color: var(--blanco); }
+
+.vs-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 0.1rem;
+  font-size: 0.9rem;
+}
+
+.vs-ai-logos {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem 2rem;
+}
+
+.vs-ai-logo {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--gris-texto);
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--gris-borde);
+  opacity: 0.6;
+}
+
+/* ── NORMATIVA ── */
+.norma-section {
+  padding: 6rem 3rem;
+  border-top: 1px solid var(--gris-borde);
+}
+
+.norma-header {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+}
+
+.norma-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--gris-borde);
+}
+
+.norma-card {
+  background: var(--negro);
+  padding: 2rem;
+  transition: background 0.2s;
+}
+
+.norma-card:hover { background: var(--gris-oscuro); }
+
+.norma-card-num {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  color: var(--oro);
+  margin-bottom: 0.75rem;
+}
+
+.norma-card-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--blanco);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.norma-card-desc {
+  font-size: 0.82rem;
+  color: var(--gris-texto);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.norma-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.norma-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--gris-borde);
+  color: var(--gris-texto);
+}
+
+/* ── GENERADORES ── */
+.gen-section {
+  padding: 6rem 3rem;
+  background: var(--negro-suave);
+  border-top: 1px solid var(--gris-borde);
+}
+
+.gen-header {
+  max-width: 1200px;
+  margin: 0 auto 3rem;
+}
+
+/* Tabs */
+.gen-tabs {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--gris-borde);
+  padding-bottom: 0;
+}
+
+.gen-tab {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  color: var(--gris-texto);
+  border: 1px solid transparent;
+  border-bottom: none;
+  background: transparent;
+  transition: all 0.2s;
+  margin-bottom: -1px;
+  white-space: nowrap;
+}
+
+.gen-tab:hover { color: var(--blanco); }
+.gen-tab.active {
+  color: var(--oro);
+  border-color: var(--gris-borde);
+  border-bottom-color: var(--negro-suave);
+  background: var(--negro-suave);
+}
+
+/* Card */
+.gen-card {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+.gen-card.active { display: grid; }
+
+.gen-card-info {}
+
+.gen-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid;
+  margin-bottom: 1.25rem;
+}
+
+.gen-card-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--blanco);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.gen-card-role {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--gris-texto);
+  letter-spacing: 0.1em;
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+}
+
+.gen-card-desc {
+  font-size: 0.9rem;
+  color: var(--gris-texto);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+.gen-card-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.gen-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--blanco);
+  line-height: 1.4;
+}
+
+.gen-feature-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--oro);
+  flex-shrink: 0;
+  margin-top: 0.5rem;
+}
+
+.gen-card-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.btn-gen {
+  padding: 0.65rem 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.btn-gen-primary {
+  background: var(--oro);
+  color: var(--negro);
+  border-color: var(--oro);
+  font-weight: 700;
+}
+
+.btn-gen-primary:hover { background: var(--oro-claro); }
+
+.btn-gen-secondary {
+  background: transparent;
+  color: var(--gris-texto);
+  border-color: var(--gris-borde);
+}
+
+.btn-gen-secondary:hover { color: var(--blanco); border-color: var(--blanco); }
+
+.gen-adquirir {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: var(--gris-texto);
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gris-borde);
+  border-left: 3px solid var(--oro);
+}
+
+/* Demo Panel */
+.gen-demo {
+  background: var(--negro);
+  border: 1px solid var(--gris-borde);
+  overflow: hidden;
+}
+
+.demo-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--gris-oscuro);
+  border-bottom: 1px solid var(--gris-borde);
+}
+
+.demo-dots {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.demo-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gris-borde);
+}
+
+.demo-dot:nth-child(1) { background: #ff5f57; }
+.demo-dot:nth-child(2) { background: #febc2e; }
+.demo-dot:nth-child(3) { background: #28c840; }
+
+.demo-url {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--gris-texto);
+  letter-spacing: 0.04em;
+}
+
+.demo-badge {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  background: rgba(201,168,76,0.1);
+  color: var(--oro);
+  border: 1px solid rgba(201,168,76,0.3);
+}
+
+.demo-body {
+  padding: 1.25rem;
+}
+
+.demo-api-field {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-api-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gris-texto);
+  white-space: nowrap;
+}
+
+.demo-api-input {
+  flex: 1;
+  background: var(--gris-oscuro);
+  border: 1px solid var(--gris-borde);
+  color: var(--gris-texto);
+  padding: 0.4rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  cursor: not-allowed;
+}
+
+.demo-api-note {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--gris-texto);
+  opacity: 0.6;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.demo-form-row {
+  margin-bottom: 0.75rem;
+}
+
+.demo-form-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--oro);
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+.demo-form-value {
+  font-size: 0.85rem;
+  color: var(--blanco);
+  padding: 0.4rem 0.75rem;
+  background: var(--gris-oscuro);
+  border: 1px solid var(--gris-borde);
+  border-left: 2px solid var(--oro);
+}
+
+.demo-divider {
+  height: 1px;
+  background: var(--gris-borde);
+  margin: 1rem 0;
+}
+
+.demo-output-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gris-texto);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-output-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gris-borde);
+}
+
+.demo-output {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: var(--blanco);
+  white-space: pre-wrap;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: rgba(255,255,255,0.02);
+}
+
+.demo-output::-webkit-scrollbar { width: 4px; }
+.demo-output::-webkit-scrollbar-track { background: transparent; }
+.demo-output::-webkit-scrollbar-thumb { background: var(--gris-borde); }
+
+.demo-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 12px;
+  background: var(--oro);
+  animation: blink 1.2s infinite;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* ── CONTACT ── */
+.contact-section {
+  padding: 6rem 3rem;
+  border-top: 1px solid var(--gris-borde);
+}
+
+.contact-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.contact-info-block {
+  margin-bottom: 2rem;
+}
+
+.contact-label {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--oro);
+  margin-bottom: 0.4rem;
+}
+
+.contact-value {
+  font-size: 1rem;
+  color: var(--blanco);
+  font-weight: 300;
+}
+
+.contact-link {
+  color: var(--blanco);
+  text-decoration: none;
+  transition: color 0.2s;
+  border-bottom: 1px solid transparent;
+}
+
+.contact-link:hover { color: var(--oro); border-bottom-color: var(--oro); }
+
+.contact-orcid {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--gris-texto);
+  letter-spacing: 0.08em;
+}
+
+.contact-gen-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contact-gen-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gris-borde);
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.contact-gen-item:hover { border-color: var(--oro); background: rgba(201,168,76,0.04); }
+
+.contact-gen-name {
+  font-size: 0.82rem;
+  color: var(--blanco);
+}
+
+.contact-gen-cta {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--oro);
+}
+
+/* ── FOOTER ── */
+footer {
+  padding: 2rem 3rem;
+  border-top: 1px solid var(--gris-borde);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--negro);
+}
+
+.footer-left {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--gris-texto);
+  letter-spacing: 0.06em;
+}
+
+.footer-doi {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--gris-texto);
+  opacity: 0.6;
+}
+
+/* ── ANIMATIONS ── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+  .hero { padding: 7rem 1.5rem 4rem; }
+  .hero-stats { flex-wrap: wrap; gap: 1.5rem; }
+  .vs-section, .norma-section, .gen-section, .contact-section { padding: 4rem 1.5rem; }
+  .vs-grid { grid-template-columns: 1fr; }
+  .vs-separator { display: none; }
+  .gen-card.active { grid-template-columns: 1fr; }
+  .contact-inner { grid-template-columns: 1fr; gap: 2rem; }
+  footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <svg class="nav-logo-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="38" height="38" fill="#111111"/>
+      <rect x="1" y="1" width="36" height="36" stroke="#c9a84c" stroke-width="0.5"/>
+      <text x="6" y="25" font-family="Georgia,serif" font-size="17" font-weight="900" fill="#c9a84c">BR</text>
+      <text x="6" y="35" font-family="Georgia,serif" font-size="8" font-weight="400" fill="#888" letter-spacing="2">B</text>
+      <line x1="26" y1="6" x2="26" y2="32" stroke="#c9a84c" stroke-width="0.5" opacity="0.5"/>
+      <circle cx="32" cy="10" r="3" fill="none" stroke="#c9a84c" stroke-width="0.8"/>
+      <circle cx="32" cy="19" r="3" fill="#c9a84c"/>
+      <circle cx="32" cy="28" r="3" fill="none" stroke="#c9a84c" stroke-width="0.8"/>
+    </svg>
+    <span class="nav-logo-text">BRB<span>-Educa</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#ventajas">Ventajas</a></li>
+    <li><a href="#normativa">Normativa</a></li>
+    <li><a href="#generadores">Generadores</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+    <li><a href="#contacto" class="nav-cta">Adquirir licencia</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-lines"></div>
+  <div class="hero-content fade-in visible">
+    <div class="hero-eyebrow">BRB Estrategia &amp; Procesos · Soberanía Técnica Ediciones</div>
+    <h1 class="hero-title">
+      Inteligencia artificial<br>
+      <em>diseñada para<br>la educación argentina.</em>
+    </h1>
+    <p class="hero-subtitle">
+      Ocho plataformas especializadas que cubren cada rol del sistema educativo —
+      estudiante, docente, tutor, directivo, investigador — con base normativa integrada
+      y sin exponer datos de menores a servidores externos.
+    </p>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num">8</div>
+        <div class="hero-stat-label">Plataformas<br>en producción</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">100+</div>
+        <div class="hero-stat-label">Instrumentos y<br>tipos de documento</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">0</div>
+        <div class="hero-stat-label">Datos enviados<br>a servidores BRB</div>
+      </div>
+    </div>
+    <div class="hero-actions">
+      <a href="#generadores" class="btn-primary">Ver los generadores</a>
+      <a href="#ventajas" class="btn-secondary">¿Por qué BRB y no ChatGPT?</a>
+    </div>
+  </div>
+  <div class="hero-scroll">Explorar</div>
+</section>
+
+<!-- VS SECTION -->
+<section class="vs-section" id="ventajas">
+  <div class="vs-header fade-in">
+    <div class="sec-label">La diferencia que importa</div>
+    <h2 class="sec-title">Un generador especializado<br><em>no es lo mismo que un chat genérico.</em></h2>
+    <p class="sec-lead">ChatGPT, Gemini, Claude y Copilot son herramientas de propósito general. Potentes, pero sin contexto educativo argentino, sin normativa integrada y sin diseño para ningún rol específico.</p>
+  </div>
+
+  <div class="vs-grid fade-in">
+    <div>
+      <div class="vs-ai-logos">
+        <span class="vs-ai-logo">ChatGPT</span>
+        <span class="vs-ai-logo">Gemini</span>
+        <span class="vs-ai-logo">Claude</span>
+        <span class="vs-ai-logo">Copilot</span>
+      </div>
+      <div class="vs-col-header generico">IA genérica — prompt libre</div>
+      <div class="vs-item generico"><span class="vs-icon">✗</span> El usuario debe construir el prompt desde cero cada vez. Sin estructura ni criterios pedagógicos.</div>
+      <div class="vs-item generico"><span class="vs-icon">✗</span> Desconoce la Res. CFE N.° 311/16, la Res. ME Chubut N.° 29/24 o el Decreto Provincial 146/08.</div>
+      <div class="vs-item generico"><span class="vs-icon">✗</span> No distingue entre una evaluación integradora obligatoria y un examen común.</div>
+      <div class="vs-item generico"><span class="vs-icon">✗</span> Los datos del estudiante (nombre, diagnóstico, trayectoria) se ingresan en el chat y pueden quedar en los servidores del proveedor.</div>
+      <div class="vs-item generico"><span class="vs-icon">✗</span> No tiene perfil docente persistente: cada sesión empieza de cero.</div>
+      <div class="vs-item generico"><span class="vs-icon">✗</span> Genera texto genérico sin anclaje institucional, provincial ni normativo.</div>
+      <div class="vs-item generico"><span class="vs-icon">✗</span> No sabe si el docente es de ETP o bachiller, técnica o común, Chubut o Salta.</div>
+      <div class="vs-item generico"><span class="vs-icon">✗</span> No tiene historial estructurado: los documentos anteriores se pierden o quedan en el chat.</div>
+    </div>
+
+    <div class="vs-separator">
+      <div class="vs-vs">VS</div>
+      <div class="vs-line"></div>
+    </div>
+
+    <div>
+      <div style="padding: 0.75rem 2rem; margin-bottom: 0;">
+        <svg width="120" height="32" viewBox="0 0 120 32" fill="none">
+          <text x="0" y="24" font-family="Georgia,serif" font-size="22" font-weight="900" fill="#c9a84c">BRB</text>
+          <text x="46" y="24" font-family="Georgia,serif" font-size="14" font-weight="400" fill="#f5f0e8">-Educa</text>
+        </svg>
+      </div>
+      <div class="vs-col-header brb">Generadores BRB — especializados por rol</div>
+      <div class="vs-item brb"><span class="vs-icon">✓</span> Formularios estructurados por rol: el docente configura una vez, genera siempre en contexto.</div>
+      <div class="vs-item brb"><span class="vs-icon">✓</span> Normativa argentina integrada en el prompt: Leyes 26.206, 26.058, 24.521; Res. CFE 93/09, 311/16, 47/08; Res. ME Chubut 29/24; Decreto 146/08.</div>
+      <div class="vs-item brb"><span class="vs-icon">✓</span> Módulo específico de Evaluación Integradora siguiendo la estructura oficial del Documento de Apoyo N.° 3 de la DGES Chubut.</div>
+      <div class="vs-item brb"><span class="vs-icon">✓</span> Los datos del estudiante nunca salen del dispositivo del profesional: extracción local vía FileReader API.</div>
+      <div class="vs-item brb"><span class="vs-icon">✓</span> Perfil persistente por herramienta: institución, cargo, modalidad, materias, provincia.</div>
+      <div class="vs-item brb"><span class="vs-icon">✓</span> Outputs con membrete institucional implícito, terminología normativa correcta y estructura exigida.</div>
+      <div class="vs-item brb"><span class="vs-icon">✓</span> Distinción por modalidad: ETP, bachiller, técnica, con tratamiento diferencial de contenidos y evaluación.</div>
+      <div class="vs-item brb"><span class="vs-icon">✓</span> Historial persistente por herramienta: legajos, instrumentos, documentos, trabajos académicos.</div>
+    </div>
+  </div>
+</section>
+
+<!-- NORMATIVA -->
+<section class="norma-section" id="normativa">
+  <div class="norma-header fade-in">
+    <div class="sec-label">Marco legal integrado</div>
+    <h2 class="sec-title">Las plataformas conocen<br><em>la ley que te rige.</em></h2>
+    <p class="sec-lead">Cada generador tiene integrada la normativa vigente que aplica a su función. No es una cita decorativa: los prompts están construidos sobre esa base legal.</p>
+  </div>
+  <div class="norma-grid fade-in">
+    <div class="norma-card">
+      <div class="norma-card-num">LEY N.° 26.206</div>
+      <div class="norma-card-title">Ley de Educación Nacional</div>
+      <div class="norma-card-desc">Marco general del sistema educativo argentino. Define roles, niveles y obligaciones institucionales.</div>
+      <div class="norma-tags">
+        <span class="norma-tag">Todas las plataformas</span>
+      </div>
+    </div>
+    <div class="norma-card">
+      <div class="norma-card-num">LEY N.° 26.058</div>
+      <div class="norma-card-title">Educación Técnico Profesional</div>
+      <div class="norma-card-desc">Marco para escuelas técnicas. Regula TP, pasantías, evaluación en laboratorio y proyecto productivo.</div>
+      <div class="norma-tags">
+        <span class="norma-tag">EvaluAR BRB</span>
+        <span class="norma-tag">Generador de Clases</span>
+        <span class="norma-tag">Asesor Dirección</span>
+      </div>
+    </div>
+    <div class="norma-card">
+      <div class="norma-card-num">RES. CFE N.° 93/09</div>
+      <div class="norma-card-title">Organización Secundaria</div>
+      <div class="norma-card-desc">Organización pedagógica e institucional del nivel secundario en todo el territorio nacional.</div>
+      <div class="norma-tags">
+        <span class="norma-tag">EvaluAR BRB</span>
+        <span class="norma-tag">Asesor Dirección</span>
+        <span class="norma-tag">Tutoría</span>
+      </div>
+    </div>
+    <div class="norma-card">
+      <div class="norma-card-num">RES. CFE N.° 311/16</div>
+      <div class="norma-card-title">Inclusión educativa</div>
+      <div class="norma-card-desc">PPI, Configuraciones de Apoyo y criterios de promoción para estudiantes con discapacidad.</div>
+      <div class="norma-tags">
+        <span class="norma-tag">Generador de Inclusión</span>
+      </div>
+    </div>
+    <div class="norma-card">
+      <div class="norma-card-num">RES. ME CHUBUT N.° 29/24</div>
+      <div class="norma-card-title">Evaluaciones Integradoras</div>
+      <div class="norma-card-desc">Obligatoriedad de Evaluaciones Integradoras antes del cierre de cada cuatrimestre en Chubut.</div>
+      <div class="norma-tags">
+        <span class="norma-tag">EvaluAR BRB — Módulo 4</span>
+      </div>
+    </div>
+    <div class="norma-card">
+      <div class="norma-card-num">DECRETO PROVINCIAL 146/08</div>
+      <div class="norma-card-title">Profesores Orientadores Tutores</div>
+      <div class="norma-card-desc">Reglamento del rol POT en el sistema educativo provincial de Chubut.</div>
+      <div class="norma-tags">
+        <span class="norma-tag">Plataforma de Tutoría</span>
+      </div>
+    </div>
+    <div class="norma-card">
+      <div class="norma-card-num">LEY N.° 25.326</div>
+      <div class="norma-card-title">Protección de Datos Personales</div>
+      <div class="norma-card-desc">Los datos de menores no salen del dispositivo del profesional. Almacenamiento local o por licencia individual.</div>
+      <div class="norma-tags">
+        <span class="norma-tag">Todas las plataformas</span>
+      </div>
+    </div>
+    <div class="norma-card">
+      <div class="norma-card-num">LEY N.° 24.521</div>
+      <div class="norma-card-title">Educación Superior</div>
+      <div class="norma-card-desc">Marco del sistema universitario argentino. Regula títulos, carreras y exigencias académicas.</div>
+      <div class="norma-tags">
+        <span class="norma-tag">Generador Universitario</span>
+        <span class="norma-tag">Generador de Tesis</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GENERADORES -->
+<section class="gen-section" id="generadores">
+  <div class="gen-header fade-in">
+    <div class="sec-label">Ecosistema completo</div>
+    <h2 class="sec-title">Ocho plataformas.<br><em>Un sistema.</em></h2>
+    <p class="sec-lead">Cada herramienta cubre un rol diferente. Navegá entre ellas para ver la demo y conocer cómo adquirir tu acceso.</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="gen-tabs fade-in">
+    <button class="gen-tab active" onclick="showGen(0)">Estudio</button>
+    <button class="gen-tab" onclick="showGen(1)">Clases</button>
+    <button class="gen-tab" onclick="showGen(2)">EvaluAR</button>
+    <button class="gen-tab" onclick="showGen(3)">Tutoría</button>
+    <button class="gen-tab" onclick="showGen(4)">Dirección</button>
+    <button class="gen-tab" onclick="showGen(5)">Universitario</button>
+    <button class="gen-tab" onclick="showGen(6)">Tesis</button>
+    <button class="gen-tab" onclick="showGen(7)">Inclusión</button>
+  </div>
+
+  <!-- GENERADOR 0: ESTUDIO -->
+  <div class="gen-card active" id="gen-0">
+    <div class="gen-card-info">
+      <div class="gen-card-badge" style="border-color:#c9a84c; color:#c9a84c;">● v2.1 · En producción</div>
+      <div class="gen-card-title">Generador de Estudio BRB</div>
+      <div class="gen-card-role">Destinatario: Estudiantes secundarios (15–18 años)</div>
+      <p class="gen-card-desc">Construye materiales de estudio personalizados en minutos: resúmenes jerarquizados, mapas conceptuales, cuestionarios de autoevaluación, fichas de vocabulario técnico y planes de estudio semanales. Aplica la metodología RTFC (Recuperación, Transformación, Fijación, Consolidación) basada en evidencia de la psicología cognitiva.</p>
+      <div class="gen-card-features">
+        <div class="gen-feature"><div class="gen-feature-dot"></div>6 módulos de generación de materiales</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Resúmenes, mapas, cuestionarios, fichas y planes semanales</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Metodología RTFC con base en evidencia científica</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Historial de materiales generados por materia</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Manual de uso incluido con la licencia</div>
+      </div>
+      <div class="gen-card-actions">
+        <a href="https://bbbarrera1986-rgb.github.io/brb-generador/generador_estudio_BRB_v2_1_final.html" target="_blank" class="btn-gen btn-gen-primary">Ir a la plataforma →</a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Generador%20de%20Estudio%20BRB" class="btn-gen btn-gen-secondary">Consultar por email</a>
+        <a href="https://wa.me/542975176351?text=Hola%20Boris%2C%20consulta%20sobre%20el%20Generador%20de%20Estudio%20BRB" target="_blank" class="btn-gen btn-gen-secondary">WhatsApp</a>
+      </div>
+      <div class="gen-adquirir">
+        <strong style="color:#c9a84c;">Cómo adquirir:</strong> Licencia individual por estudiante. Incluye activación por código de dispositivo, acceso completo a los 6 módulos y manual de uso. Contactar por email o WhatsApp para cotización y activación.
+      </div>
+    </div>
+    <div class="gen-demo">
+      <div class="demo-topbar">
+        <div class="demo-dots"><div class="demo-dot"></div><div class="demo-dot"></div><div class="demo-dot"></div></div>
+        <div class="demo-url">bbbarrera1986-rgb.github.io/brb-generador/generador_estudio_BRB_v2_1_final.html</div>
+        <div class="demo-badge">DEMO</div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-api-field">
+          <span class="demo-api-label">API Key</span>
+          <input class="demo-api-input" type="password" value="AIzaSy••••••••••••••••••••••••" readonly disabled>
+        </div>
+        <div class="demo-api-note">* Tu clave API de Google Gemini. Gratuita en AI Studio. Los datos nunca salen de tu dispositivo.</div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Materia</span>
+          <div class="demo-form-value">Química Analítica</div>
+        </div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Tema</span>
+          <div class="demo-form-value">Titulación ácido-base · Punto de equivalencia</div>
+        </div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Tipo de material</span>
+          <div class="demo-form-value">Resumen jerarquizado + Cuestionario de autoevaluación</div>
+        </div>
+        <div class="demo-divider"></div>
+        <div class="demo-output-label">Documento generado</div>
+        <div class="demo-output">TITULACIÓN ÁCIDO-BASE — PUNTO DE EQUIVALENCIA
+
+CONCEPTO CENTRAL
+La titulación ácido-base es un método volumétrico que
+determina la concentración de un analito mediante la
+reacción controlada con un titulante de concentración
+conocida.
+
+PUNTO DE EQUIVALENCIA
+- Momento en que los moles de titulante equivalen
+  exactamente a los moles de analito.
+- No confundir con punto final: el PE es teórico; el
+  punto final es experimental (cambio de indicador).
+
+CUESTIONARIO DE AUTOEVALUACIÓN
+
+1. ¿Cuál es la diferencia entre punto de equivalencia
+   y punto final? ¿Cuál se observa directamente?
+
+2. Si titulás HCl 0,1 M con NaOH 0,1 M: ¿el pH en el
+   PE es 7? Justificá con la ecuación de neutralización.
+
+3. ¿Por qué la curva de titulación tiene forma de S?
+   Identificá las tres zonas características.<span class="demo-cursor"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERADOR 1: CLASES -->
+  <div class="gen-card" id="gen-1">
+    <div class="gen-card-info">
+      <div class="gen-card-badge" style="border-color:#2e75b6; color:#2e75b6;">● v2.1 · En producción</div>
+      <div class="gen-card-title">Generador de Clases BRB</div>
+      <div class="gen-card-role">Destinatario: Docentes de nivel secundario</div>
+      <p class="gen-card-desc">Planificación de clases con objetivos didácticos, secuencia pedagógica, recursos y criterios de evaluación. Genera en dos modalidades: planificación completa y planificación express. El perfil del docente (institución, cargo, materia, modalidad) se carga una sola vez y contextualiza cada output.</p>
+      <div class="gen-card-features">
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Planificación completa y modalidad express</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Perfil docente persistente con datos institucionales</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Diferenciación ETP / bachiller / modalidad técnica</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Historial de planificaciones por materia y año</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Manual de uso incluido con la licencia</div>
+      </div>
+      <div class="gen-card-actions">
+        <a href="https://bbbarrera1986-rgb.github.io/brb-generador/generador_clases_BRB_v2_1.html" target="_blank" class="btn-gen btn-gen-primary">Ir a la plataforma →</a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Generador%20de%20Clases%20BRB" class="btn-gen btn-gen-secondary">Consultar por email</a>
+        <a href="https://wa.me/542975176351?text=Hola%20Boris%2C%20consulta%20sobre%20el%20Generador%20de%20Clases%20BRB" target="_blank" class="btn-gen btn-gen-secondary">WhatsApp</a>
+      </div>
+      <div class="gen-adquirir">
+        <strong style="color:#c9a84c;">Cómo adquirir:</strong> Licencia individual por docente. Activación inmediata por código de dispositivo. Incluye manual de uso y soporte de implementación. Contactar para cotización.
+      </div>
+    </div>
+    <div class="gen-demo">
+      <div class="demo-topbar">
+        <div class="demo-dots"><div class="demo-dot"></div><div class="demo-dot"></div><div class="demo-dot"></div></div>
+        <div class="demo-url">bbbarrera1986-rgb.github.io/brb-generador/generador_clases_BRB_v2_1.html</div>
+        <div class="demo-badge">DEMO</div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-api-field">
+          <span class="demo-api-label">API Key</span>
+          <input class="demo-api-input" type="password" value="AIzaSy••••••••••••••••••••••••" readonly disabled>
+        </div>
+        <div class="demo-api-note">* Tu clave API de Google Gemini. Gratuita en AI Studio. Los datos nunca salen de tu dispositivo.</div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Docente · Institución</span>
+          <div class="demo-form-value">Esc. Mpal. de Pesca N.° 2701 "Juan Demonte" · ETP · Chubut</div>
+        </div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Materia · Año · Tema</span>
+          <div class="demo-form-value">Operaciones Unitarias II · 5.° año · Destilación fraccionada</div>
+        </div>
+        <div class="demo-divider"></div>
+        <div class="demo-output-label">Planificación generada</div>
+        <div class="demo-output">PLANIFICACIÓN DE CLASE — OU II
+Escuela Mpal. de Pesca N.° 2701 · ETP · Chubut
+
+OBJETIVO: El estudiante describe el principio de la
+destilación fraccionada y calcula la composición del
+destilado mediante la ley de Raoult aplicada a mezclas
+binarias ideales.
+
+SECUENCIA DIDÁCTICA (80 min)
+- Inicio (15 min): revisión de conceptos de equilibrio
+  L-V. Pregunta diagnóstica: ¿cuándo no alcanza con
+  una sola etapa de destilación?
+- Desarrollo (45 min): diagrama T-x-y para mezclas
+  binarias. Cálculo de composición por etapas teóricas.
+  Ejercicio integrador con datos reales de refinería.
+- Cierre (20 min): aplicación en procesamiento de
+  langostino patagónico (contexto ETP local).
+
+CRITERIO DE EVALUACIÓN
+Resolución numérica correcta + justificación del
+criterio de selección de platos teóricos.<span class="demo-cursor"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERADOR 2: EVALUAR -->
+  <div class="gen-card" id="gen-2">
+    <div class="gen-card-info">
+      <div class="gen-card-badge" style="border-color:#c0392b; color:#c0392b;">● v1.0 · En producción</div>
+      <div class="gen-card-title">EvaluAR BRB</div>
+      <div class="gen-card-role">Destinatario: Docentes de nivel secundario</div>
+      <p class="gen-card-desc">Generación de instrumentos de evaluación: rúbricas analíticas y holísticas, exámenes escritos, guías de laboratorio, evaluaciones integradoras (obligatorias por Res. ME N.° 29/24 de Chubut), autoevaluación, coevaluación y matrices de seguimiento. 25 tipos de instrumentos en 6 módulos.</p>
+      <div class="gen-card-features">
+        <div class="gen-feature"><div class="gen-feature-dot"></div>6 módulos · 25 tipos de instrumento</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Módulo 4: Evaluación Integradora — estructura oficial DGES Chubut</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Cumplimiento Res. ME Chubut N.° 29/24</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Perfil docente persistente · Historial ilimitado</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Manual de uso incluido con la licencia</div>
+      </div>
+      <div class="gen-card-actions">
+        <a href="https://bbbarrera1986-rgb.github.io/brb-generador/evaluAR_BRB_v1.html" target="_blank" class="btn-gen btn-gen-primary">Ir a la plataforma →</a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20EvaluAR%20BRB" class="btn-gen btn-gen-secondary">Consultar por email</a>
+        <a href="https://wa.me/542975176351?text=Hola%20Boris%2C%20consulta%20sobre%20EvaluAR%20BRB" target="_blank" class="btn-gen btn-gen-secondary">WhatsApp</a>
+      </div>
+      <div class="gen-adquirir">
+        <strong style="color:#c9a84c;">Cómo adquirir:</strong> Licencia individual o grupal (institución). Para escuelas que quieran activar EvaluAR para todos sus docentes, consultar planes institucionales con descuento.
+      </div>
+    </div>
+    <div class="gen-demo">
+      <div class="demo-topbar">
+        <div class="demo-dots"><div class="demo-dot"></div><div class="demo-dot"></div><div class="demo-dot"></div></div>
+        <div class="demo-url">bbbarrera1986-rgb.github.io/brb-generador/evaluAR_BRB_v1.html</div>
+        <div class="demo-badge">DEMO</div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-api-field">
+          <span class="demo-api-label">API Key</span>
+          <input class="demo-api-input" type="password" value="AIzaSy••••••••••••••••••••••••" readonly disabled>
+        </div>
+        <div class="demo-api-note">* Tu clave API de Google Gemini. Gratuita en AI Studio. Los datos nunca salen de tu dispositivo.</div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Módulo · Instrumento</span>
+          <div class="demo-form-value">Módulo 1 — Rúbrica analítica de evaluación</div>
+        </div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Materia · Contenido</span>
+          <div class="demo-form-value">Química Analítica · Informe de análisis gravimétrico</div>
+        </div>
+        <div class="demo-divider"></div>
+        <div class="demo-output-label">Instrumento generado</div>
+        <div class="demo-output">RÚBRICA ANALÍTICA — INFORME DE ANÁLISIS GRAVIMÉTRICO
+Química Analítica · Esc. Mpal. de Pesca N.° 2701 · ETP
+
+CRITERIO 1: FUNDAMENTO TEÓRICO (25%)
+- Excelente: Describe con precisión el principio de
+  precipitación selectiva y su fundamento termodinámico.
+- Satisfactorio: Menciona el principio sin desarrollar
+  el fundamento cuantitativo.
+- En proceso: Describe el procedimiento sin relacionarlo
+  con el marco teórico.
+
+CRITERIO 2: CÁLCULO DE RENDIMIENTO (35%)
+- Excelente: Calcula rendimiento con propagación de
+  incertidumbre y analiza fuentes de error sistemático.
+- Satisfactorio: Calcula rendimiento con fórmula
+  correcta e identifica error aleatorio.
+- En proceso: Calcula con errores de conversión de
+  unidades o sin justificación.<span class="demo-cursor"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERADOR 3: TUTORIA -->
+  <div class="gen-card" id="gen-3">
+    <div class="gen-card-info">
+      <div class="gen-card-badge" style="border-color:#7b3fa0; color:#7b3fa0;">● v1.0 · En producción</div>
+      <div class="gen-card-title">Plataforma de Tutoría BRB</div>
+      <div class="gen-card-role">Destinatario: Tutores POT — sistema educativo provincial</div>
+      <p class="gen-card-desc">Gestión de legajos estudiantiles con historial de intervenciones y 6 herramientas de IA contextualizadas: guías de entrevista individual, textos para familias, estrategias de estudio personalizadas, actividades grupales, informes de trayectoria y planes de seguimiento. Cumple el Decreto Provincial 146/08.</p>
+      <div class="gen-card-features">
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Legajos estudiantiles con historial de intervenciones</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>6 herramientas IA contextualizadas por legajo</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Cumplimiento Decreto Provincial 146/08 (POT Chubut)</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Integración con el flujo de derivación al MAI de inclusión</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Manual de uso incluido con la licencia</div>
+      </div>
+      <div class="gen-card-actions">
+        <a href="https://bbbarrera1986-rgb.github.io/brb-generador/generador_tutoria_BRB_v1.html" target="_blank" class="btn-gen btn-gen-primary">Ir a la plataforma →</a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Plataforma%20de%20Tutoría%20BRB" class="btn-gen btn-gen-secondary">Consultar por email</a>
+        <a href="https://wa.me/542975176351?text=Hola%20Boris%2C%20consulta%20sobre%20la%20Plataforma%20de%20Tutoría%20BRB" target="_blank" class="btn-gen btn-gen-secondary">WhatsApp</a>
+      </div>
+      <div class="gen-adquirir">
+        <strong style="color:#c9a84c;">Cómo adquirir:</strong> Licencia individual por tutor POT. Disponible también en plan suite conjunta con el Generador de Inclusión BRB para cobertura del ciclo completo de acompañamiento.
+      </div>
+    </div>
+    <div class="gen-demo">
+      <div class="demo-topbar">
+        <div class="demo-dots"><div class="demo-dot"></div><div class="demo-dot"></div><div class="demo-dot"></div></div>
+        <div class="demo-url">bbbarrera1986-rgb.github.io/brb-generador/generador_tutoria_BRB_v1.html</div>
+        <div class="demo-badge">DEMO</div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-api-field">
+          <span class="demo-api-label">API Key</span>
+          <input class="demo-api-input" type="password" value="AIzaSy••••••••••••••••••••••••" readonly disabled>
+        </div>
+        <div class="demo-api-note">* Tu clave API de Google Gemini. Gratuita en AI Studio. Los datos nunca salen de tu dispositivo.</div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Estudiante (legajo activo)</span>
+          <div class="demo-form-value">Estudiante A · 4.° año · Riesgo de abandono detectado</div>
+        </div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Herramienta · Objetivo</span>
+          <div class="demo-form-value">Guía de entrevista individual · Revinculación escolar</div>
+        </div>
+        <div class="demo-divider"></div>
+        <div class="demo-output-label">Documento generado</div>
+        <div class="demo-output">GUÍA DE ENTREVISTA INDIVIDUAL — REVINCULACIÓN
+Tutor POT · Escuela secundaria · Chubut
+
+APERTURA (sin preguntas directas, escucha activa)
+- Agradecé que haya podido venir.
+- Mencioná que la reunión es un espacio suyo, no
+  una citación disciplinaria.
+
+EXPLORACIÓN DE LA SITUACIÓN
+- ¿Cómo estás viviendo este momento en la escuela?
+- ¿Hay algo que esté pasando afuera que te dificulta
+  venir? (No presionar si no quiere responder.)
+- ¿Hay alguna materia o docente con quien te sientas
+  más cómodo/a? ¿Cuál es la más difícil de transitar?
+
+CIERRE ORIENTADO A LA ACCIÓN
+- Acordar una acción concreta pequeña y alcanzable
+  para la semana siguiente.
+- Registrar en el legajo el compromiso y la fecha de
+  seguimiento.<span class="demo-cursor"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERADOR 4: DIRECCIÓN -->
+  <div class="gen-card" id="gen-4">
+    <div class="gen-card-info">
+      <div class="gen-card-badge" style="border-color:#2e75b6; color:#2e75b6;">● v2.0 · En producción</div>
+      <div class="gen-card-title">Asesor de Dirección BRB</div>
+      <div class="gen-card-role">Destinatario: Equipos directivos — escuelas secundarias</div>
+      <p class="gen-card-desc">Generación de documentación institucional formal: 36 tipos de documentos en 6 módulos temáticos. Cubre PEI, PCI, actas, comunicaciones, convivencia, gestión técnico-práctica y trayectorias estudiantiles. Acepta adjuntos PDF/Word para generar respuestas institucionales a documentos recibidos.</p>
+      <div class="gen-card-features">
+        <div class="gen-feature"><div class="gen-feature-dot"></div>6 módulos · 36 tipos de documento institucional</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Perfil directivo persistente · Historial ilimitado</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Adjunto de notas y resoluciones recibidas (PDF/Word)</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Módulo ETP exclusivo: memorias, convenios, pasantías</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Manual de uso incluido con la licencia</div>
+      </div>
+      <div class="gen-card-actions">
+        <a href="https://bbbarrera1986-rgb.github.io/brb-generador/asesor_direccion_BRB_v2.html" target="_blank" class="btn-gen btn-gen-primary">Ir a la plataforma →</a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Asesor%20de%20Dirección%20BRB" class="btn-gen btn-gen-secondary">Consultar por email</a>
+        <a href="https://wa.me/542975176351?text=Hola%20Boris%2C%20consulta%20sobre%20el%20Asesor%20de%20Dirección%20BRB" target="_blank" class="btn-gen btn-gen-secondary">WhatsApp</a>
+      </div>
+      <div class="gen-adquirir">
+        <strong style="color:#c9a84c;">Cómo adquirir:</strong> Licencia institucional recomendada (cubre al equipo directivo completo). Sin límite de generaciones. Consultar plan para la institución completa.
+      </div>
+    </div>
+    <div class="gen-demo">
+      <div class="demo-topbar">
+        <div class="demo-dots"><div class="demo-dot"></div><div class="demo-dot"></div><div class="demo-dot"></div></div>
+        <div class="demo-url">bbbarrera1986-rgb.github.io/brb-generador/asesor_direccion_BRB_v2.html</div>
+        <div class="demo-badge">DEMO</div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-api-field">
+          <span class="demo-api-label">API Key</span>
+          <input class="demo-api-input" type="password" value="AIzaSy••••••••••••••••••••••••" readonly disabled>
+        </div>
+        <div class="demo-api-note">* Tu clave API de Google Gemini o Claude. Los documentos adjuntos nunca salen de tu dispositivo.</div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Módulo · Documento</span>
+          <div class="demo-form-value">Módulo 3 — Comunicación a familias</div>
+        </div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Directivo · Institución</span>
+          <div class="demo-form-value">Director/a · Esc. Técnica N.° XXXX · Chubut</div>
+        </div>
+        <div class="demo-divider"></div>
+        <div class="demo-output-label">Documento generado</div>
+        <div class="demo-output">COMUNICADO A FAMILIAS
+Escuela Técnica N.° XXXX · Puerto Madryn · Chubut
+
+Estimadas familias:
+
+Nos dirigimos a ustedes para informar que, en el marco
+del cierre del primer cuatrimestre, se realizarán las
+Evaluaciones Integradoras obligatorias establecidas por
+la Resolución del Ministerio de Educación de Chubut
+N.° 29/24.
+
+Las evaluaciones se desarrollarán entre los días [FECHA
+INICIO] y [FECHA CIERRE] en los espacios curriculares
+indicados por cada docente. Les solicitamos acompañar
+a sus hijos/as en la organización del estudio durante
+este período.
+
+Ante consultas, estamos disponibles en la secretaría
+escolar en el horario de atención habitual.
+
+Atentamente,
+Equipo Directivo<span class="demo-cursor"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERADOR 5: UNIVERSITARIO -->
+  <div class="gen-card" id="gen-5">
+    <div class="gen-card-info">
+      <div class="gen-card-badge" style="border-color:#c9a84c; color:#c9a84c;">● v1.0 · En producción</div>
+      <div class="gen-card-title">Generador Universitario BRB</div>
+      <div class="gen-card-role">Destinatario: Estudiantes universitarios de grado</div>
+      <p class="gen-card-desc">Plataforma académica para estudiantes universitarios argentinos. Cubre 16 tipos de trabajos académicos con perfil personalizado por universidad, carrera y año cursado. Glosario disciplinar integrado por área de conocimiento. Soporte para 32 universidades nacionales. Opera bajo sistema de licencias por código de dispositivo.</p>
+      <div class="gen-card-features">
+        <div class="gen-feature"><div class="gen-feature-dot"></div>16 tipos de trabajo académico universitario</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Perfil por universidad · carrera · año cursado</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Glosario disciplinar integrado (5 áreas)</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>32 universidades nacionales argentinas incluidas</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Historial de 10 trabajos · Manual de uso incluido</div>
+      </div>
+      <div class="gen-card-actions">
+        <a href="https://bbbarrera1986-rgb.github.io/brb-universitario/" target="_blank" class="btn-gen btn-gen-primary">Ir a la plataforma →</a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Generador%20Universitario%20BRB" class="btn-gen btn-gen-secondary">Consultar por email</a>
+        <a href="https://wa.me/542975176351?text=Hola%20Boris%2C%20consulta%20sobre%20el%20Generador%20Universitario%20BRB" target="_blank" class="btn-gen btn-gen-secondary">WhatsApp</a>
+      </div>
+      <div class="gen-adquirir">
+        <strong style="color:#c9a84c;">Cómo adquirir:</strong> Licencia individual por estudiante con vigencia semestral o anual. Activación por código. En desarrollo: planes grupales por cohorte o por carrera para instituciones universitarias.
+      </div>
+    </div>
+    <div class="gen-demo">
+      <div class="demo-topbar">
+        <div class="demo-dots"><div class="demo-dot"></div><div class="demo-dot"></div><div class="demo-dot"></div></div>
+        <div class="demo-url">bbbarrera1986-rgb.github.io/brb-universitario/</div>
+        <div class="demo-badge">DEMO</div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-api-field">
+          <span class="demo-api-label">Licencia</span>
+          <input class="demo-api-input" type="text" value="BRB-UNI-••••-••••" readonly disabled>
+        </div>
+        <div class="demo-api-note">* Código de licencia individual. Un dispositivo por licencia.</div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Universidad · Carrera · Año</span>
+          <div class="demo-form-value">UNPSJB · Ingeniería Pesquera · 3er año</div>
+        </div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Trabajo · Extensión · Cita</span>
+          <div class="demo-form-value">Informe de Laboratorio · Media · APA 7</div>
+        </div>
+        <div class="demo-divider"></div>
+        <div class="demo-output-label">Sección generada — Introducción</div>
+        <div class="demo-output">INTRODUCCIÓN
+
+El presente informe de laboratorio corresponde a la
+práctica de determinación de humedad en harina de
+pescado mediante el método de estufa (AOAC 925.10),
+realizada en el marco de la asignatura Tecnología de
+Productos Pesqueros (UNPSJB, 3.° año).
+
+La humedad es un parámetro crítico de calidad en
+harinas de origen marino: valores superiores al 10%
+favorecen el desarrollo microbiano y la oxidación
+lipídica, reduciendo la vida útil del producto
+(Sikorski, 2004). Su determinación gravimétrica es
+el método de referencia internacional establecido
+por la AOAC y adoptado por el SENASA para el control
+de exportaciones del sector pesquero patagónico.
+
+OBJETIVO
+Determinar el porcentaje de humedad en tres muestras
+de harina de pescado y comparar los resultados con
+los límites establecidos por la normativa SENASA
+vigente para productos de exportación.<span class="demo-cursor"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERADOR 6: TESIS -->
+  <div class="gen-card" id="gen-6">
+    <div class="gen-card-info">
+      <div class="gen-card-badge" style="border-color:#c9a84c; color:#c9a84c;">● v1.0 · En producción</div>
+      <div class="gen-card-title">Generador de Tesis BRB</div>
+      <div class="gen-card-role">Destinatario: Tesistas e investigadores — todos los niveles</div>
+      <p class="gen-card-desc">Asistencia para elaborar trabajos académicos de investigación formal: tesis de grado, trabajo final de tecnicatura, monografías, investigaciones escolares, informes técnicos y tesis de posgrado. Wizard de 4 pasos con selección de área disciplinar, nivel, estructura, extensión y estilo de citación. Acceso libre con tu propia clave Gemini.</p>
+      <div class="gen-card-features">
+        <div class="gen-feature"><div class="gen-feature-dot"></div>6 tipos de trabajo de investigación formal</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Wizard 4 pasos: tipo · datos · estructura · contexto</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>5 estilos de cita: APA 7, Vancouver, Chicago, ICONTEC, libre</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Adjunto de documentos base · extracción local</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Panel de índice lateral · generación sección por sección</div>
+      </div>
+      <div class="gen-card-actions">
+        <a href="https://bbbarrera1986-rgb.github.io/generador-tesis-brb/" target="_blank" class="btn-gen btn-gen-primary">Ir a la plataforma →</a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Generador%20de%20Tesis%20BRB" class="btn-gen btn-gen-secondary">Consultar por email</a>
+        <a href="https://wa.me/542975176351?text=Hola%20Boris%2C%20consulta%20sobre%20el%20Generador%20de%20Tesis%20BRB" target="_blank" class="btn-gen btn-gen-secondary">WhatsApp</a>
+      </div>
+      <div class="gen-adquirir">
+        <strong style="color:#c9a84c;">Cómo adquirir:</strong> Acceso libre con clave API de Google Gemini (gratuita en AI Studio, hasta 250 solicitudes/día sin tarjeta de crédito). Sin barrera de acceso para ningún estudiante o investigador.
+      </div>
+    </div>
+    <div class="gen-demo">
+      <div class="demo-topbar">
+        <div class="demo-dots"><div class="demo-dot"></div><div class="demo-dot"></div><div class="demo-dot"></div></div>
+        <div class="demo-url">bbbarrera1986-rgb.github.io/generador-tesis-brb/</div>
+        <div class="demo-badge">DEMO</div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-api-field">
+          <span class="demo-api-label">API Key Gemini</span>
+          <input class="demo-api-input" type="password" value="AIzaSy••••••••••••••••••••••••" readonly disabled>
+        </div>
+        <div class="demo-api-note">* Clave gratuita de Google AI Studio. 250 requests/día sin tarjeta.</div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Tipo · Área · Nivel</span>
+          <div class="demo-form-value">Tesis de Grado · Ciencias de la Salud · Universitario</div>
+        </div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Extensión · Cita</span>
+          <div class="demo-form-value">Extensa (+40 pág.) · Vancouver</div>
+        </div>
+        <div class="demo-divider"></div>
+        <div class="demo-output-label">Estructura generada — Índice</div>
+        <div class="demo-output">ÍNDICE PRELIMINAR — TESIS DE GRADO
+
+1. INTRODUCCIÓN
+   1.1 Planteamiento del problema
+   1.2 Justificación
+   1.3 Hipótesis de trabajo
+   1.4 Objetivos general y específicos
+
+2. MARCO TEÓRICO
+   2.1 Antecedentes nacionales e internacionales
+   2.2 Bases conceptuales
+   2.3 Marco normativo aplicable
+
+3. MATERIAL Y MÉTODOS
+   3.1 Diseño del estudio
+   3.2 Población y muestra
+   3.3 Variables e instrumentos de medición
+   3.4 Análisis estadístico
+
+4. RESULTADOS
+5. DISCUSIÓN
+6. CONCLUSIONES
+7. REFERENCIAS (Vancouver)
+8. ANEXOS<span class="demo-cursor"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GENERADOR 7: INCLUSIÓN -->
+  <div class="gen-card" id="gen-7">
+    <div class="gen-card-info">
+      <div class="gen-card-badge" style="border-color:#3dab6d; color:#3dab6d;">● v1.0 · En producción</div>
+      <div class="gen-card-title">Generador de Inclusión BRB</div>
+      <div class="gen-card-role">Destinatario: MAI · Psicopedagogos · Fonoaudiólogos</div>
+      <p class="gen-card-desc">Plataforma especializada para el Maestro de Apoyo a la Inclusión y profesionales del equipo de orientación escolar. Genera PPI completo (Res. CFE N.° 311/16 · Anexo II), Configuraciones de Apoyo, traducción clínico-pedagógica (DSM-5 → estrategias de aula), Informes de Avance MAI, Planificaciones DUA y Evaluaciones Adaptadas. Opera en suite con la Plataforma de Tutoría BRB cubriendo el ciclo completo.</p>
+      <div class="gen-card-features">
+        <div class="gen-feature"><div class="gen-feature-dot"></div>PPI completo — estructura oficial Res. CFE 311/16 · Anexo II</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Traducción DSM-5 → estrategias concretas de aula</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Informes de Avance MAI para obras sociales y supervisión</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Planificación DUA (CAST 2018) y Evaluación Adaptada</div>
+        <div class="gen-feature"><div class="gen-feature-dot"></div>Datos clínicos 100% locales · Nunca salen del dispositivo</div>
+      </div>
+      <div class="gen-card-actions">
+        <a href="https://bbbarrera1986-rgb.github.io/brb-inclusion/" target="_blank" class="btn-gen btn-gen-primary">Ir a la plataforma →</a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Generador%20de%20Inclusión%20BRB" class="btn-gen btn-gen-secondary">Consultar por email</a>
+        <a href="https://wa.me/542975176351?text=Hola%20Boris%2C%20consulta%20sobre%20el%20Generador%20de%20Inclusión%20BRB" target="_blank" class="btn-gen btn-gen-secondary">WhatsApp</a>
+      </div>
+      <div class="gen-adquirir">
+        <strong style="color:#c9a84c;">Cómo adquirir:</strong> Licencia individual por profesional MAI o en plan Suite Inclusiva conjunta con la Plataforma de Tutoría (descuento por bundle). Consultar también planes institucionales para equipos de orientación escolar completos.
+      </div>
+    </div>
+    <div class="gen-demo">
+      <div class="demo-topbar">
+        <div class="demo-dots"><div class="demo-dot"></div><div class="demo-dot"></div><div class="demo-dot"></div></div>
+        <div class="demo-url">bbbarrera1986-rgb.github.io/brb-inclusion/</div>
+        <div class="demo-badge">DEMO</div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-api-field">
+          <span class="demo-api-label">API Key Gemini</span>
+          <input class="demo-api-input" type="password" value="AIzaSy••••••••••••••••••••••••" readonly disabled>
+        </div>
+        <div class="demo-api-note">* Los datos clínicos del estudiante nunca salen de tu dispositivo. Extracción local vía FileReader API.</div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Módulo · Documento</span>
+          <div class="demo-form-value">PPI — Plan Pedagógico Individual · Res. CFE 311/16</div>
+        </div>
+        <div class="demo-form-row">
+          <span class="demo-form-label">Diagnóstico (traducción clínica)</span>
+          <div class="demo-form-value">TEA nivel 1 · Dificultades en comunicación social</div>
+        </div>
+        <div class="demo-divider"></div>
+        <div class="demo-output-label">PPI generado — fragmento</div>
+        <div class="demo-output">PLAN PEDAGÓGICO INDIVIDUAL
+Res. CFE N.° 311/16 · Anexo II
+
+PERFIL FUNCIONAL DEL ESTUDIANTE
+El estudiante presenta fortalezas en procesamiento
+visual y atención sostenida en tareas de su interés.
+Las dificultades se concentran en la comprensión de
+consignas con doble sentido y en las interacciones
+grupales no estructuradas.
+
+CONFIGURACIONES DE APOYO
+- Presentación de consignas: siempre por escrito,
+  con ejemplos concretos y sin metáforas.
+- Organización del espacio: lugar fijo, anticipación
+  de cambios de rutina con al menos 24 hs.
+- Evaluación: tiempo extendido y posibilidad de
+  respuesta oral o escrita según preferencia.
+
+ESTRATEGIAS DUA PARA EL DOCENTE DE GRADO
+- Usar organizadores visuales (esquemas, mapas).
+- Ofrecer el material de clase con anticipación.
+- Acordar una señal privada si necesita un descanso.<span class="demo-cursor"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="contact-section" id="contacto">
+  <div class="contact-inner">
+    <div class="fade-in">
+      <div class="sec-label">Autor y contacto</div>
+      <h2 class="sec-title">Boris Rodríguez<br><em>Barrera.</em></h2>
+
+      <div class="contact-info-block">
+        <div class="contact-label">Especialidad</div>
+        <div class="contact-value">Gestión de Calidad · Procesos Industriales · Microbiología</div>
+      </div>
+      <div class="contact-info-block">
+        <div class="contact-label">Institución</div>
+        <div class="contact-value">Docente — Escuela Municipal de Pesca "Juan Demonte" N.° 2701<br>Puerto Madryn, Chubut, Argentina</div>
+      </div>
+      <div class="contact-info-block">
+        <div class="contact-label">Sello editorial</div>
+        <div class="contact-value">BRB Estrategia &amp; Procesos · Soberanía Técnica Ediciones</div>
+      </div>
+      <div class="contact-info-block">
+        <div class="contact-label">Email</div>
+        <div class="contact-value">
+          <a href="mailto:bbbarrera1986@gmail.com" class="contact-link">bbbarrera1986@gmail.com</a>
+        </div>
+      </div>
+      <div class="contact-info-block">
+        <div class="contact-label">WhatsApp</div>
+        <div class="contact-value">
+          <a href="https://wa.me/542975176351" target="_blank" class="contact-link">+54 297 517-6351</a>
+        </div>
+      </div>
+      <div class="contact-info-block">
+        <div class="contact-label">ORCID</div>
+        <div class="contact-orcid">0009-0004-6583-6439</div>
+      </div>
+
+    </div>
+
+    <div class="fade-in">
+      <div class="sec-label" style="margin-bottom:1.5rem;">Consultar por generador</div>
+      <div class="contact-gen-list">
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Generador%20de%20Estudio%20BRB" class="contact-gen-item">
+          <span class="contact-gen-name">Generador de Estudio BRB</span>
+          <span class="contact-gen-cta">Consultar →</span>
+        </a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Generador%20de%20Clases%20BRB" class="contact-gen-item">
+          <span class="contact-gen-name">Generador de Clases BRB</span>
+          <span class="contact-gen-cta">Consultar →</span>
+        </a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20EvaluAR%20BRB" class="contact-gen-item">
+          <span class="contact-gen-name">EvaluAR BRB</span>
+          <span class="contact-gen-cta">Consultar →</span>
+        </a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Plataforma%20de%20Tutoría%20BRB" class="contact-gen-item">
+          <span class="contact-gen-name">Plataforma de Tutoría BRB</span>
+          <span class="contact-gen-cta">Consultar →</span>
+        </a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Asesor%20de%20Dirección%20BRB" class="contact-gen-item">
+          <span class="contact-gen-name">Asesor de Dirección BRB</span>
+          <span class="contact-gen-cta">Consultar →</span>
+        </a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Generador%20Universitario%20BRB" class="contact-gen-item">
+          <span class="contact-gen-name">Generador Universitario BRB</span>
+          <span class="contact-gen-cta">Consultar →</span>
+        </a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Generador%20de%20Tesis%20BRB" class="contact-gen-item">
+          <span class="contact-gen-name">Generador de Tesis BRB</span>
+          <span class="contact-gen-cta">Consultar →</span>
+        </a>
+        <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20Generador%20de%20Inclusión%20BRB" class="contact-gen-item">
+          <span class="contact-gen-name">Generador de Inclusión BRB</span>
+          <span class="contact-gen-cta">Consultar →</span>
+        </a>
+        <a href="https://wa.me/542975176351?text=Hola%20Boris%2C%20quiero%20consultar%20sobre%20el%20ecosistema%20BRB-Educa" target="_blank" class="contact-gen-item" style="border-color: #25d366;">
+          <span class="contact-gen-name" style="color:#25d366;">WhatsApp — consulta general</span>
+          <span class="contact-gen-cta" style="color:#25d366;">Escribir →</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    © 2026 · BRB Estrategia &amp; Procesos · Soberanía Técnica Ediciones · Puerto Madryn, Chubut, Argentina
+  </div>
+  <div class="footer-doi">
+    WP v1: DOI 10.5281/zenodo.19651076 &nbsp;·&nbsp;
+    WP v2: DOI 10.5281/Zenodo.19656154 &nbsp;·&nbsp;
+    ORCID: 0009-0004-6583-6439
+  </div>
+</footer>
+
+<script>
+// ── GENERADORES TABS ──
+function showGen(idx) {
+  document.querySelectorAll('.gen-card').forEach((c, i) => {
+    c.classList.toggle('active', i === idx);
+  });
+  document.querySelectorAll('.gen-tab').forEach((t, i) => {
+    t.classList.toggle('active', i === idx);
+  });
+}
+
+// ── FADE IN ON SCROLL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
