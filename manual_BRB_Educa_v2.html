@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual BRB-Educa · Sistema de Plataformas IA para Argentina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#1B3A6B;--azul-med:#2E6DA4;--azul-cl:#E8F0FB;--azul-deep:#0F2244;
+  --oro:#C8A84B;--oro-cl:#E8C96A;
+  --burdeo:#6B1A2A;--burdeo-med:#8B2535;
+  --verde:#1A6B3A;--verde-cl:#E8F5EE;
+  --morado:#4a2780;--morado-cl:#f0e8fa;
+  --esmeralda:#0D6B4A;--esmeralda-cl:#E0F5EE;
+  --marino:#1A3A5C;--marino-cl:#E0EBF5;
+  --crema:#F5F1EA;--crema-osc:#EDE4D4;
+  --negro:#0D1520;--gris:#5A5750;--gris-cl:#9A9490;--gris-b:#D8D4CC;
+  --blanco:#FAFAF8;
+  --nav-w:268px;
+  --sombra:0 2px 20px rgba(15,34,68,.10);
+  --sombra-lg:0 8px 48px rgba(15,34,68,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;font-size:16px;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--crema);color:var(--negro);min-height:100vh;}
+
+/* ══ NAV ══ */
+#nav-lateral{position:fixed;top:0;left:0;width:var(--nav-w);height:100vh;background:var(--azul-deep);display:flex;flex-direction:column;z-index:500;overflow-y:auto;border-right:1px solid rgba(200,168,75,.12);transition:transform .3s;}
+.nl-logo{padding:22px 20px 16px;border-bottom:1px solid rgba(200,168,75,.12);}
+.nl-marca{font-family:'Cormorant Garamond',serif;font-size:21px;color:#fff;font-weight:700;line-height:1;}
+.nl-marca em{font-style:italic;color:var(--oro);}
+.nl-sub{font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(200,168,75,.45);letter-spacing:.22em;text-transform:uppercase;margin-top:4px;}
+.nl-sec{font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:rgba(200,168,75,.28);letter-spacing:.3em;text-transform:uppercase;padding:12px 20px 3px;}
+.nl-btn{display:flex;align-items:center;gap:8px;padding:8px 20px;font-size:11.5px;color:rgba(255,255,255,.52);text-decoration:none;cursor:pointer;border:none;background:transparent;width:100%;text-align:left;border-left:3px solid transparent;transition:all .18s;font-family:'IBM Plex Sans',sans-serif;}
+.nl-btn:hover{color:var(--oro);background:rgba(200,168,75,.06);border-left-color:rgba(200,168,75,.3);}
+.nl-btn.activo{color:var(--oro);background:rgba(200,168,75,.1);border-left-color:var(--oro);}
+.nl-btn-ic{width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.nl-num{font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(200,168,75,.35);margin-left:auto;flex-shrink:0;}
+
+/* ══ MAIN ══ */
+#main{margin-left:var(--nav-w);min-height:100vh;}
+.pantalla{display:none;}
+.pantalla.activa{display:block;}
+
+/* ══ HERO ══ */
+.hero{background:var(--azul-deep);padding:60px 64px 52px;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(200,168,75,.035) 59px,rgba(200,168,75,.035) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(200,168,75,.035) 59px,rgba(200,168,75,.035) 60px);}
+.hero::after{content:'';position:absolute;right:-120px;top:-120px;width:500px;height:500px;background:radial-gradient(ellipse,rgba(200,168,75,.065),transparent 65%);}
+.hero-inner{position:relative;z-index:1;max-width:780px;}
+.hero-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(200,168,75,.55);letter-spacing:.32em;text-transform:uppercase;margin-bottom:14px;}
+.hero-titulo{font-family:'Cormorant Garamond',serif;font-size:50px;color:#fff;font-weight:700;line-height:1.04;margin-bottom:10px;}
+.hero-titulo em{font-style:italic;color:var(--oro);}
+.hero-sub{font-size:14.5px;color:rgba(255,255,255,.6);line-height:1.78;max-width:600px;margin-bottom:28px;}
+.hero-chips{display:flex;gap:8px;flex-wrap:wrap;}
+.hchip{font-family:'IBM Plex Mono',monospace;font-size:8.5px;padding:4px 11px;border:1px solid rgba(200,168,75,.28);color:var(--oro);letter-spacing:.08em;text-transform:uppercase;}
+
+/* ══ HERO COLOR VARIANTS ══ */
+.hero.azul{background:var(--azul-deep);}
+.hero.burdeo{background:var(--burdeo);}
+.hero.verde{background:var(--verde);}
+.hero.morado{background:var(--morado);}
+.hero.esmeralda{background:var(--esmeralda);}
+.hero.marino{background:var(--marino);}
+.hero.negro{background:#080e18;}
+
+/* ══ SECCIONES ══ */
+.sec{padding:46px 64px;border-bottom:1px solid var(--gris-b);max-width:1020px;}
+.sec:last-child{border-bottom:none;}
+.sec-num{font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:var(--azul-med);letter-spacing:.3em;text-transform:uppercase;margin-bottom:6px;}
+.sec-titulo{font-family:'Cormorant Garamond',serif;font-size:33px;color:var(--azul);font-weight:700;margin-bottom:8px;line-height:1.07;}
+.sec-titulo em{font-style:italic;color:var(--oro);}
+.sec-subtitulo{font-family:'Cormorant Garamond',serif;font-size:23px;color:var(--azul);font-weight:700;margin-bottom:12px;line-height:1.1;}
+.sec-subtitulo em{font-style:italic;color:var(--oro);}
+.sec-lead{font-size:13.5px;color:var(--gris);line-height:1.82;margin-bottom:30px;max-width:700px;}
+
+/* ══ CARDS ══ */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;margin-bottom:26px;}
+.card{background:#fff;border:1px solid var(--gris-b);border-top:3px solid var(--azul);padding:18px;box-shadow:var(--sombra);transition:transform .18s,box-shadow .18s;}
+.card:hover{transform:translateY(-2px);box-shadow:var(--sombra-lg);}
+.card.burdeo-top{border-top-color:var(--burdeo);}
+.card.verde-top{border-top-color:var(--verde);}
+.card.morado-top{border-top-color:var(--morado);}
+.card.esmeralda-top{border-top-color:var(--esmeralda);}
+.card.marino-top{border-top-color:var(--marino);}
+.card.oro-top{border-top-color:var(--oro);}
+.card-icon{font-size:20px;margin-bottom:7px;display:block;}
+.card-tit{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--azul);font-weight:700;margin-bottom:3px;}
+.card-badge{font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:var(--azul-med);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px;display:block;}
+.card-desc{font-size:11.5px;color:var(--gris);line-height:1.62;}
+.card-lista{margin-top:9px;display:flex;flex-direction:column;gap:3px;}
+.card-item{font-size:10.5px;color:var(--gris);padding-left:13px;position:relative;line-height:1.5;}
+.card-item::before{content:'→';position:absolute;left:0;color:var(--oro);font-size:8.5px;top:2px;}
+
+/* ══ PASOS ══ */
+.pasos{display:flex;flex-direction:column;gap:16px;margin-bottom:26px;}
+.paso{display:flex;gap:14px;align-items:flex-start;}
+.paso-n{width:32px;height:32px;min-width:32px;background:var(--azul);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.paso-n.burdeo{background:var(--burdeo);}
+.paso-n.verde{background:var(--verde);}
+.paso-n.morado{background:var(--morado);}
+.paso-n.esmeralda{background:var(--esmeralda);}
+.paso-n.marino{background:var(--marino);}
+.paso-tit{font-weight:600;font-size:13.5px;color:var(--azul);margin-bottom:3px;}
+.paso-tit.burdeo{color:var(--burdeo);}
+.paso-tit.verde{color:var(--verde);}
+.paso-tit.morado{color:var(--morado);}
+.paso-tit.esmeralda{color:var(--esmeralda);}
+.paso-tit.marino{color:var(--marino);}
+.paso-desc{font-size:12.5px;color:var(--gris);line-height:1.72;}
+
+/* ══ ALERTAS ══ */
+.alerta{background:rgba(200,168,75,.08);border:1px solid rgba(200,168,75,.25);border-left:4px solid var(--oro);padding:13px 17px;margin:18px 0;font-size:12.5px;color:var(--gris);line-height:1.72;}
+.alerta strong{color:var(--azul);}
+.tip{background:rgba(27,58,107,.055);border:1px solid rgba(27,58,107,.14);border-left:4px solid var(--azul-med);padding:11px 15px;margin:13px 0;font-size:11.5px;color:var(--negro);line-height:1.66;}
+.tip strong{color:var(--azul);}
+.tip.burdeo{background:rgba(107,26,42,.055);border-color:rgba(107,26,42,.18);border-left-color:var(--burdeo);}
+.tip.verde{background:rgba(26,107,58,.055);border-color:rgba(26,107,58,.18);border-left-color:var(--verde);}
+.tip.morado{background:rgba(74,39,128,.055);border-color:rgba(74,39,128,.18);border-left-color:var(--morado);}
+.tip.esmeralda{background:rgba(13,107,74,.055);border-color:rgba(13,107,74,.18);border-left-color:var(--esmeralda);}
+.advertencia{background:rgba(139,26,26,.06);border:1px solid rgba(139,26,26,.18);border-left:4px solid #8B1A1A;padding:13px 17px;margin:18px 0;font-size:12.5px;color:var(--gris);line-height:1.72;}
+.advertencia strong{color:#8B1A1A;}
+
+/* ══ TABLA ══ */
+.tabla{width:100%;border-collapse:collapse;margin:14px 0;font-size:11.5px;}
+.tabla th{background:var(--azul);color:#fff;padding:9px 13px;text-align:left;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;}
+.tabla th.burdeo{background:var(--burdeo);}
+.tabla th.verde{background:var(--verde);}
+.tabla th.morado{background:var(--morado);}
+.tabla th.esmeralda{background:var(--esmeralda);}
+.tabla th.marino{background:var(--marino);}
+.tabla td{padding:8px 13px;border-bottom:1px solid var(--gris-b);color:var(--gris);line-height:1.5;}
+.tabla tr:nth-child(even) td{background:rgba(27,58,107,.022);}
+.tabla td strong{color:var(--azul);font-weight:600;}
+
+/* ══ TABS ══ */
+.tool-tabs{display:flex;gap:0;margin-bottom:28px;border-bottom:2px solid var(--gris-b);flex-wrap:wrap;}
+.tool-tab{padding:10px 20px;font-size:11px;font-weight:600;color:var(--gris);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .18s;font-family:'IBM Plex Mono',monospace;letter-spacing:.04em;}
+.tool-tab:hover{color:var(--azul);}
+.tool-tab.on{color:var(--azul);border-bottom-color:var(--azul);}
+.tool-tab.on.burdeo{color:var(--burdeo);border-bottom-color:var(--burdeo);}
+.tool-tab.on.verde{color:var(--verde);border-bottom-color:var(--verde);}
+.tool-tab.on.morado{color:var(--morado);border-bottom-color:var(--morado);}
+.tool-tab.on.esmeralda{color:var(--esmeralda);border-bottom-color:var(--esmeralda);}
+.tool-panel{display:none;}
+.tool-panel.on{display:block;}
+
+/* ══ DEMOS ══ */
+.demo-wrap{margin:22px 0;border:1px solid var(--gris-b);background:#fff;box-shadow:var(--sombra);}
+.demo-hdr{padding:9px 15px;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;}
+.demo-hdr.azul{background:var(--azul);color:var(--oro);}
+.demo-hdr.burdeo{background:var(--burdeo);color:var(--oro);}
+.demo-hdr.verde{background:var(--verde);color:var(--oro);}
+.demo-hdr.morado{background:var(--morado);color:var(--oro);}
+.demo-hdr.esmeralda{background:var(--esmeralda);color:var(--oro);}
+.demo-hdr.marino{background:var(--marino);color:var(--oro);}
+.demo-body{padding:18px;}
+.demo-form{display:flex;flex-direction:column;gap:9px;margin-bottom:13px;}
+.demo-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.demo-campo label{display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--azul);margin-bottom:3px;}
+.demo-campo label.burdeo{color:var(--burdeo);}
+.demo-campo label.verde{color:var(--verde);}
+.demo-campo label.morado{color:var(--morado);}
+.demo-campo label.esmeralda{color:var(--esmeralda);}
+.demo-campo label.marino{color:var(--marino);}
+.demo-campo input,.demo-campo select,.demo-campo textarea{width:100%;font-family:'IBM Plex Sans',sans-serif;font-size:11.5px;color:var(--negro);background:var(--crema);border:1px solid var(--gris-b);padding:7px 10px;outline:none;transition:border-color .15s;}
+.demo-campo textarea{min-height:55px;resize:vertical;}
+.demo-campo input:focus,.demo-campo select:focus,.demo-campo textarea:focus{border-color:var(--azul-med);}
+.demo-btn{padding:10px 20px;font-family:'IBM Plex Sans',sans-serif;font-size:11.5px;font-weight:700;border:none;cursor:pointer;transition:all .2s;letter-spacing:.04em;display:inline-flex;align-items:center;gap:7px;}
+.demo-btn.azul{background:var(--azul);color:#fff;}
+.demo-btn.azul:hover{background:var(--azul-med);}
+.demo-btn.burdeo{background:var(--burdeo);color:#fff;}
+.demo-btn.burdeo:hover{background:var(--burdeo-med);}
+.demo-btn.verde{background:var(--verde);color:#fff;}
+.demo-btn.verde:hover{opacity:.88;}
+.demo-btn.morado{background:var(--morado);color:#fff;}
+.demo-btn.morado:hover{opacity:.88;}
+.demo-btn.esmeralda{background:var(--esmeralda);color:#fff;}
+.demo-btn.esmeralda:hover{opacity:.88;}
+.demo-btn.marino{background:var(--marino);color:#fff;}
+.demo-btn.marino:hover{opacity:.88;}
+.demo-spinner{width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+.generando .demo-spinner{display:inline-block;}
+.demo-output{display:none;background:var(--crema);border:1px solid var(--gris-b);border-top:3px solid var(--oro);padding:15px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.92;color:var(--negro);white-space:pre-wrap;max-height:300px;overflow-y:auto;margin-top:12px;}
+.demo-output.visible{display:block;}
+.demo-actions{display:flex;gap:7px;margin-top:9px;}
+.demo-act-btn{padding:4px 11px;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--gris-b);background:#fff;color:var(--gris);cursor:pointer;transition:all .15s;}
+.demo-act-btn:hover{background:var(--azul);color:#fff;border-color:var(--azul);}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ══ COMPARATIVA ══ */
+.comp-tabla{width:100%;border-collapse:collapse;font-size:11px;margin:14px 0;}
+.comp-tabla th{background:var(--azul-deep);color:var(--oro);padding:10px 13px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;}
+.comp-tabla th.col-brb{background:var(--azul);color:#fff;}
+.comp-tabla td{padding:8px 13px;border-bottom:1px solid var(--gris-b);border-right:1px solid var(--gris-b);color:var(--gris);text-align:center;line-height:1.45;}
+.comp-tabla td.col-aspecto{text-align:left;font-weight:600;color:var(--negro);background:rgba(27,58,107,.022);}
+.comp-tabla td.col-brb{background:rgba(200,168,75,.055);font-weight:600;color:var(--azul);}
+.ico-si{color:#1A6B3A;font-weight:700;}
+.ico-no{color:#8B1A1A;font-weight:700;}
+
+/* ══ ECOSISTEMA ══ */
+.eco-flow{display:flex;align-items:stretch;justify-content:center;gap:0;margin:22px 0;flex-wrap:wrap;}
+.eco-box{background:#fff;border:1px solid var(--gris-b);padding:14px 16px;text-align:center;min-width:120px;flex:1;position:relative;max-width:160px;}
+.eco-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.eco-box.c1::before{background:var(--azul);}
+.eco-box.c2::before{background:var(--burdeo);}
+.eco-box.c3::before{background:var(--verde);}
+.eco-box.c4::before{background:var(--morado);}
+.eco-box.c5::before{background:var(--esmeralda);}
+.eco-box.c6::before{background:var(--marino);}
+.eco-box.c7::before{background:var(--oro);}
+.eco-box.c8::before{background:#555;}
+.eco-ico{font-size:18px;display:block;margin-bottom:3px;}
+.eco-nom{font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:700;color:var(--negro);line-height:1.2;}
+.eco-rol{font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:var(--gris-cl);letter-spacing:.07em;margin-top:2px;}
+.eco-arr{font-size:16px;color:var(--oro);display:flex;align-items:center;padding:0 4px;}
+
+/* ══ NORMATIVA ══ */
+.norma-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.norma-card{background:#fff;border:1px solid var(--gris-b);border-left:4px solid var(--azul);padding:14px;}
+.norma-card.oro{border-left-color:var(--oro);}
+.norma-card.burdeo{border-left-color:var(--burdeo);}
+.norma-card.morado{border-left-color:var(--morado);}
+.norma-ref{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--azul-med);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;}
+.norma-tit{font-size:12.5px;font-weight:600;color:var(--negro);margin-bottom:5px;}
+.norma-desc{font-size:11px;color:var(--gris);line-height:1.62;}
+
+/* ══ DIAGNÓSTICOS ══ */
+.diag-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:14px 0;}
+.diag-card{background:#fff;border:1px solid var(--gris-b);border-top:2px solid var(--esmeralda);padding:14px;}
+.diag-nom{font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;font-weight:700;color:var(--negro);margin-bottom:2px;}
+.diag-dsm{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--esmeralda);letter-spacing:.08em;margin-bottom:6px;}
+.diag-est{font-size:10.5px;color:var(--gris);line-height:1.58;}
+
+/* ══ ESTADO DEL ARTE ══ */
+.edr-item{padding:12px 0;border-bottom:1px solid var(--gris-b);}
+.edr-item:last-child{border-bottom:none;}
+.edr-fuente{font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:var(--oro);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;}
+.edr-tit{font-size:12.5px;font-weight:600;color:var(--negro);margin-bottom:3px;}
+.edr-txt{font-size:11.5px;color:var(--gris);line-height:1.65;}
+
+/* ══ MÓDULOS LISTA ══ */
+.mod-lista-v{display:flex;flex-direction:column;gap:10px;margin:14px 0;}
+.mod-item-v{background:#fff;border:1px solid var(--gris-b);padding:14px;display:flex;gap:12px;align-items:flex-start;}
+.mod-ico-v{font-size:20px;flex-shrink:0;}
+.mod-nom-v{font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;font-weight:700;color:var(--negro);margin-bottom:2px;}
+.mod-norm-v{font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:var(--esmeralda);letter-spacing:.08em;margin-bottom:4px;}
+.mod-desc-v{font-size:11px;color:var(--gris);line-height:1.6;}
+
+/* ══ FOOTER ══ */
+.footer-doc{background:var(--negro);padding:20px 64px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-txt{font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:rgba(200,168,75,.32);letter-spacing:.1em;line-height:1.8;}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:15px;color:rgba(200,168,75,.55);font-weight:700;}
+.footer-logo em{color:var(--oro);}
+
+/* ══ HAMBURGUESA ══ */
+#hamburger{display:none;position:fixed;top:12px;left:12px;z-index:600;background:var(--azul-deep);border:1px solid rgba(200,168,75,.2);width:36px;height:36px;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:4px;}
+#hamburger span{display:block;width:16px;height:2px;background:var(--oro);}
+
+@media(max-width:900px){
+  #nav-lateral{transform:translateX(-100%);}
+  #nav-lateral.abierto{transform:translateX(0);}
+  #main{margin-left:0;}
+  #hamburger{display:flex;}
+  .hero{padding:40px 24px;}
+  .sec{padding:36px 24px;}
+  .hero-titulo{font-size:34px;}
+  .norma-grid,.diag-grid,.demo-row{grid-template-columns:1fr;}
+  .footer-doc{padding:18px 24px;}
+  .eco-flow{flex-direction:column;align-items:center;}
+  .eco-arr{transform:rotate(90deg);}
+}
+</style>
+</head>
+<body>
+
+<div id="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
+
+<nav id="nav-lateral">
+  <div class="nl-logo">
+    <div class="nl-marca">BRB <em>Educa</em></div>
+    <div class="nl-sub">Manual Unificado · v2.0 · 2026</div>
+  </div>
+
+  <div class="nl-sec">Plataforma</div>
+  <button class="nl-btn activo" onclick="ir('p00',this)"><span class="nl-btn-ic">⬛</span>La IA llegó sin protocolo<span class="nl-num">00</span></button>
+  <button class="nl-btn" onclick="ir('p01',this)"><span class="nl-btn-ic">🌐</span>El sistema BRB-Educa<span class="nl-num">01</span></button>
+  <button class="nl-btn" onclick="ir('p02',this)"><span class="nl-btn-ic">⚡</span>BRB-Educa vs IA genérica<span class="nl-num">02</span></button>
+  <button class="nl-btn" onclick="ir('p03',this)"><span class="nl-btn-ic">🔗</span>Cómo se vinculan<span class="nl-num">03</span></button>
+  <button class="nl-btn" onclick="ir('p04',this)"><span class="nl-btn-ic">📋</span>Base normativa<span class="nl-num">04</span></button>
+
+  <div class="nl-sec">Herramientas Docentes</div>
+  <button class="nl-btn" onclick="ir('p05',this)"><span class="nl-btn-ic">📗</span>Generador de Clases<span class="nl-num">05</span></button>
+  <button class="nl-btn" onclick="ir('p06',this)"><span class="nl-btn-ic">📕</span>EvaluAR BRB<span class="nl-num">06</span></button>
+  <button class="nl-btn" onclick="ir('p07',this)"><span class="nl-btn-ic">🟣</span>Generador de Tutoría<span class="nl-num">07</span></button>
+  <button class="nl-btn" onclick="ir('p08',this)"><span class="nl-btn-ic">🟢</span>BRB Inclusión<span class="nl-num">08</span></button>
+  <button class="nl-btn" onclick="ir('p09',this)"><span class="nl-btn-ic">🔵</span>Asesor de Dirección<span class="nl-num">09</span></button>
+
+  <div class="nl-sec">Herramientas Académicas</div>
+  <button class="nl-btn" onclick="ir('p10',this)"><span class="nl-btn-ic">📘</span>Generador de Estudio<span class="nl-num">10</span></button>
+  <button class="nl-btn" onclick="ir('p11',this)"><span class="nl-btn-ic">🎓</span>Generador Universitario<span class="nl-num">11</span></button>
+  <button class="nl-btn" onclick="ir('p12',this)"><span class="nl-btn-ic">📖</span>Generador de Tesis<span class="nl-num">12</span></button>
+
+  <div class="nl-sec">Sistema</div>
+  <button class="nl-btn" onclick="ir('p13',this)"><span class="nl-btn-ic">🔑</span>Cómo acceder<span class="nl-num">13</span></button>
+  <button class="nl-btn" onclick="ir('p14',this)"><span class="nl-btn-ic">✉</span>Contacto y autor<span class="nl-num">14</span></button>
+</nav>
+
+<div id="main">
+
+<!-- ══════════════════════════════════════════
+     00 — PREÁMBULO: LA IA LLEGÓ SIN PROTOCOLO
+══════════════════════════════════════════ -->
+<div id="p00" class="pantalla activa">
+  <div class="hero negro">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">00 · Preámbulo — Estado del Arte 2022–2026</div>
+      <div class="hero-titulo">La inteligencia artificial<br>llegó a las aulas<br><em>sin que nadie la invitara</em></div>
+      <div class="hero-sub">El 30 de noviembre de 2022, OpenAI lanzó ChatGPT. En cinco días acumuló un millón de usuarios. En pocas semanas, estaba en las aulas argentinas. Sin protocolo. Sin formación docente. Sin marco normativo. Sin herramientas pedagógicas diseñadas para gestionarla.</div>
+      <div class="hero-chips"><span class="hchip">2022–2026</span><span class="hchip">Educación Argentina</span><span class="hchip">IA Generativa</span><span class="hchip">Estado del Arte</span></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">00 · Lo que pasó</div>
+    <div class="sec-titulo">Una tecnología disruptiva<br><em>antes que el sistema reaccionara</em></div>
+    <div class="sec-lead">El impacto de la inteligencia artificial generativa en la educación argentina no fue gradual ni planificado. Fue una irrupción. Comprender ese contexto es indispensable para entender por qué BRB-Educa existe y qué problema concreto resuelve.</div>
+
+    <div class="edr-item">
+      <div class="edr-fuente">IUDPT · Argentina · Noviembre 2023</div>
+      <div class="edr-tit">9 de cada 10 alumnos universitarios ya usaban ChatGPT — sin que nadie se lo enseñara</div>
+      <div class="edr-txt">Una encuesta realizada entre docentes y estudiantes del Instituto Universitario para el Desarrollo Productivo y Tecnológico reveló que el 90% de los alumnos utilizaba ChatGPT activamente, pese a que sus respuestas no son verificadas ni contextualizadas. Usaban la herramienta porque era accesible, gratuita y resolvía tareas en segundos. No porque supieran usarla bien.</div>
+    </div>
+    <div class="edr-item">
+      <div class="edr-fuente">Ministerio de Educación · CABA · Julio 2023</div>
+      <div class="edr-tit">El 86,6% de los docentes porteños podía detectar trabajos hechos con IA — pero no tenían herramientas para responder</div>
+      <div class="edr-txt">Los docentes reconocían los textos generados por IA. Lo que no tenían era un protocolo pedagógico para responder: cómo rediseñar las consignas, cómo evaluar de otro modo, cómo incorporar la herramienta en lugar de prohibirla. La brecha no era de detección — era de acción pedagógica.</div>
+    </div>
+    <div class="edr-item">
+      <div class="edr-fuente">Turnitin · América Latina · 2026</div>
+      <div class="edr-tit">El 92% de los estudiantes universitarios latinoamericanos usa IA como asistente cognitivo esencial</div>
+      <div class="edr-txt">Un estudio reciente sobre integridad académica en América Latina señala que la mayoría de los estudiantes nativos de IA utilizan estas herramientas no para hacer trampa, sino como asistentes cognitivos durante el proceso de escritura y aprendizaje. La integridad académica enfrenta así una redefinición completa: ya no se trata de detectar el fraude, sino de acompañar un proceso que sucede de todos modos.</div>
+    </div>
+    <div class="edr-item">
+      <div class="edr-fuente">UTN-FRT · Argentina · 2024 (publicado en arXiv 2025)</div>
+      <div class="edr-tit">Experimento empírico en Argentina: uso no guiado de IA resultó en 0% de aprobados</div>
+      <div class="edr-txt">Un estudio de caso en la carrera de Ingeniería Civil de la UTN documentó cómo el uso no supervisado de ChatGPT como tutor produjo un fracaso generalizado en la primera evaluación (0% de aprobados, 65% de similitud entre trabajos). Cuando se rediseñó la intervención con guía docente estructurada, los resultados mejoraron significativamente. La conclusión es contundente: la IA sin andamiaje pedagógico perjudica el aprendizaje.</div>
+    </div>
+    <div class="edr-item">
+      <div class="edr-fuente">Ministerio de Capital Humano · Argentina · 2025</div>
+      <div class="edr-tit">Recién en 2025 Argentina publicó su primera Guía de Integración de IA en Educación</div>
+      <div class="edr-txt">La Secretaría de Educación publicó en 2025 la Guía para la Integración de las Inteligencias Artificiales en Educación, elaborada por el equipo DOCENT.IA. Es el primer documento oficial del Estado argentino con lineamientos prácticos para docentes. Llegó casi tres años después de que la IA ya estuviera en todas las aulas. BRB-Educa operaba desde antes de que ese marco existiera.</div>
+    </div>
+    <div class="edr-item">
+      <div class="edr-fuente">Instituto de Innovación Digital · Argentina · Agosto 2025</div>
+      <div class="edr-tit">La IA llegó a las aulas argentinas — con evidencia mixta, sin despliegue coordinado</div>
+      <div class="edr-txt">Un relevamiento sobre el estado de la IA en la educación argentina documenta experiencias piloto aisladas: la escuela "Zoe" en Santa Fe, PowerBuddy de Uruguay en la plataforma CREA, "Plu" de Brasil en Plurall. En todos los casos, la herramienta fue diseñada para el docente como asistente, no como reemplazo. El consenso emergente es claro: el valor de la IA en educación depende de que exista andamiaje pedagógico experto.</div>
+    </div>
+
+    <div class="alerta">
+      <strong>La brecha que BRB-Educa cierra:</strong> La IA genérica (ChatGPT, Gemini, Claude) es una herramienta de propósito universal. No conoce el diseño curricular de Chubut, no sabe qué es el sistema TEA/TEP/TED, no genera PPI según la Res. CFE 311/16, no estructura una planificación según la normativa de escuela técnica argentina. BRB-Educa es la infraestructura pedagógica que convierte la IA genérica en una herramienta útil para el docente argentino concreto, en su institución concreta, con su normativa concreta.
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · Soberanía Técnica Ediciones<br>ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351 · Puerto Madryn, Chubut</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     01 — EL SISTEMA BRB-EDUCA
+══════════════════════════════════════════ -->
+<div id="p01" class="pantalla">
+  <div class="hero azul">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">01 · El Sistema</div>
+      <div class="hero-titulo">¿Qué es<br><em>BRB-Educa?</em></div>
+      <div class="hero-sub">Un ecosistema de ocho plataformas de inteligencia artificial diseñadas exclusivamente para el sistema educativo argentino. No son herramientas genéricas adaptadas — son instrumentos construidos sobre la normativa, el diseño curricular y los problemas reales del docente, directivo, tutor y estudiante argentino.</div>
+      <div class="hero-chips"><span class="hchip">8 plataformas</span><span class="hchip">Gemini · Claude · GPT-4</span><span class="hchip">BYOK · Sin intermediación</span><span class="hchip">Argentina · 2026</span></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">01 · Las ocho plataformas</div>
+    <div class="sec-titulo">Un ecosistema<br><em>completo y articulado</em></div>
+    <div class="sec-lead">BRB-Educa está organizado en dos bloques funcionales que cubren todos los roles del sistema educativo: las herramientas para quienes enseñan y gestionan, y las herramientas para quienes estudian e investigan.</div>
+
+    <div class="sec-subtitulo" style="margin-bottom:14px;">Herramientas <em>para docentes y gestión institucional</em></div>
+    <div class="cards-grid">
+      <div class="card" style="cursor:pointer" onclick="ir('p05',document.querySelectorAll('.nl-btn')[6])">
+        <span class="card-icon">📗</span>
+        <div class="card-tit">Generador de Clases</div>
+        <span class="card-badge">v3.5 · Docentes</span>
+        <div class="card-desc">Planificaciones institucionales completas. Seis tipos de clase, adjunto de archivos propios, estructura curricular de Chubut.</div>
+      </div>
+      <div class="card burdeo-top" style="cursor:pointer" onclick="ir('p06',document.querySelectorAll('.nl-btn')[7])">
+        <span class="card-icon">📕</span>
+        <div class="card-tit">EvaluAR BRB</div>
+        <span class="card-badge">v1.1 · Evaluadores</span>
+        <div class="card-desc">24 instrumentos de evaluación en 6 módulos. Rúbricas, exámenes, laboratorio, integradoras, autoevaluación, seguimiento.</div>
+      </div>
+      <div class="card morado-top" style="cursor:pointer" onclick="ir('p07',document.querySelectorAll('.nl-btn')[8])">
+        <span class="card-icon">🟣</span>
+        <div class="card-tit">Generador de Tutoría</div>
+        <span class="card-badge">v1.0 · POT</span>
+        <div class="card-desc">Legajo digital del estudiante. Gestión de intervenciones y generación de documentos para el Profesor Orientador Tutor.</div>
+      </div>
+      <div class="card esmeralda-top" style="cursor:pointer" onclick="ir('p08',document.querySelectorAll('.nl-btn')[9])">
+        <span class="card-icon">🟢</span>
+        <div class="card-tit">BRB Inclusión</div>
+        <span class="card-badge">v1.0 · MAI · Psicopedagogos</span>
+        <div class="card-desc">PPI, Configuraciones de Apoyo, Traductor Clínico-Pedagógico y Planificación DUA. Marco normativo Res. CFE 311/16.</div>
+      </div>
+      <div class="card marino-top" style="cursor:pointer" onclick="ir('p09',document.querySelectorAll('.nl-btn')[10])">
+        <span class="card-icon">🔵</span>
+        <div class="card-tit">Asesor de Dirección</div>
+        <span class="card-badge">v2.0 · Directivos</span>
+        <div class="card-desc">36 documentos en 6 módulos para la gestión escolar completa. PEI, PCI, comunicaciones, convivencia, ETP, trayectorias.</div>
+      </div>
+    </div>
+
+    <div class="sec-subtitulo" style="margin-top:24px;margin-bottom:14px;">Herramientas <em>para estudiantes e investigadores</em></div>
+    <div class="cards-grid">
+      <div class="card verde-top" style="cursor:pointer" onclick="ir('p10',document.querySelectorAll('.nl-btn')[12])">
+        <span class="card-icon">📘</span>
+        <div class="card-tit">Generador de Estudio</div>
+        <span class="card-badge">v3.2 · Secundaria</span>
+        <div class="card-desc">Resúmenes, mapas, cuestionarios, fichas, ejercicios y glosarios para estudiantes de secundaria técnica patagónica.</div>
+      </div>
+      <div class="card oro-top" style="cursor:pointer" onclick="ir('p11',document.querySelectorAll('.nl-btn')[13])">
+        <span class="card-icon">🎓</span>
+        <div class="card-tit">Generador Universitario</div>
+        <span class="card-badge">v3.0 · Nivel superior</span>
+        <div class="card-desc">16 tipos de trabajo académico. Monografías, ensayos, informes, proyectos y TFC con normas bibliográficas por área.</div>
+      </div>
+      <div class="card" style="border-top-color:#4a2780;cursor:pointer" onclick="ir('p12',document.querySelectorAll('.nl-btn')[14])">
+        <span class="card-icon">📖</span>
+        <div class="card-tit">Generador de Tesis</div>
+        <span class="card-badge">v3.0 · Posgrado</span>
+        <div class="card-desc">Generación sección por sección con verificación SAVI. El nivel más exigente del ecosistema para trabajos de investigación.</div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <strong>Principio de diseño compartido:</strong> Las ocho plataformas comparten la misma lógica operativa — perfil del usuario persistente, API Key propia (BYOK), salida en texto plano sin markdown, historial guardado y adjunto de documentos propios como contexto. Aprender a usar una facilita el uso de todas las demás.
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · Soberanía Técnica Ediciones<br>ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     02 — BRB-EDUCA VS IA GENÉRICA
+══════════════════════════════════════════ -->
+<div id="p02" class="pantalla">
+  <div class="hero azul" style="padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">02 · Diferenciación</div>
+      <div class="hero-titulo" style="font-size:40px;">BRB-Educa vs<br><em>IA genérica</em></div>
+      <div class="hero-sub">La diferencia no es el modelo de IA — es el contexto, la estructura y el propósito. BRB-Educa usa los mismos modelos que cualquier usuario. Lo que cambia es que ya sabe dónde está, con quién trabaja y para qué sistema educativo genera.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">02 · Comparativa</div>
+    <div class="sec-titulo">Lo que cambia<br><em>cuando la IA tiene contexto</em></div>
+
+    <table class="comp-tabla">
+      <tr><th style="text-align:left;min-width:190px;">Dimensión</th><th class="col-brb">BRB-Educa</th><th>IA Genérica (ChatGPT / Gemini libre)</th></tr>
+      <tr><td class="col-aspecto">Contexto curricular</td><td class="col-brb">Diseño curricular Chubut, LEN 26.206, ETP, modalidades</td><td>Currículo genérico — sin referencia jurisdiccional</td></tr>
+      <tr><td class="col-aspecto">Perfil del usuario</td><td class="col-brb">Nombre, institución, cargo, materia, año — persistente</td><td>Sin memoria entre sesiones — se repite en cada consulta</td></tr>
+      <tr><td class="col-aspecto">Instrumentos de evaluación</td><td class="col-brb">24 tipos estructurados con normativa Chubut integrada</td><td>El usuario construye el instrumento desde cero</td></tr>
+      <tr><td class="col-aspecto">Sistema TEA/TEP/TED</td><td class="col-brb"><span class="ico-si">✓</span> Incorporado en EvaluAR</td><td><span class="ico-no">✗</span> Desconoce este sistema provincial</td></tr>
+      <tr><td class="col-aspecto">PPI / Res. CFE 311/16</td><td class="col-brb"><span class="ico-si">✓</span> Estructura normativa completa</td><td><span class="ico-no">✗</span> Sin conocimiento de esta normativa</td></tr>
+      <tr><td class="col-aspecto">Evaluación Integradora Chubut</td><td class="col-brb"><span class="ico-si">✓</span> Doc. Apoyo N.°3 DGES 2024</td><td><span class="ico-no">✗</span> Sin referencia al marco provincial</td></tr>
+      <tr><td class="col-aspecto">Adjunto de archivos</td><td class="col-brb"><span class="ico-si">✓</span> PDF y DOCX propios del usuario</td><td>Solo en versiones pagas con suscripción mensual</td></tr>
+      <tr><td class="col-aspecto">Privacidad de datos clínicos</td><td class="col-brb">Datos del alumno no salen del dispositivo (localStorage)</td><td>Todo va a servidores del proveedor</td></tr>
+      <tr><td class="col-aspecto">Normas bibliográficas</td><td class="col-brb">Vancouver, APA7, IEEE, Chicago por área de conocimiento</td><td>Sin asignación automática por área disciplinar</td></tr>
+      <tr><td class="col-aspecto">Formato de salida</td><td class="col-brb">Texto plano sin markdown — listo para imprimir</td><td>Markdown con asteriscos — requiere limpieza manual</td></tr>
+      <tr><td class="col-aspecto">Legajo digital del estudiante</td><td class="col-brb"><span class="ico-si">✓</span> Sistema de gestión con historial de intervenciones</td><td><span class="ico-no">✗</span> No existe este concepto</td></tr>
+      <tr><td class="col-aspecto">Documentos de gestión escolar</td><td class="col-brb"><span class="ico-si">✓</span> PEI, PCI, actas, memorias, comunicaciones</td><td>Requiere prompt extenso para cada documento</td></tr>
+    </table>
+
+    <div class="tip">
+      <strong>La metáfora exacta:</strong> Un profesional de laboratorio puede trabajar con equipos genéricos o con equipos calibrados para su protocolo específico. Los resultados con equipos calibrados son más confiables, más rápidos y más útiles. BRB-Educa es la calibración de la IA para el sistema educativo argentino.
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · ORCID: 0009-0004-6583-6439<br>bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     03 — CÓMO SE VINCULAN
+══════════════════════════════════════════ -->
+<div id="p03" class="pantalla">
+  <div class="hero azul" style="padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">03 · Ecosistema integrado</div>
+      <div class="hero-titulo" style="font-size:40px;">El flujo pedagógico<br><em>completo</em></div>
+      <div class="hero-sub">Las ocho plataformas no son herramientas independientes. Forman un ecosistema articulado donde cada una cubre un rol específico del sistema educativo y se conecta lógicamente con las demás.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">03 · Vinculación</div>
+    <div class="sec-titulo">Cada plataforma,<br><em>un rol en el sistema</em></div>
+
+    <div class="eco-flow">
+      <div class="eco-box c5"><span class="eco-ico">🔵</span><div class="eco-nom">Dirección</div><div class="eco-rol">GESTIÓN</div></div>
+      <div class="eco-arr">→</div>
+      <div class="eco-box c1"><span class="eco-ico">📗</span><div class="eco-nom">Clases</div><div class="eco-rol">PLANIFICAR</div></div>
+      <div class="eco-arr">→</div>
+      <div class="eco-box c2"><span class="eco-ico">📕</span><div class="eco-nom">EvaluAR</div><div class="eco-rol">EVALUAR</div></div>
+      <div class="eco-arr">→</div>
+      <div class="eco-box c4"><span class="eco-ico">🟣</span><div class="eco-nom">Tutoría</div><div class="eco-rol">ACOMPAÑAR</div></div>
+      <div class="eco-arr">→</div>
+      <div class="eco-box c3"><span class="eco-ico">🟢</span><div class="eco-nom">Inclusión</div><div class="eco-rol">INCLUIR</div></div>
+    </div>
+    <div class="eco-flow" style="margin-top:8px;">
+      <div class="eco-box c3"><span class="eco-ico">📘</span><div class="eco-nom">Estudio</div><div class="eco-rol">SECUNDARIA</div></div>
+      <div class="eco-arr">→</div>
+      <div class="eco-box c6"><span class="eco-ico">🎓</span><div class="eco-nom">Universitario</div><div class="eco-rol">TERCIARIO</div></div>
+      <div class="eco-arr">→</div>
+      <div class="eco-box c7"><span class="eco-ico">📖</span><div class="eco-nom">Tesis</div><div class="eco-rol">INVESTIGACIÓN</div></div>
+    </div>
+
+    <div class="tip" style="margin-top:20px;">
+      <strong>Ejemplo concreto en una institución técnica:</strong> El director usa el Asesor de Dirección para generar el PEI y las actas de la jornada institucional. El docente de Microbiología usa el Generador de Clases para planificar la unidad de recuento microbiano. Genera con EvaluAR la rúbrica del informe de laboratorio y la lista de cotejo procedimental. El tutor POT registra en su plataforma las intervenciones con los alumnos con dificultades y genera el informe al equipo directivo. La MAI usa BRB Inclusión para elaborar el PPI de un alumno con TDAH y generar las estrategias DUA para el docente de grado. El alumno estudia con el Generador de Estudio. Si cursa nivel superior, usa el Generador Universitario. Si investiga, usa el Generador de Tesis.
+    </div>
+
+    <div class="sec-subtitulo" style="margin-top:28px;">Características <em>compartidas por las ocho plataformas</em></div>
+    <table class="tabla" style="margin-top:16px;">
+      <tr><th>Característica</th><th>Descripción</th></tr>
+      <tr><td><strong>BYOK — API Key propia</strong></td><td>El usuario conecta su propio acceso a Gemini, Claude u OpenAI. Los datos van directamente al proveedor elegido, sin intermediación de BRB.</td></tr>
+      <tr><td><strong>Multi-proveedor</strong></td><td>Compatible con Gemini 2.5 Flash (opción gratuita), Claude Sonnet (Anthropic) y GPT-4o (OpenAI).</td></tr>
+      <tr><td><strong>Perfil persistente</strong></td><td>El nombre, institución, cargo y materia del usuario se cargan una sola vez y se aplican automáticamente en todos los documentos generados.</td></tr>
+      <tr><td><strong>Adjunto de archivos</strong></td><td>PDF con texto seleccionable y DOCX como contexto adicional. La extracción es local — el archivo no se transmite a servidores externos.</td></tr>
+      <tr><td><strong>Salida sin markdown</strong></td><td>Todos los documentos se generan en texto plano, sin asteriscos ni numerales de encabezado. Listos para pegar en Word e imprimir.</td></tr>
+      <tr><td><strong>Historial guardado</strong></td><td>Los documentos generados pueden guardarse y recuperarse. Cada plataforma usa el sistema de almacenamiento más adecuado al tipo de datos que maneja.</td></tr>
+      <tr><td><strong>Descarga en .txt</strong></td><td>Cualquier documento generado puede descargarse como archivo de texto y copiarse al portapapeles.</td></tr>
+    </table>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · ORCID: 0009-0004-6583-6439<br>bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     04 — BASE NORMATIVA
+══════════════════════════════════════════ -->
+<div id="p04" class="pantalla">
+  <div class="hero azul" style="padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">04 · Marco legal y curricular</div>
+      <div class="hero-titulo" style="font-size:40px;">La normativa<br><em>que sostiene el sistema</em></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">04 · Normativa</div>
+    <div class="sec-titulo">BRB-Educa conoce<br><em>el sistema educativo argentino</em></div>
+    <div class="sec-lead">Cada plataforma del ecosistema está construida sobre el marco normativo y curricular del sistema educativo argentino. No son herramientas que el docente debe "educar" — ya saben qué leyes, resoluciones y diseños curriculares rigen la práctica de cada rol.</div>
+
+    <div class="norma-grid">
+      <div class="norma-card"><div class="norma-ref">Ley Nacional</div><div class="norma-tit">Ley de Educación Nacional N.° 26.206</div><div class="norma-desc">Estructura de la educación secundaria (ciclo básico y orientado), obligatoriedad, objetivos de formación, integración de tecnologías y modalidades. Marco de referencia de todas las herramientas.</div></div>
+      <div class="norma-card"><div class="norma-ref">Ley Provincial</div><div class="norma-tit">Ley de Educación de la Provincia del Chubut</div><div class="norma-desc">Ciclo Básico (3 años) + Ciclo Orientado (3-4 años en técnica). Define la educación técnico-profesional y los parámetros jurisdiccionales que aplican EvaluAR, Clases y Tutoría.</div></div>
+      <div class="norma-card burdeo"><div class="norma-ref">Normativa CFE</div><div class="norma-tit">Resolución CFE N.° 311/16 — Educación Inclusiva</div><div class="norma-desc">Regula la promoción, acreditación, certificación y titulación de estudiantes con discapacidad. Estructura los Anexos I, II, III y IV que BRB Inclusión genera (PPI, Configuraciones de Apoyo, Informes de Avance).</div></div>
+      <div class="norma-card burdeo"><div class="norma-ref">Normativa Provincial 2024</div><div class="norma-tit">Doc. de Apoyo N.° 3 — DGES Chubut 2024</div><div class="norma-desc">Establece la estructura oficial de las Evaluaciones Integradoras. EvaluAR BRB genera los cinco formatos (Proyecto, ABP, Portfolio, Análisis de Caso, Simulación) con esta estructura.</div></div>
+      <div class="norma-card"><div class="norma-ref">Datos personales</div><div class="norma-tit">Ley N.° 25.326 — Protección de Datos Personales</div><div class="norma-desc">Rige el tratamiento de datos de alumnos, especialmente datos sensibles de salud (Art. 7 y 8). BRB Inclusión y el Generador de Tutoría aplican esta normativa en su arquitectura de almacenamiento local.</div></div>
+      <div class="norma-card"><div class="norma-ref">Marco pedagógico</div><div class="norma-tit">DUA — Diseño Universal para el Aprendizaje (CAST 2018)</div><div class="norma-desc">Los tres principios (múltiples medios de representación, acción/expresión y motivación) están integrados en BRB Inclusión (M5 — Planificación DUA) y en el Generador de Clases (sección de adaptaciones).</div></div>
+      <div class="norma-card"><div class="norma-ref">Derechos del niño</div><div class="norma-tit">Ley N.° 26.061 — Protección Integral de Niñas, Niños y Adolescentes</div><div class="norma-desc">Marco de derechos que encuadra las intervenciones del tutor POT. El Generador de Tutoría genera protocolos de derivación y acompañamiento coherentes con esta ley.</div></div>
+      <div class="norma-card morado"><div class="norma-ref">Bibliografía académica</div><div class="norma-tit">Vancouver · APA 7.ª ed. · IEEE · Chicago 17</div><div class="norma-desc">Los Generadores Universitario y de Tesis asignan automáticamente la norma bibliográfica según el área de conocimiento: Vancouver para salud, APA7 para sociales y educación, IEEE para ingeniería, Chicago17 para derecho.</div></div>
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · ORCID: 0009-0004-6583-6439<br>bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     05 — GENERADOR DE CLASES
+══════════════════════════════════════════ -->
+<div id="p05" class="pantalla">
+  <div class="hero azul" style="padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">05 · Generador de Clases BRB v3.5</div>
+      <div class="hero-titulo" style="font-size:40px;">Planificaciones<br><em>institucionales con IA</em></div>
+      <div class="hero-sub">Genera planificaciones completas adaptadas al diseño curricular de Chubut y la modalidad técnico-profesional. Seis tipos de clase, secciones configurables y adjunto de archivos propios del docente.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">05 · Generador de Clases</div>
+    <div class="sec-titulo">Cómo funciona<br><em>paso a paso</em></div>
+    <div class="pasos">
+      <div class="paso"><div class="paso-n">1</div><div><div class="paso-tit">Configurar el perfil docente</div><div class="paso-desc">Se ingresa nombre, institución, cargo, materias y estilo pedagógico preferido. El sistema guarda estos datos y los aplica automáticamente en cada planificación. No es necesario repetirlos.</div></div></div>
+      <div class="paso"><div class="paso-n">2</div><div><div class="paso-tit">Seleccionar tipo de clase</div><div class="paso-desc">Clase Teórica, Trabajo Práctico, Clase Taller, Evaluación, Debate/Problema o Integradora. Cada tipo despliega una estructura de secciones específica según el propósito pedagógico.</div></div></div>
+      <div class="paso"><div class="paso-n">3</div><div><div class="paso-tit">Completar el contenido</div><div class="paso-desc">Tema, unidad, objetivos, contenidos conceptuales/procedimentales/actitudinales, duración y modalidad de interacción. Opcionalmente se adjunta el programa de la materia o el libro de texto en PDF o DOCX.</div></div></div>
+      <div class="paso"><div class="paso-n">4</div><div><div class="paso-tit">Generar y usar</div><div class="paso-desc">En 15 a 45 segundos aparece la planificación completa en texto plano, con encabezado institucional, sin markdown. Se copia, descarga como .txt o guarda en el historial.</div></div></div>
+    </div>
+
+    <div class="sec-subtitulo">Seis tipos de <em>planificación</em></div>
+    <div class="cards-grid" style="margin-top:14px;">
+      <div class="card"><span class="card-icon">📖</span><div class="card-tit">Clase Teórica</div><div class="card-desc">Exposición docente con recuperación de saberes previos, desarrollo del tema, ejemplos contextualizados y preguntas de cierre.</div></div>
+      <div class="card"><span class="card-icon">🔬</span><div class="card-tit">Trabajo Práctico</div><div class="card-desc">Actividades de laboratorio o campo: procedimiento, materiales, criterios de seguridad, tabla de datos y cuestionario integrador.</div></div>
+      <div class="card"><span class="card-icon">🔧</span><div class="card-tit">Clase Taller</div><div class="card-desc">Producción grupal: proyectos, maquetas, producciones escritas o técnicas con roles, distribución de grupos y criterios de proceso.</div></div>
+      <div class="card"><span class="card-icon">📝</span><div class="card-tit">Clase de Evaluación</div><div class="card-desc">Planificación de la instancia de acreditación formal: instrucciones, tiempos, criterios y herramienta de registro de resultados.</div></div>
+      <div class="card"><span class="card-icon">💬</span><div class="card-tit">Debate / Problema</div><div class="card-desc">Situación disparadora, consignas guía, gestión del debate argumentativo y síntesis docente. Pensamiento crítico en acción.</div></div>
+      <div class="card"><span class="card-icon">🔗</span><div class="card-tit">Clase Integradora</div><div class="card-desc">Cierre de unidad o articulación interdisciplinaria. Recupera los contenidos clave del período y propone una actividad de síntesis.</div></div>
+    </div>
+
+    <div class="demo-wrap">
+      <div class="demo-hdr azul"><span>📗 Generador de Clases BRB v3.5 — Demo interactiva</span><span style="opacity:.5;">Sin API Key</span></div>
+      <div class="demo-body">
+        <div class="demo-form">
+          <div class="demo-row">
+            <div class="demo-campo"><label>Materia</label><input type="text" id="dc-mat" value="Microbiología de Alimentos"></div>
+            <div class="demo-campo"><label>Año / División</label><input type="text" id="dc-anio" value="6to año · Técnica Pesca"></div>
+          </div>
+          <div class="demo-campo"><label>Tema de la clase</label><input type="text" id="dc-tema" value="Recuento microbiano en langostino — técnicas e interpretación"></div>
+          <div class="demo-row">
+            <div class="demo-campo"><label>Tipo</label><select id="dc-tipo"><option>Clase Teórica</option><option selected>Trabajo Práctico</option><option>Clase Taller</option><option>Debate / Problema</option><option>Clase Integradora</option></select></div>
+            <div class="demo-campo"><label>Duración</label><select id="dc-dur"><option>60 min</option><option selected>80 min</option><option>120 min</option></select></div>
+          </div>
+        </div>
+        <button class="demo-btn azul" id="btn-dc" onclick="demoClases()"><span class="demo-spinner" id="sp-dc"></span>Generar planificación de demostración</button>
+        <div class="demo-output" id="out-dc"></div>
+        <div class="demo-actions" id="act-dc" style="display:none;"><button class="demo-act-btn" onclick="copiarDemo('out-dc')">📋 Copiar</button><button class="demo-act-btn" onclick="limpiarDemo('out-dc','act-dc')">✕ Limpiar</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     06 — EVALUAR BRB
+══════════════════════════════════════════ -->
+<div id="p06" class="pantalla">
+  <div class="hero burdeo" style="padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">06 · EvaluAR BRB v1.1</div>
+      <div class="hero-titulo" style="font-size:40px;">24 instrumentos<br><em>de evaluación con IA</em></div>
+      <div class="hero-sub">Rúbricas, exámenes, guías de laboratorio, evaluaciones integradoras, autoevaluación y seguimiento. Con la estructura oficial del Ministerio de Educación de Chubut. Listos para imprimir.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">06 · EvaluAR BRB</div>
+    <div class="sec-titulo">Los 6 módulos<br><em>de evaluación</em></div>
+
+    <div class="tool-tabs">
+      <div class="tool-tab on burdeo" onclick="tab(this,'ev-r','burdeo')">📊 Rúbricas</div>
+      <div class="tool-tab" onclick="tab(this,'ev-e','burdeo')">📝 Exámenes</div>
+      <div class="tool-tab" onclick="tab(this,'ev-l','burdeo')">🧪 Laboratorio</div>
+      <div class="tool-tab" onclick="tab(this,'ev-i','burdeo')">🔗 Integradora</div>
+      <div class="tool-tab" onclick="tab(this,'ev-a','burdeo')">🔄 Autoevaluación</div>
+      <div class="tool-tab" onclick="tab(this,'ev-s','burdeo')">📈 Seguimiento</div>
+    </div>
+    <div id="ev-r" class="tool-panel on"><div class="cards-grid">
+      <div class="card burdeo-top"><span class="card-icon">📊</span><div class="card-tit">Rúbrica Analítica</div><div class="card-desc">Tabla de doble entrada: criterios × niveles. Descriptores detallados por celda. Espacio de puntuación y observaciones.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">📊</span><div class="card-tit">Rúbrica Holística</div><div class="card-desc">Descripción global por nivel de desempeño. Para evaluaciones donde el conjunto importa más que los componentes.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">📊</span><div class="card-tit">Rúbrica de Proceso</div><div class="card-desc">Evaluación por etapas. Ideal para proyectos y trabajos colaborativos extendidos.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">📊</span><div class="card-tit">Rúbrica de Producto</div><div class="card-desc">Evalúa el resultado final: informe, maqueta, producción técnica. Con criterios específicos y ponderación.</div></div>
+    </div></div>
+    <div id="ev-e" class="tool-panel"><div class="cards-grid">
+      <div class="card burdeo-top"><span class="card-icon">📝</span><div class="card-tit">Examen de Desarrollo</div><div class="card-desc">Con clave de corrección completa, indicadores de logro y puntaje por pregunta.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">📝</span><div class="card-tit">Opción Múltiple</div><div class="card-desc">4 alternativas A/B/C/D. Clave de respuestas con justificación de cada opción correcta.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">📝</span><div class="card-tit">Resolución de Problemas</div><div class="card-desc">Con datos, consignas y solución completa paso a paso. Para materias técnicas, matemática y ciencias.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">📝</span><div class="card-tit">Verdadero / Falso</div><div class="card-desc">Con espacio para justificación y clave completa. Promueve el razonamiento, no solo la memoria.</div></div>
+    </div></div>
+    <div id="ev-l" class="tool-panel"><div class="cards-grid">
+      <div class="card burdeo-top"><span class="card-icon">🧪</span><div class="card-tit">Guía de TP</div><div class="card-desc">Objetivo, fundamento, materiales, procedimiento numerado, precauciones de seguridad, tabla de datos y cuestionario.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">🧪</span><div class="card-tit">Lista de Cotejo Procedimental</div><div class="card-desc">Ítems SI/NO con observaciones e indicadores de seguridad diferenciados. Para evaluar ejecución técnica en tiempo real.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">🧪</span><div class="card-tit">Rúbrica de Informe</div><div class="card-desc">Para informes técnicos escritos: componentes, calidad del lenguaje científico, presentación y conclusiones.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">🧪</span><div class="card-tit">Escala de Técnica</div><div class="card-desc">Dimensiones técnicas con indicadores observables, seguridad e higiene, valoración y puntaje total.</div></div>
+    </div></div>
+    <div id="ev-i" class="tool-panel">
+      <div class="alerta" style="margin-top:0;"><strong>Nota:</strong> Los 5 instrumentos de Evaluación Integradora respetan la estructura del Documento de Apoyo N.° 3, DGES Chubut, 2024.</div>
+      <div class="cards-grid">
+        <div class="card burdeo-top"><span class="card-icon">🔗</span><div class="card-tit">Proyecto de Investigación</div><div class="card-desc">Propuesta general, objetivo en saber-hacer, contenidos por área, rúbrica integrada y consigna para el alumno.</div></div>
+        <div class="card burdeo-top"><span class="card-icon">🔗</span><div class="card-tit">ABP</div><div class="card-desc">Situación problema contextualizada, rol de cada área, etapas de investigación y rúbrica integrada.</div></div>
+        <div class="card burdeo-top"><span class="card-icon">🔗</span><div class="card-tit">Portfolio</div><div class="card-desc">Criterios de selección de evidencias, estructura, rúbrica y consigna de reflexión metacognitiva.</div></div>
+        <div class="card burdeo-top"><span class="card-icon">🔗</span><div class="card-tit">Análisis de Caso</div><div class="card-desc">Descripción del caso, preguntas guía, rúbrica integrada y consignas para los estudiantes.</div></div>
+        <div class="card burdeo-top"><span class="card-icon">🔗</span><div class="card-tit">Simulación / Debate</div><div class="card-desc">Roles asignados, criterios de oralidad, rúbrica específica para la argumentación.</div></div>
+      </div>
+    </div>
+    <div id="ev-a" class="tool-panel"><div class="cards-grid">
+      <div class="card burdeo-top"><span class="card-icon">🔄</span><div class="card-tit">Autoevaluación del Alumno</div><div class="card-desc">Cuestionario reflexivo, escala de logros y síntesis de aprendizajes propios.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">🔄</span><div class="card-tit">Reflexión Metacognitiva</div><div class="card-desc">Preguntas sobre el proceso, las estrategias usadas, las dificultades y la proyección.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">🔄</span><div class="card-tit">Coevaluación entre Pares</div><div class="card-desc">Criterios con descriptores, escala de valoración y espacio de comentarios constructivos.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">🔄</span><div class="card-tit">Autoevaluación Docente</div><div class="card-desc">Dimensiones de la práctica, indicadores observables, valoración y compromisos de mejora.</div></div>
+    </div></div>
+    <div id="ev-s" class="tool-panel"><div class="cards-grid">
+      <div class="card burdeo-top"><span class="card-icon">📈</span><div class="card-tit">Seguimiento Grupal</div><div class="card-desc">Planilla matricial: todos los alumnos × múltiples criterios/fechas. Compatible con TEA/TEP/TED de Chubut.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">📈</span><div class="card-tit">Progreso Individual</div><div class="card-desc">Para acompañamiento específico. Cronograma, registro de intervenciones y síntesis evolutiva.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">📈</span><div class="card-tit">Diagnóstico Inicial</div><div class="card-desc">Releva saberes previos al iniciar una unidad. Con guía de interpretación de resultados para el docente.</div></div>
+      <div class="card burdeo-top"><span class="card-icon">📈</span><div class="card-tit">Plan de Recuperación</div><div class="card-desc">Contenidos a recuperar, actividades graduadas, cronograma e instancias de la evaluación recuperatoria.</div></div>
+    </div></div>
+
+    <div class="demo-wrap" style="margin-top:24px;">
+      <div class="demo-hdr burdeo"><span>📕 EvaluAR BRB v1.1 — Demo de Rúbrica</span><span style="opacity:.5;">Sin API Key</span></div>
+      <div class="demo-body">
+        <div class="demo-form">
+          <div class="demo-row">
+            <div class="demo-campo"><label class="burdeo">Materia</label><input type="text" id="de-mat" value="Tecnología de los Productos Pesqueros"></div>
+            <div class="demo-campo"><label class="burdeo">Año</label><input type="text" id="de-anio" value="5to año · Técnica Pesca"></div>
+          </div>
+          <div class="demo-campo"><label class="burdeo">Tarea a evaluar</label><textarea id="de-tarea">Informe de laboratorio sobre determinación de índice de frescura en langostino patagónico mediante análisis sensorial y físicoquímico</textarea></div>
+          <div class="demo-row">
+            <div class="demo-campo"><label class="burdeo">Tipo de rúbrica</label><select id="de-tipo"><option selected>Analítica</option><option>Holística</option><option>De proceso</option></select></div>
+            <div class="demo-campo"><label class="burdeo">Escala</label><select id="de-esc"><option selected>Numérico (1-10)</option><option>TEA / TEP / TED</option><option>A / B / C / D</option></select></div>
+          </div>
+        </div>
+        <button class="demo-btn burdeo" id="btn-de" onclick="demoEvaluar()"><span class="demo-spinner" id="sp-de"></span>Generar rúbrica de demostración</button>
+        <div class="demo-output" id="out-de"></div>
+        <div class="demo-actions" id="act-de" style="display:none;"><button class="demo-act-btn" onclick="copiarDemo('out-de')">📋 Copiar</button><button class="demo-act-btn" onclick="limpiarDemo('out-de','act-de')">✕ Limpiar</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     07 — GENERADOR DE TUTORÍA
+══════════════════════════════════════════ -->
+<div id="p07" class="pantalla">
+  <div class="hero morado" style="padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">07 · Generador de Tutoría BRB v1.0</div>
+      <div class="hero-titulo" style="font-size:40px;">El legajo digital<br><em>del estudiante</em></div>
+      <div class="hero-sub">Plataforma de gestión tutorial para el Profesor Orientador Tutor (POT). El estudiante como eje: legajo individual con historial de intervenciones y seis módulos de generación documental con IA.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">07 · Tutoría BRB</div>
+    <div class="sec-titulo">Una plataforma para<br><em>el trabajo real del tutor</em></div>
+    <div class="sec-lead">El Generador de Tutoría BRB combina la gestión de legajos estudiantiles con herramientas de inteligencia artificial contextualizadas al rol del POT. No es un chatbot genérico — conoce la institución, los alumnos a cargo y el marco normativo del tutor en Argentina.</div>
+
+    <div class="cards-grid">
+      <div class="card morado-top"><span class="card-icon">📁</span><div class="card-tit">Legajo digital</div><div class="card-desc">Cada alumno tiene su propio legajo con datos personales, familiares e historial cronológico de intervenciones. Se construye progresivamente durante el año.</div></div>
+      <div class="card morado-top"><span class="card-icon">📝</span><div class="card-tit">Registro de intervenciones</div><div class="card-desc">Entrevistas, seguimientos, derivaciones, comunicaciones a familia. Con fecha y tipo de intervención. Cronológicamente acumuladas en el legajo del alumno.</div></div>
+      <div class="card morado-top"><span class="card-icon">🤖</span><div class="card-tit">6 módulos con IA</div><div class="card-desc">Desde el legajo de cada alumno se lanzan los seis módulos de generación. El sistema ya sabe de quién se trata y carga sus datos automáticamente.</div></div>
+    </div>
+
+    <div class="sec-subtitulo" style="margin-top:8px;">Los 6 módulos <em>de generación documental</em></div>
+    <table class="tabla" style="margin-top:14px;">
+      <tr><th class="morado">Módulo</th><th class="morado">Documento generado</th><th class="morado">Para quién</th></tr>
+      <tr><td><strong>M1 · Informe de situación</strong></td><td>Informe integral del alumno para equipo directivo o pedagógico</td><td>Dirección · EOE</td></tr>
+      <tr><td><strong>M2 · Comunicado a familia</strong></td><td>Nota formal o informal a los referentes del alumno</td><td>Familia · Tutores legales</td></tr>
+      <tr><td><strong>M3 · Derivación</strong></td><td>Protocolo de derivación a EOE, salud mental o servicio social</td><td>EOE · Profesionales externos</td></tr>
+      <tr><td><strong>M4 · Acuerdo pedagógico</strong></td><td>Compromiso de convivencia o acuerdo de mejora con el alumno</td><td>Alumno · Familia · Dirección</td></tr>
+      <tr><td><strong>M5 · Plan de acompañamiento</strong></td><td>Plan de acción individual para el alumno en dificultad</td><td>Docentes · Equipo tutorial</td></tr>
+      <tr><td><strong>M6 · Memoria de tutoría</strong></td><td>Informe cuatrimestral/anual con estadísticas y análisis del grupo</td><td>Dirección · Supervisión</td></tr>
+    </table>
+
+    <div class="tip morado">
+      <strong>Marco normativo del rol POT:</strong> El Generador de Tutoría aplica la Circular Técnica N.°2/2021 sobre funciones del equipo directivo y articulación tutorial, la Ley 26.061 de Protección Integral del Niño, y la Ley 25.326 de Datos Personales en el manejo de los legajos.
+    </div>
+
+    <div class="demo-wrap">
+      <div class="demo-hdr morado"><span>🟣 Generador de Tutoría BRB — Demo de Plan de Acompañamiento</span><span style="opacity:.5;">Sin API Key</span></div>
+      <div class="demo-body">
+        <div class="demo-form">
+          <div class="demo-row">
+            <div class="demo-campo"><label class="morado">Alumno (iniciales)</label><input type="text" id="dt-alu" value="M.G. · 3er año B"></div>
+            <div class="demo-campo"><label class="morado">Institución</label><input type="text" id="dt-inst" value="Esc. Municipal de Pesca N.° 2701"></div>
+          </div>
+          <div class="demo-campo"><label class="morado">Situación que motiva el acompañamiento</label><textarea id="dt-sit">Alumno con tres materias en proceso de recuperación, ausentismo reiterado y dificultades de atención sostenida según informes docentes del período.</textarea></div>
+        </div>
+        <button class="demo-btn morado" id="btn-dt" onclick="demoTutoria()"><span class="demo-spinner" id="sp-dt"></span>Generar plan de acompañamiento</button>
+        <div class="demo-output" id="out-dt"></div>
+        <div class="demo-actions" id="act-dt" style="display:none;"><button class="demo-act-btn" onclick="copiarDemo('out-dt')">📋 Copiar</button><button class="demo-act-btn" onclick="limpiarDemo('out-dt','act-dt')">✕ Limpiar</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     08 — BRB INCLUSIÓN
+══════════════════════════════════════════ -->
+<div id="p08" class="pantalla">
+  <div class="hero esmeralda" style="padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">08 · BRB Inclusión &amp; Neuro-Estrategias v1.0</div>
+      <div class="hero-titulo" style="font-size:40px;">Del diagnóstico clínico<br><em>a la estrategia de aula</em></div>
+      <div class="hero-sub">Para MAI, psicopedagogos y fonoaudiólogos. Genera PPI, Configuraciones de Apoyo e Informes de Avance según la Res. CFE 311/16. Traduce diagnósticos DSM-5/CIE-11 en estrategias pedagógicas concretas. Los datos del alumno no salen del dispositivo.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">08 · BRB Inclusión</div>
+    <div class="sec-titulo">Los 6 módulos<br><em>de inclusión educativa</em></div>
+    <div class="sec-lead">Cada módulo genera un tipo de documento diferente, con estructura y lenguaje apropiados para su destinatario. La IA adapta el contenido al diagnóstico, perfil funcional y datos del legajo del alumno. Puede adjuntarse el informe clínico como contexto adicional.</div>
+
+    <div class="mod-lista-v">
+      <div class="mod-item-v"><div class="mod-ico-v">📋</div><div><div class="mod-nom-v">M1 — PPI: Proyecto Pedagógico Individual</div><div class="mod-norm-v">Res. CFE 311/16 · Anexo II</div><div class="mod-desc-v">Genera el PPI completo con todos los elementos normativos: datos del alumno, equipo interviniente, diagnóstico, metas trimestrales por materia, configuraciones de apoyo previstas, compromisos de la familia y firmas de corresponsabilidad.</div></div></div>
+      <div class="mod-item-v"><div class="mod-ico-v">🧩</div><div><div class="mod-nom-v">M2 — Configuraciones de Apoyo</div><div class="mod-norm-v">Res. CFE 311/16 · Anexo III</div><div class="mod-desc-v">Diseña las configuraciones de apoyo según el tipo de barrera identificada: física, comunicacional, didáctica o actitudinal. Incluye estrategias de atención, asesoramiento, provisión de recursos y seguimiento. Puede generarse por materia o para todas las áreas.</div></div></div>
+      <div class="mod-item-v"><div class="mod-ico-v">🔬</div><div><div class="mod-nom-v">M3 — Traductor Clínico-Pedagógico</div><div class="mod-norm-v">DUA · DSM-5 · Neurociencias aplicadas</div><div class="mod-desc-v">Convierte el diagnóstico clínico en estrategias de aula concretas y específicas al perfil funcional del alumno. No genera listas genéricas — aplica transposición didáctica basada en el diagnóstico individual. Es el módulo más utilizado para orientar al docente de grado.</div></div></div>
+      <div class="mod-item-v"><div class="mod-ico-v">📊</div><div><div class="mod-nom-v">M4 — Informe de Avance MAI</div><div class="mod-norm-v">Obras sociales · Supervisión · Res. CFE 311/16</div><div class="mod-desc-v">Genera el informe técnico de evolución según el destinatario: obra social, supervisión escolar, familia o equipo de orientación. Incluye horas de apoyo, avances del período, dificultades persistentes y recomendaciones. Disponible en versiones trimestrales, anuales y de alta.</div></div></div>
+      <div class="mod-item-v"><div class="mod-ico-v">🎯</div><div><div class="mod-nom-v">M5 — Planificación DUA</div><div class="mod-norm-v">Diseño Universal para el Aprendizaje · CAST 2018</div><div class="mod-desc-v">Diseña una clase o unidad con múltiples medios de representación, acción/expresión y motivación. Aplica los tres principios DUA para que el docente de grado llegue a todos los alumnos, incluyendo al alumno con inclusión, sin necesidad de materiales diferenciados.</div></div></div>
+      <div class="mod-item-v"><div class="mod-ico-v">✅</div><div><div class="mod-nom-v">M6 — Evaluación Adaptada</div><div class="mod-norm-v">Res. CFE 311/16 · Art. 48 — criterios de promoción</div><div class="mod-desc-v">Genera un instrumento evaluativo vinculado a los objetivos del PPI del alumno. Incluye criterios de logro adaptados, tipo de evaluación (oral, escrita simplificada, múltiple opción, portfolio) y tiempo extendido. El docente de grado puede aplicarlo directamente.</div></div></div>
+    </div>
+
+    <div class="sec-subtitulo" style="margin-top:8px;">Diagnósticos <em>con estrategias preconfiguradas</em></div>
+    <div class="diag-grid" style="margin-top:14px;">
+      <div class="diag-card"><div class="diag-nom">TDAH</div><div class="diag-dsm">DSM-5: F90.x · Prevalencia escolar: 4–11%</div><div class="diag-est">Segmentación de tareas · Recordatorios visuales · Asiento estratégico · Descansos activos · Instrucciones orales + escritas · Tiempo extendido · Automonitoreo conductual</div></div>
+      <div class="diag-card"><div class="diag-nom">TEA — Trastorno del Espectro Autista</div><div class="diag-dsm">DSM-5: F84.0 · 1 cada 31 niños</div><div class="diag-est">Anticipación de cambios · Agendas visuales · Instrucciones literales · Reducción de ambigüedad · Espacios de desregulación · Intereses específicos como anclaje curricular</div></div>
+      <div class="diag-card"><div class="diag-nom">Dislexia</div><div class="diag-dsm">DSM-5: F81.0 · 7–15% población escolar</div><div class="diag-est">Tipografía sin serif · Espaciado aumentado · Lectura en voz alta por el docente · Materiales en audio · Tiempo extendido · No penalizar la ortografía en contenidos</div></div>
+      <div class="diag-card"><div class="diag-nom">Discalculia</div><div class="diag-dsm">DSM-5: F81.2 · Trastorno del aprendizaje matemático</div><div class="diag-est">Material concreto · Calculadora permitida · Tablas de multiplicar como apoyo permanente · Problemas contextualizados · Evaluación de razonamiento, no de cálculo</div></div>
+    </div>
+
+    <div class="advertencia">
+      <strong>Principio irrenunciable:</strong> Todo texto generado por esta plataforma es un borrador orientativo. El profesional firmante es el único y exclusivo responsable de la interpretación clínica, validación técnica y uso institucional del documento. La firma implica responsabilidad profesional plena.
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     09 — ASESOR DE DIRECCIÓN
+══════════════════════════════════════════ -->
+<div id="p09" class="pantalla">
+  <div class="hero marino" style="padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">09 · Asesor de Dirección BRB v2.0</div>
+      <div class="hero-titulo" style="font-size:40px;">36 documentos para<br><em>la gestión institucional</em></div>
+      <div class="hero-sub">Para directores, vicedirectores, regentes y supervisores. PEI, PCI, actas, comunicaciones, convivencia, documentación ETP y trayectorias estudiantiles. La normativa jurisdiccional integrada desde el perfil.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">09 · Asesor de Dirección</div>
+    <div class="sec-titulo">Los 6 módulos<br><em>de gestión escolar</em></div>
+    <div class="sec-lead">El directivo configura su perfil una sola vez: nombre, cargo, institución, modalidad y provincia. Desde ese momento, cada documento generado lleva el membrete institucional correcto y aplica la normativa jurisdiccional correspondiente.</div>
+
+    <div class="cards-grid">
+      <div class="card marino-top"><span class="card-icon">📚</span><div class="card-tit">M1 · Gestión Pedagógica</div><span class="card-badge">6 documentos</span><div class="card-lista"><div class="card-item">PEI — Proyecto Educativo Institucional</div><div class="card-item">PCI — Proyecto Curricular</div><div class="card-item">Actas pedagógicas</div><div class="card-item">Jornadas institucionales</div><div class="card-item">Informes de evaluación institucional</div><div class="card-item">Memoria anual</div></div></div>
+      <div class="card marino-top"><span class="card-icon">🏛</span><div class="card-tit">M2 · Gestión Organizacional</div><span class="card-badge">6 documentos</span><div class="card-lista"><div class="card-item">Actas de dirección</div><div class="card-item">Planes de mejora</div><div class="card-item">Distribución de carga horaria</div><div class="card-item">Cronogramas institucionales</div><div class="card-item">Actas de entrega de cargos</div><div class="card-item">Informes de gestión</div></div></div>
+      <div class="card marino-top"><span class="card-icon">📨</span><div class="card-tit">M3 · Comunicaciones</div><span class="card-badge">6 documentos</span><div class="card-lista"><div class="card-item">Notas a supervisión</div><div class="card-item">Circulares a familias</div><div class="card-item">Comunicados a docentes</div><div class="card-item">Notas a organismos externos</div><div class="card-item">Comunicados urgentes</div><div class="card-item">Respuestas institucionales</div></div></div>
+      <div class="card marino-top"><span class="card-icon">⚖</span><div class="card-tit">M4 · Convivencia</div><span class="card-badge">6 documentos</span><div class="card-lista"><div class="card-item">Acuerdo Institucional de Convivencia</div><div class="card-item">Actas disciplinarias</div><div class="card-item">Protocolos de violencia</div><div class="card-item">Informes de vulneración de derechos</div><div class="card-item">Compromisos pedagógicos</div><div class="card-item">Actas de mediación</div></div></div>
+      <div class="card oro-top"><span class="card-icon">🔧</span><div class="card-tit">M5 · Gestión Técnica</div><span class="card-badge">6 documentos · exclusivo ETP</span><div class="card-lista"><div class="card-item">Memorias de taller</div><div class="card-item">Convenios de pasantía</div><div class="card-item">Actas de Enseñanza Práctica</div><div class="card-item">Informes de seguridad e higiene</div><div class="card-item">Proyectos productivos</div><div class="card-item">Informes de equipamiento</div></div></div>
+      <div class="card marino-top"><span class="card-icon">🎯</span><div class="card-tit">M6 · Trayectorias</div><span class="card-badge">6 documentos</span><div class="card-lista"><div class="card-item">Informes de trayectoria escolar</div><div class="card-item">Planes de acompañamiento de alumnos en riesgo</div><div class="card-item">Documentos de articulación</div><div class="card-item">Actas de pase de nivel</div><div class="card-item">Certificaciones parciales</div><div class="card-item">Informes de egreso</div></div></div>
+    </div>
+
+    <div class="tip" style="border-left-color:var(--marino);">
+      <strong>Módulo 5 exclusivo para ETP:</strong> El módulo de Gestión Técnica es la única herramienta del ecosistema diseñada exclusivamente para escuelas técnico-profesionales. Genera documentación específica que no existe en las herramientas de gestión genéricas: memorias de taller, convenios de pasantía, actas de Enseñanza Práctica en Contextos Reales de Trabajo (ECRT) y protocolos de seguridad e higiene aplicados.
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     10 — GENERADOR DE ESTUDIO
+══════════════════════════════════════════ -->
+<div id="p10" class="pantalla">
+  <div class="hero verde" style="padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">10 · Generador de Estudio BRB v3.2</div>
+      <div class="hero-titulo" style="font-size:40px;">Material de estudio<br><em>para secundaria</em></div>
+      <div class="hero-sub">Seis formatos de material para el alumno de secundaria técnica patagónica: resúmenes, mapas conceptuales, cuestionarios, fichas de repaso, ejercicios con solución y glosarios técnicos.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">10 · Generador de Estudio</div>
+    <div class="sec-titulo">Seis módulos,<br><em>un objetivo distinto cada uno</em></div>
+
+    <div class="cards-grid">
+      <div class="card verde-top"><span class="card-icon">📄</span><div class="card-tit">Resumen</div><span class="card-badge">Para entender</span><div class="card-desc">Síntesis estructurada con conceptos clave, definiciones y relaciones. Organizado en secciones jerárquicas. Ideal para primer acercamiento al tema.</div></div>
+      <div class="card verde-top"><span class="card-icon">🧠</span><div class="card-tit">Mapa Conceptual</div><span class="card-badge">Para organizar</span><div class="card-desc">Jerarquía de conceptos con subordinados y palabras de enlace. En formato de texto estructurado transferible a herramientas gráficas.</div></div>
+      <div class="card verde-top"><span class="card-icon">❓</span><div class="card-tit">Cuestionario</div><span class="card-badge">Para practicar</span><div class="card-desc">Preguntas graduadas por dificultad (comprensión, análisis, aplicación) con respuestas modelo al final del documento.</div></div>
+      <div class="card verde-top"><span class="card-icon">🃏</span><div class="card-tit">Fichas de Repaso</div><span class="card-badge">Para repasar rápido</span><div class="card-desc">Tarjetas CONCEPTO — DEFINICIÓN. 10 a 20 fichas por generación. Incluye términos clave y fórmulas del tema.</div></div>
+      <div class="card verde-top"><span class="card-icon">✏️</span><div class="card-tit">Ejercicios</div><span class="card-badge">Para aplicar</span><div class="card-desc">Serie graduada con datos, consignas y solución completa paso a paso. Para matemática, física, química y materias técnicas.</div></div>
+      <div class="card verde-top"><span class="card-icon">📖</span><div class="card-tit">Glosario Técnico</div><span class="card-badge">Para el vocabulario</span><div class="card-desc">Listado alfabético de 20 a 30 términos especializados con definición precisa y contexto de uso disciplinar.</div></div>
+    </div>
+
+    <div class="demo-wrap">
+      <div class="demo-hdr verde"><span>📘 Generador de Estudio BRB v3.2 — Demo</span><span style="opacity:.5;">Sin API Key</span></div>
+      <div class="demo-body">
+        <div class="demo-form">
+          <div class="demo-row">
+            <div class="demo-campo"><label class="verde">Materia</label><input type="text" id="des-mat" value="Industrialización Pesquera"></div>
+            <div class="demo-campo"><label class="verde">Año</label><input type="text" id="des-anio" value="5to año · Secundaria Técnica"></div>
+          </div>
+          <div class="demo-campo"><label class="verde">Tema específico</label><input type="text" id="des-tema" value="Sistema HACCP — puntos críticos de control en planta de langostino"></div>
+          <div class="demo-campo"><label class="verde">Módulo</label><select id="des-mod"><option selected>Resumen</option><option>Fichas de Repaso</option><option>Cuestionario con respuestas</option><option>Ejercicios con solución</option><option>Glosario técnico</option></select></div>
+        </div>
+        <button class="demo-btn verde" id="btn-des" onclick="demoEstudio()"><span class="demo-spinner" id="sp-des"></span>Generar material de demostración</button>
+        <div class="demo-output" id="out-des"></div>
+        <div class="demo-actions" id="act-des" style="display:none;"><button class="demo-act-btn" onclick="copiarDemo('out-des')">📋 Copiar</button><button class="demo-act-btn" onclick="limpiarDemo('out-des','act-des')">✕ Limpiar</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     11 — GENERADOR UNIVERSITARIO
+══════════════════════════════════════════ -->
+<div id="p11" class="pantalla">
+  <div class="hero" style="background:#7a4f1a;padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">11 · Generador Universitario BRB v3.0 · Estado del Arte</div>
+      <div class="hero-titulo" style="font-size:40px;">Para el estudiante<br><em>de nivel superior</em></div>
+      <div class="hero-sub">16 tipos de trabajo académico en un wizard guiado de 5 pasos. Monografías, ensayos, informes, proyectos, TFC y más. Normas bibliográficas asignadas automáticamente por área de conocimiento.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">11 · Contexto y descripción</div>
+    <div class="sec-titulo">La IA en la educación<br><em>superior: el desafío real</em></div>
+    <div class="sec-lead">Para 2026, el 92% de los estudiantes universitarios latinoamericanos usa IA como asistente cognitivo habitual (Turnitin, 2026). La discusión ya no es si se usa — es cómo se usa bien. El Generador Universitario BRB está diseñado para que el estudiante produzca trabajo con integridad académica: la IA asiste el proceso, el estudiante sostiene la autoría.</div>
+
+    <div class="edr-item">
+      <div class="edr-fuente">Dra. Sarah Elaine Eaton · AMICAL Consortium · 2025</div>
+      <div class="edr-tit">El concepto de "post plagio": la integridad académica necesita redefinirse</div>
+      <div class="edr-txt">Las normas históricas de citación y autoría fueron diseñadas para un mundo analógico. En la era de la IA generativa, estudiantes y académicos co-crean con herramientas de IA. La integridad no desaparece — evoluciona: el eje pasa del producto al proceso, de la entrega final a la trazabilidad del razonamiento. El Generador Universitario BRB opera en esa lógica: genera secciones que el estudiante revisa, critica y adapta.</div>
+    </div>
+    <div class="edr-item">
+      <div class="edr-fuente">Ministerio de Capital Humano · Argentina · 2025</div>
+      <div class="edr-tit">La Guía de IA en Educación reconoce su vigencia en el nivel superior</div>
+      <div class="edr-txt">La Guía para la Integración de las Inteligencias Artificiales en Educación (2025) señala que, si bien fue diseñada para todos los niveles, sus lineamientos tienen especial vigencia en la educación universitaria, donde la autonomía estudiantil y la diversidad de trayectorias exigen herramientas que acompañen sin reemplazar el pensamiento propio.</div>
+    </div>
+
+    <div class="sec-subtitulo" style="margin-top:20px;">El wizard de <em>5 pasos</em></div>
+    <div class="pasos" style="margin-top:14px;">
+      <div class="paso"><div class="paso-n" style="background:#7a4f1a;">1</div><div><div class="paso-tit" style="color:#7a4f1a;">Tipo de trabajo</div><div class="paso-desc">16 tipos disponibles: Monografía, Trabajo Práctico, Informe de Laboratorio, Trabajo de Investigación, Ensayo Académico, Proyecto, Revisión Bibliográfica, Resumen/Síntesis, Caso Clínico, Plan de Negocios, TFC, Tesis de Grado, Informe de Práctica Profesional, Protocolo, Análisis Jurídico, Informe Técnico.</div></div></div>
+      <div class="paso"><div class="paso-n" style="background:#7a4f1a;">2</div><div><div class="paso-tit" style="color:#7a4f1a;">Datos del trabajo</div><div class="paso-desc">Título provisorio, carrera, materia, área de conocimiento. La selección del área determina automáticamente la norma bibliográfica: Vancouver para Ciencias de la Salud, APA 7.ª para Ciencias Sociales y Educación, IEEE para Ingeniería, Chicago 17 para Derecho.</div></div></div>
+      <div class="paso"><div class="paso-n" style="background:#7a4f1a;">3</div><div><div class="paso-tit" style="color:#7a4f1a;">Estructura del documento</div><div class="paso-desc">Se seleccionan las secciones a incluir: introducción, marco teórico, metodología, resultados, discusión, conclusión, bibliografía. Cada tipo de trabajo tiene secciones sugeridas predefinidas y ajustables.</div></div></div>
+      <div class="paso"><div class="paso-n" style="background:#7a4f1a;">4</div><div><div class="paso-tit" style="color:#7a4f1a;">Motor de IA y fuentes</div><div class="paso-desc">Se selecciona el proveedor (Gemini, OpenAI, Anthropic), la profundidad del texto (media, extensa, profunda) y si se incluyen sugerencias de fuentes bibliográficas reales.</div></div></div>
+      <div class="paso"><div class="paso-n" style="background:#7a4f1a;">5</div><div><div class="paso-tit" style="color:#7a4f1a;">Contexto adicional (opcional)</div><div class="paso-desc">El estudiante puede adjuntar apuntes propios, bibliografía ya recopilada o la consigna del docente en PDF o DOCX para que la IA adapte el texto al contexto específico del trabajo.</div></div></div>
+    </div>
+
+    <div class="alerta">
+      <strong>Normas bibliográficas automáticas:</strong> Ciencias de la Salud → Vancouver · Ciencias Sociales, Educación y Económicas → APA 7.ª edición · Ingeniería y Tecnología → IEEE · Derecho → Chicago 17 · Agronomía y Veterinaria → APA 7.ª edición. La norma se aplica automáticamente en el formato de referencias del documento generado.
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     12 — GENERADOR DE TESIS
+══════════════════════════════════════════ -->
+<div id="p12" class="pantalla">
+  <div class="hero" style="background:#2a1a4a;padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">12 · Generador de Tesis BRB v3.0</div>
+      <div class="hero-titulo" style="font-size:40px;">El nivel más exigente<br><em>del ecosistema</em></div>
+      <div class="hero-sub">Generación sección por sección de trabajos de investigación con verificación SAVI integrada. Para tesis de grado, posgrado y trabajos finales de carrera. El instrumento más sofisticado de BRB-Educa.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">12 · Generador de Tesis</div>
+    <div class="sec-titulo">Cómo funciona<br><em>la generación por secciones</em></div>
+    <div class="sec-lead">A diferencia del Generador Universitario (que produce el documento completo en una sola operación), el Generador de Tesis trabaja sección por sección. Esto permite al tesista revisar, corregir y aprobar cada parte antes de avanzar a la siguiente — manteniendo el control intelectual del trabajo en todo momento.</div>
+
+    <div class="pasos">
+      <div class="paso"><div class="paso-n" style="background:#2a1a4a;">1</div><div><div class="paso-tit" style="color:#2a1a4a;">Configurar el perfil del tesista</div><div class="paso-desc">Nombre, institución, carrera, director de tesis, área de conocimiento y nivel del trabajo (grado, posgrado, TFC). Este perfil se aplica en el encabezado y la bibliografía de todas las secciones.</div></div></div>
+      <div class="paso"><div class="paso-n" style="background:#2a1a4a;">2</div><div><div class="paso-tit" style="color:#2a1a4a;">Ingresar el tema y la pregunta de investigación</div><div class="paso-desc">El tesista define el tema, la pregunta central, la hipótesis o supuesto de trabajo y el objetivo general. Estos datos se usan como eje de coherencia en todas las secciones generadas.</div></div></div>
+      <div class="paso"><div class="paso-n" style="background:#2a1a4a;">3</div><div><div class="paso-tit" style="color:#2a1a4a;">Seleccionar y generar cada sección</div><div class="paso-desc">El tesista selecciona una sección del índice (Introducción, Marco Teórico, Metodología, Resultados, Discusión, Conclusiones, Bibliografía) y genera el texto. Puede adjuntar bibliografía propia o artículos de referencia en PDF como contexto.</div></div></div>
+      <div class="paso"><div class="paso-n" style="background:#2a1a4a;">4</div><div><div class="paso-tit" style="color:#2a1a4a;">Verificación SAVI integrada</div><div class="paso-desc">Después de cada sección generada, el sistema lanza automáticamente la verificación SAVI (Fuente, Exactitud, Verificabilidad, Intención). El tesista recibe una evaluación del texto en cuatro dimensiones antes de incorporarlo al trabajo.</div></div></div>
+      <div class="paso"><div class="paso-n" style="background:#2a1a4a;">5</div><div><div class="paso-tit" style="color:#2a1a4a;">Guardar, revisar y exportar</div><div class="paso-desc">Cada sección aprobada se guarda en el historial del trabajo. El tesista puede retomar en cualquier sesión. Al finalizar, exporta el trabajo completo como archivo .txt estructurado con todas las secciones.</div></div></div>
+    </div>
+
+    <div class="sec-subtitulo">El protocolo <em>SAVI</em></div>
+    <div class="sec-lead" style="margin-top:8px;">SAVI es un protocolo de verificación de contenido generado por IA desarrollado por BRB Estrategia &amp; Procesos, diferenciado de los marcos SIFT, CRAAP y RADAR. Evalúa cuatro dimensiones:</div>
+    <table class="tabla">
+      <tr><th style="background:#2a1a4a;">Dimensión</th><th style="background:#2a1a4a;">Qué evalúa</th><th style="background:#2a1a4a;">Por qué importa en tesis</th></tr>
+      <tr><td><strong>S — Fuente</strong></td><td>Origen y trayectoria del contenido generado</td><td>Los textos de IA pueden mezclar fuentes sin citarlas correctamente</td></tr>
+      <tr><td><strong>A — Exactitud</strong></td><td>Precisión factual de los datos y afirmaciones</td><td>La IA puede "alucinar" datos estadísticos o citas bibliográficas</td></tr>
+      <tr><td><strong>V — Verificabilidad</strong></td><td>Posibilidad de contrastar cada afirmación</td><td>Una tesis debe ser reproducible y verificable por el director</td></tr>
+      <tr><td><strong>I — Intención</strong></td><td>Coherencia entre el texto y el objetivo del trabajo</td><td>La IA puede derivar del foco original sin que el tesista lo note</td></tr>
+    </table>
+
+    <div class="alerta">
+      <strong>SAVI es una metodología original de Boris Rodríguez Barrera</strong> — Criterio de Autor — publicada bajo el sello Soberanía Técnica Ediciones y registrada en Zenodo (ORCID: 0009-0004-6583-6439). Su incorporación al Generador de Tesis convierte a la herramienta en la única plataforma académica del ecosistema BRB con verificación de integridad integrada al flujo de generación.
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     13 — CÓMO ACCEDER
+══════════════════════════════════════════ -->
+<div id="p13" class="pantalla">
+  <div class="hero azul" style="padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">13 · Acceso al sistema</div>
+      <div class="hero-titulo" style="font-size:40px;">Cómo ingresar<br><em>a cualquier plataforma</em></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">13 · Acceso</div>
+    <div class="sec-titulo">El flujo de acceso<br><em>es el mismo en todas las plataformas</em></div>
+
+    <div class="pasos">
+      <div class="paso"><div class="paso-n">1</div><div><div class="paso-tit">Obtenés tu licencia</div><div class="paso-desc">Adquirís acceso a la herramienta a través de los canales de venta de BRB. Recibís por email tu clave de acceso y el enlace directo a la plataforma.</div></div></div>
+      <div class="paso"><div class="paso-n">2</div><div><div class="paso-tit">Obtenés tu API Key de IA</div><div class="paso-desc">Creás una cuenta gratuita en Google AI Studio (aistudio.google.com) y generás tu clave personal de Gemini. El proceso toma menos de cinco minutos. No requiere tarjeta de crédito para la cuota gratuita. También podés usar OpenAI o Anthropic si ya tenés cuenta.</div></div></div>
+      <div class="paso"><div class="paso-n">3</div><div><div class="paso-tit">Abrís la plataforma en el navegador</div><div class="paso-desc">Ingresás al enlace de la herramienta en cualquier navegador actualizado (Chrome, Firefox, Edge, Safari). No requiere instalación. Pegás tu API Key en la primera pantalla y seleccionás el proveedor.</div></div></div>
+      <div class="paso"><div class="paso-n">4</div><div><div class="paso-tit">Verificás con tu clave BRB</div><div class="paso-desc">Ingresás con el email y la clave de licencia recibidos. El sistema verifica tus credenciales. Si son correctas, accedés directamente a la plataforma. El primer dispositivo que se conecta queda registrado.</div></div></div>
+      <div class="paso"><div class="paso-n">5</div><div><div class="paso-tit">Configurás tu perfil y comenzás</div><div class="paso-desc">En el primer ingreso completás los datos de perfil (nombre, institución, cargo, materia). Se guardan automáticamente y se aplican en todos los documentos que generes a partir de ese momento.</div></div></div>
+    </div>
+
+    <div class="alerta">
+      <strong>Preguntas frecuentes de acceso:</strong><br><br>
+      — <strong>"¿La API Key es gratuita?"</strong> Sí. Google AI Studio ofrece una cuota gratuita (15 solicitudes por minuto, hasta 1.500 por día) suficiente para el uso docente regular. No requiere tarjeta.<br><br>
+      — <strong>"¿Puedo usar la herramienta desde el teléfono?"</strong> Sí. Las plataformas están optimizadas para dispositivos móviles. El rendimiento óptimo es en pantallas de 10 pulgadas o más.<br><br>
+      — <strong>"¿La API Key se guarda?"</strong> Queda en el almacenamiento local de tu navegador. Si limpiás el caché o usás un navegador de incógnito, deberás volver a ingresarla.<br><br>
+      — <strong>"¿Mis contenidos generados se almacenan en servidores externos?"</strong> No. Los textos generados se guardan en tu dispositivo o en tu sesión de usuario. BRB no intercepta, lee ni almacena los contenidos que producís.<br><br>
+      — <strong>"¿Puedo cambiar de dispositivo?"</strong> Sí, con aviso previo a BRB. El proceso de reseteo tarda menos de 24 horas.
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     14 — CONTACTO Y AUTOR
+══════════════════════════════════════════ -->
+<div id="p14" class="pantalla">
+  <div class="hero azul" style="padding:46px 64px 38px;">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">14 · Soporte y autor</div>
+      <div class="hero-titulo" style="font-size:40px;">Contacto directo<br><em>sin intermediarios</em></div>
+      <div class="hero-sub">Soporte técnico con el desarrollador del sistema. Tiempo de respuesta habitual: menos de 24 horas en días hábiles.</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-num">14 · Contacto</div>
+    <div class="sec-titulo">Canales de<br><em>comunicación directa</em></div>
+
+    <!-- BOTONES DE CONTACTO INTERACTIVOS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:28px;">
+
+      <!-- WHATSAPP -->
+      <a href="https://wa.me/542975176351" target="_blank" rel="noopener" style="text-decoration:none;">
+        <div style="background:#25D366;padding:20px 16px;text-align:center;cursor:pointer;transition:all .2s;border-radius:2px;box-shadow:0 2px 12px rgba(37,211,102,.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(37,211,102,.35)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(37,211,102,.25)'">
+          <div style="font-size:28px;margin-bottom:8px;">💬</div>
+          <div style="font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">WhatsApp</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.8);letter-spacing:.08em;">+54 297 517-6351</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(255,255,255,.6);margin-top:6px;letter-spacing:.06em;">TOQUE PARA CHATEAR</div>
+        </div>
+      </a>
+
+      <!-- EMAIL -->
+      <a href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20BRB-Educa&body=Hola%20Boris%2C%20me%20comunico%20desde%20el%20Manual%20BRB-Educa%20para%20consultar%20sobre%3A%0A%0A" target="_blank" rel="noopener" style="text-decoration:none;">
+        <div style="background:#D44638;padding:20px 16px;text-align:center;cursor:pointer;transition:all .2s;border-radius:2px;box-shadow:0 2px 12px rgba(212,70,56,.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(212,70,56,.35)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(212,70,56,.25)'">
+          <div style="font-size:28px;margin-bottom:8px;">✉️</div>
+          <div style="font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">Correo electrónico</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.8);letter-spacing:.06em;">bbbarrera1986@gmail.com</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(255,255,255,.6);margin-top:6px;letter-spacing:.06em;">TOQUE PARA ESCRIBIR</div>
+        </div>
+      </a>
+
+      <!-- ORCID -->
+      <a href="https://orcid.org/0009-0004-6583-6439" target="_blank" rel="noopener" style="text-decoration:none;">
+        <div style="background:#A6CE39;padding:20px 16px;text-align:center;cursor:pointer;transition:all .2s;border-radius:2px;box-shadow:0 2px 12px rgba(166,206,57,.25);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(166,206,57,.35)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(166,206,57,.25)'">
+          <div style="font-size:28px;margin-bottom:8px;">🔬</div>
+          <div style="font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;">ORCID</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);letter-spacing:.06em;">0009-0004-6583-6439</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(255,255,255,.7);margin-top:6px;letter-spacing:.06em;">PUBLICACIONES Y AUTORÍA</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- TABLA DE REFERENCIA -->
+    <table class="tabla">
+      <tr><th>Canal</th><th>Contacto</th><th>Para qué</th><th>Tiempo de respuesta</th></tr>
+      <tr><td><strong>WhatsApp</strong></td><td>+54 297 517-6351</td><td>Soporte urgente, problemas de acceso, consultas rápidas</td><td>Horas (días hábiles)</td></tr>
+      <tr><td><strong>Email</strong></td><td>bbbarrera1986@gmail.com</td><td>Consultas técnicas, soporte general, documentación</td><td>Menos de 24 hs</td></tr>
+      <tr><td><strong>ORCID</strong></td><td>0009-0004-6583-6439</td><td>Verificación de autoría, publicaciones, referencias académicas</td><td>Perfil público</td></tr>
+    </table>
+
+    <!-- FORMULARIO DE CONSULTA -->
+    <div style="margin-top:28px;background:#fff;border:1px solid var(--gris-b);border-top:3px solid var(--azul);padding:24px;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--azul);font-weight:700;margin-bottom:4px;">¿Tenés una consulta? <em style="color:var(--oro);">Enviala directamente</em></div>
+      <div style="font-size:12px;color:var(--gris);margin-bottom:18px;">Completá el formulario y elegí cómo querés que BRB te responda.</div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--azul);margin-bottom:4px;">Tu nombre</label>
+            <input type="text" id="cons-nombre" placeholder="Nombre y apellido" style="width:100%;font-family:'IBM Plex Sans',sans-serif;font-size:12px;color:var(--negro);background:var(--crema);border:1px solid var(--gris-b);padding:8px 11px;outline:none;">
+          </div>
+          <div>
+            <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--azul);margin-bottom:4px;">Institución (opcional)</label>
+            <input type="text" id="cons-inst" placeholder="Nombre de tu escuela o institución" style="width:100%;font-family:'IBM Plex Sans',sans-serif;font-size:12px;color:var(--negro);background:var(--crema);border:1px solid var(--gris-b);padding:8px 11px;outline:none;">
+          </div>
+        </div>
+        <div>
+          <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--azul);margin-bottom:4px;">Tipo de consulta</label>
+          <select id="cons-tipo" style="width:100%;font-family:'IBM Plex Sans',sans-serif;font-size:12px;color:var(--negro);background:var(--crema);border:1px solid var(--gris-b);padding:8px 11px;outline:none;">
+            <option value="">— Seleccioná el tema —</option>
+            <option value="acceso">Acceso o problema con mi licencia</option>
+            <option value="apikey">Cómo obtener o configurar la API Key</option>
+            <option value="herramienta">Pregunta sobre una herramienta específica</option>
+            <option value="tecnico">Error técnico o bug</option>
+            <option value="institucional">Propuesta institucional o grupal</option>
+            <option value="otro">Otra consulta</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--azul);margin-bottom:4px;">Tu consulta</label>
+          <textarea id="cons-msg" placeholder="Describí brevemente tu consulta o problema..." rows="3" style="width:100%;font-family:'IBM Plex Sans',sans-serif;font-size:12px;color:var(--negro);background:var(--crema);border:1px solid var(--gris-b);padding:8px 11px;outline:none;resize:vertical;"></textarea>
+        </div>
+        <div>
+          <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--azul);margin-bottom:8px;">¿Cómo querés que te responda BRB?</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <button onclick="enviarConsulta('whatsapp')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;background:#25D366;color:#fff;border:none;font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.03em;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+              💬 Enviar por WhatsApp
+            </button>
+            <button onclick="enviarConsulta('email')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 16px;background:#D44638;color:#fff;border:none;font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.03em;" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+              ✉️ Enviar por Email
+            </button>
+          </div>
+        </div>
+        <div id="cons-aviso" style="display:none;padding:10px 14px;background:rgba(26,107,58,.08);border:1px solid rgba(26,107,58,.2);border-left:3px solid var(--verde);font-size:12px;color:var(--verde);font-family:'IBM Plex Mono',monospace;letter-spacing:.04em;"></div>
+      </div>
+    </div>
+
+    <div class="tip" style="margin-top:22px;">
+      <strong>Problemas frecuentes y solución rápida:</strong><br><br>
+      — <strong>"No puedo ingresar"</strong> → Verificá que el email y la clave sean exactamente los del correo recibido (respetan mayúsculas y guiones). Si el problema persiste, escribí por WhatsApp.<br><br>
+      — <strong>"La herramienta no genera nada o da error"</strong> → Verificá que la API Key esté pegada sin espacios. En Gemini, verificá en aistudio.google.com que la clave sea válida y tenga cuota disponible.<br><br>
+      — <strong>"El resultado salió con asteriscos o markdown"</strong> → No debería ocurrir. Si pasa, reportalo con captura de pantalla para corrección.<br><br>
+      — <strong>"Perdí mis legajos"</strong> → Si limpiaste el caché del navegador, los datos locales se eliminaron. En BRB Inclusión y Tutoría, exportar el legajo regularmente en .txt es obligatorio como respaldo.
+    </div>
+
+    <div class="sec-subtitulo" style="margin-top:30px;">El autor <em>— Boris Rodríguez Barrera</em></div>
+    <div style="font-size:13px;color:var(--gris);line-height:1.88;max-width:700px;margin-top:12px;">
+      Graduado en la Universidad de Ciencias Médicas de La Habana. Especialista en Bioanálisis Clínico. Máster en Sistemas de Gestión de Calidad. Especialista en Biología Criminalística.<br><br>
+      Docente de la Escuela Municipal de Pesca "Juan Demonte" N.° 2701, Puerto Madryn, Chubut. Ex Director de Calidad en industria farmacéutica. Ex Gerente de Planta en la industria pesquera patagónica. Trayectoria en biología forense, criminalística, gestión de la calidad alimentaria e industrialización pesquera.<br><br>
+      Publica bajo el sello Soberanía Técnica Ediciones en Zenodo, Amazon, Hotmart, Academia.edu y Google Scholar (ORCID: 0009-0004-6583-6439). Las series de publicación activas son Serie MBH (forensia), Serie Pesquera (industria pesquera patagónica) y Serie Educativa (IA y docencia).<br><br>
+      BRB-Educa es producto de la experiencia directa en el aula técnica patagónica: la observación de primera mano de las necesidades reales del docente argentino — falta de tiempo, contextos institucionales específicos, y ausencia total de herramientas de IA diseñadas para el sistema educativo local.
+    </div>
+  </div>
+
+  <div class="footer-doc">
+    <div class="footer-logo">BRB <em>Educa</em></div>
+    <div class="footer-txt">Boris Rodríguez Barrera · BRB Estrategia &amp; Procesos · Soberanía Técnica Ediciones<br>ORCID: 0009-0004-6583-6439 · bbbarrera1986@gmail.com · +54 297 517-6351 · Puerto Madryn, Chubut, Argentina</div>
+    <div class="footer-txt">Manual Unificado v2.0 · 2026 · Todos los derechos reservados</div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+/* ══ NAVEGACIÓN ══ */
+function ir(id,btn){
+  document.querySelectorAll('.pantalla').forEach(p=>p.classList.remove('activa'));
+  const t=document.getElementById(id);
+  if(t){t.classList.add('activa');window.scrollTo(0,0);}
+  document.querySelectorAll('.nl-btn').forEach(b=>b.classList.remove('activo'));
+  if(btn)btn.classList.add('activo');
+  document.getElementById('nav-lateral').classList.remove('abierto');
+}
+function toggleNav(){document.getElementById('nav-lateral').classList.toggle('abierto');}
+
+/* ══ TABS ══ */
+function tab(t,panelId,color){
+  const sec=t.closest('.sec')||t.closest('.pantalla');
+  sec.querySelectorAll('.tool-tab').forEach(x=>{x.classList.remove('on','burdeo','verde','morado','esmeralda','marino');});
+  t.classList.add('on');if(color)t.classList.add(color);
+  sec.querySelectorAll('.tool-panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById(panelId).classList.add('on');
+}
+
+/* ══ UTILES DEMO ══ */
+function startDemo(btnId,spId,outId,actId){
+  const btn=document.getElementById(btnId),sp=document.getElementById(spId),out=document.getElementById(outId),act=document.getElementById(actId);
+  btn.classList.add('generando');sp.style.display='inline-block';btn.disabled=true;
+  out.classList.remove('visible');if(act)act.style.display='none';
+  return {btn,sp,out,act};
+}
+function endDemo(d,texto){
+  d.out.textContent=texto;d.out.classList.add('visible');
+  if(d.act)d.act.style.display='flex';
+  d.btn.classList.remove('generando');d.sp.style.display='none';d.btn.disabled=false;
+}
+function copiarDemo(id){
+  navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{
+    event.target.textContent='✓ Copiado';setTimeout(()=>event.target.textContent='📋 Copiar',2000);
+  });
+}
+function limpiarDemo(outId,actId){
+  document.getElementById(outId).classList.remove('visible');
+  document.getElementById(actId).style.display='none';
+}
+
+/* ══ DEMO CLASES ══ */
+function demoClases(){
+  const d=startDemo('btn-dc','sp-dc','out-dc','act-dc');
+  const mat=document.getElementById('dc-mat').value||'Materia';
+  const anio=document.getElementById('dc-anio').value||'Año';
+  const tema=document.getElementById('dc-tema').value||'Tema';
+  setTimeout(()=>endDemo(d,`PLANIFICACION INSTITUCIONAL
+
+Institución: Escuela Municipal de Pesca Juan Demonte N.2701 — Puerto Madryn, Chubut
+Materia: ${mat} — ${anio}
+Tipo de clase: Trabajo Práctico de laboratorio
+Duración: 80 minutos (2 módulos)
+
+TEMA
+${tema}
+
+OBJETIVO GENERAL
+Que el alumno ejecute correctamente las técnicas de recuento microbiano en muestras de langostino fresco, interprete los resultados según los límites del CAA (SENASA) e identifique posibles fuentes de contaminación en la cadena de proceso.
+
+CONTENIDOS
+Conceptuales: Métodos de recuento microbiano en alimentos de origen marino. Criterios microbiologicos del Codigo Alimentario Argentino para crustaceos. Interpretacion de resultados en UFC/g.
+Procedimentales: Tecnica de diluciones seriadas decimales. Siembra en placa por inclusion en agar nutritivo y VRBA. Lectura e interpretacion a las 24-48 horas.
+Actitudinales: Respeto de las normas de bioseguridad. Registro sistematico y veraz de los datos. Trabajo colaborativo con responsabilidad sobre la muestra asignada.
+
+MATERIALES Y EQUIPOS
+Muestra de langostino fresco (100 g por grupo, 4 grupos) — Solucion peptonada bufferada 0,1% — Agar nutritivo y Agar VRBA — Tubos de ensayo, micropipetas, placas Petri esteriles — Mechero o cabina de bioseguridad — Incubadora a 35-37 grados C.
+
+DESARROLLO
+0-10 min: Presentacion de la guia, repaso del procedimiento, asignacion de grupos.
+10-65 min: Ejecucion del TP: pesaje, homogeneizacion, diluciones, siembra.
+65-75 min: Rotulado de placas, ingreso a incubadora, limpieza del area de trabajo.
+75-80 min: Cierre: registro en cuaderno de laboratorio y consignas del informe.
+
+CRITERIOS DE EVALUACION
+Ejecucion correcta de diluciones (verificada in situ): 30%
+Aplicacion de normas de bioseguridad: 20%
+Registro de datos (legible, completo, con unidades): 20%
+Informe final en estructura IMRYD: 30%
+
+TAREA
+Entregar informe de laboratorio en estructura IMRYD en la proxima clase. Incluir comparacion de resultados con los limites del CAA para langostino fresco.
+
+BORRADOR — REVISAR Y ADAPTAR ANTES DE USAR`),1900);
+}
+
+/* ══ DEMO EVALUAR ══ */
+function demoEvaluar(){
+  const d=startDemo('btn-de','sp-de','out-de','act-de');
+  const mat=document.getElementById('de-mat').value||'Materia';
+  const anio=document.getElementById('de-anio').value||'Año';
+  const tarea=document.getElementById('de-tarea').value||'Tarea';
+  const esc=document.getElementById('de-esc').value;
+  setTimeout(()=>endDemo(d,`RUBRICA ANALITICA
+
+Materia: ${mat} — ${anio}
+Instrumento: Rubrica Analitica de evaluacion
+Tarea: ${tarea}
+Escala: ${esc}
+
+CRITERIO 1: FUNDAMENTACION TEORICA (25%)
+${esc.includes('TEA')?'TEA':'9-10'}: Desarrolla con precision el fundamento teorico del metodo. Cita correctamente los parametros del CAA. Establece relacion clara entre el metodo y los microorganismos objetivo.
+${esc.includes('TEA')?'TEP':'7-8'}: El fundamento es correcto pero incompleto. Menciona la normativa sin profundizar.
+${esc.includes('TEA')?'TED':'5-6'}: Contiene errores conceptuales. No menciona normativa. Reproduce la guia sin reformulacion propia.
+
+CRITERIO 2: DESCRIPCION DEL PROCEDIMIENTO (25%)
+${esc.includes('TEA')?'TEA':'9-10'}: Describe cronologicamente con precision tecnica. Incluye todas las diluciones con su calculo. Menciona condiciones de asepsia y parametros de incubacion.
+${esc.includes('TEA')?'TEP':'7-8'}: El procedimiento es correcto pero omite algun dato tecnico clave.
+${esc.includes('TEA')?'TED':'5-6'}: El procedimiento esta incompleto, fuera de orden o copiado textualmente de la guia.
+
+CRITERIO 3: RESULTADOS Y CALCULOS (30%)
+${esc.includes('TEA')?'TEA':'9-10'}: Resultados en UFC/g con calculo correcto del factor de dilucion. Tabla clara con unidades. Comparacion explicita con los limites del CAA.
+${esc.includes('TEA')?'TEP':'7-8'}: Los resultados son correctos pero la comparacion con el CAA es incompleta.
+${esc.includes('TEA')?'TED':'5-6'}: Calculos con errores conceptuales. Resultados sin unidades. Sin comparacion con el limite legal.
+
+CRITERIO 4: DISCUSION Y CONCLUSIONES (20%)
+${esc.includes('TEA')?'TEA':'9-10'}: Interpreta resultados en el contexto de la seguridad alimentaria. Identifica posibles fuentes de contaminacion. La conclusion cierra coherentemente con el objetivo del TP.
+${esc.includes('TEA')?'TEP':'7-8'}: La discusion es correcta pero superficial. Las conclusiones no se articulan con el objetivo inicial.
+${esc.includes('TEA')?'TED':'5-6'}: La conclusion repite los resultados sin interpretacion critica.
+
+CALIFICACION FINAL
+Criterio 1: ___ / 2.5 pts
+Criterio 2: ___ / 2.5 pts
+Criterio 3: ___ / 3.0 pts
+Criterio 4: ___ / 2.0 pts
+TOTAL: ___ / 10 pts
+
+Alumno/a: _____________________ Fecha: ______________ Firma docente: ______________
+
+BORRADOR — REVISAR Y ADAPTAR ANTES DE USAR`),2200);
+}
+
+/* ══ DEMO TUTORÍA ══ */
+function demoTutoria(){
+  const d=startDemo('btn-dt','sp-dt','out-dt','act-dt');
+  const alu=document.getElementById('dt-alu').value||'Alumno';
+  const inst=document.getElementById('dt-inst').value||'Institución';
+  const sit=document.getElementById('dt-sit').value||'Situación';
+  setTimeout(()=>endDemo(d,`PLAN DE ACOMPAÑAMIENTO TUTORIAL
+
+Institucion: ${inst}
+Alumno/a: ${alu}
+Tutor POT a cargo: [Nombre del tutor]
+Fecha de elaboracion: ${new Date().toLocaleDateString('es-AR')}
+Período de vigencia: Cuatrimestre en curso
+
+SITUACION DETECTADA
+${sit}
+
+OBJETIVO GENERAL DEL PLAN
+Que el alumno logre mejorar su rendimiento academico y sostenibilidad de la trayectoria escolar mediante un acompañamiento tutorial estructurado, sostenido y articulado con el equipo docente y la familia.
+
+ACCIONES DEL TUTOR
+
+1. Entrevista individual con el alumno (semana 1)
+Relevamiento de su percepcion sobre las dificultades, identificacion de factores externos que inciden, establecimiento de un vinculo de confianza. Registro en legajo.
+
+2. Reunion con docentes de materias en proceso (semanas 1-2)
+Coordinacion de estrategias de acompañamiento aula. Solicitud de informes de desempeño. Acuerdo sobre mecanismos de comunicacion periodica.
+
+3. Entrevista con referentes familiares (semana 2)
+Comunicacion formal de la situacion. Compromiso de la familia en el acompañamiento domiciliario. Firma del Acuerdo Pedagogico si corresponde.
+
+4. Seguimiento quincenal del alumno (todo el período)
+Registro de asistencia, entrega de trabajos, resultados parciales. Ajuste del plan segun evolucion. Registro en legajo.
+
+5. Articulacion con EOE si persisten dificultades (semana 3 o antes si es necesario)
+Derivacion fundamentada al Equipo de Orientacion Escolar para evaluacion psicopedagogica o intervencion especifica.
+
+INDICADORES DE EVALUACION DEL PLAN
+- Mejora de la asistencia: meta 85% o mas
+- Entrega de trabajos practicos pendientes: al menos el 70% de los adeudados
+- Mejora en al menos una de las materias en proceso al cierre del cuatrimestre
+
+PROXIMA REVISION: [Fecha a definir] — Firma del tutor: ________________
+
+BORRADOR — REVISAR Y ADAPTAR ANTES DE USAR`),2000);
+}
+
+/* ══ FORMULARIO DE CONSULTA ══ */
+function enviarConsulta(canal){
+  const nombre=document.getElementById('cons-nombre').value.trim();
+  const inst=document.getElementById('cons-inst').value.trim();
+  const tipo=document.getElementById('cons-tipo').value;
+  const msg=document.getElementById('cons-msg').value.trim();
+  const aviso=document.getElementById('cons-aviso');
+  const errStyle='background:rgba(139,26,26,.08);border-left-color:#8B1A1A;color:#8B1A1A;';
+  const okStyle='background:rgba(26,107,58,.08);border-left-color:var(--verde);color:var(--verde);';
+  if(!nombre){aviso.style.cssText=errStyle;aviso.style.display='block';aviso.textContent='⚠ Por favor ingresá tu nombre antes de enviar.';return;}
+  if(!msg){aviso.style.cssText=errStyle;aviso.style.display='block';aviso.textContent='⚠ Por favor describí tu consulta antes de enviar.';return;}
+  const labels={'acceso':'Acceso / Licencia','apikey':'API Key','herramienta':'Herramienta específica','tecnico':'Error técnico','institucional':'Propuesta institucional','otro':'Otra consulta','':'Consulta general'};
+  const tipoTxt=labels[tipo]||'Consulta general';
+  const cuerpo='*Consulta desde Manual BRB-Educa*\n\n*Nombre:* '+nombre+(inst?'\n*Institución:* '+inst:'')+'\n*Tipo:* '+tipoTxt+'\n\n*Consulta:*\n'+msg;
+  if(canal==='whatsapp'){
+    window.open('https://wa.me/542975176351?text='+encodeURIComponent(cuerpo),'_blank');
+    aviso.style.cssText=okStyle;aviso.style.display='block';
+    aviso.textContent='✓ Se abrió WhatsApp con tu consulta lista. Si no se abrió, el número es +54 297 517-6351.';
+  } else {
+    const asunto=encodeURIComponent('Consulta BRB-Educa — '+tipoTxt+' — '+nombre);
+    const body=encodeURIComponent('Hola Boris,\n\nMe comunico desde el Manual BRB-Educa.\n\nNombre: '+nombre+(inst?'\nInstitución: '+inst:'')+'\nTipo de consulta: '+tipoTxt+'\n\nConsulta:\n'+msg+'\n\nQuedo a la espera.\n'+nombre);
+    window.open('mailto:bbbarrera1986@gmail.com?subject='+asunto+'&body='+body,'_blank');
+    aviso.style.cssText=okStyle;aviso.style.display='block';
+    aviso.textContent='✓ Se abrió tu cliente de correo. Si no se abrió, escribí a bbbarrera1986@gmail.com.';
+  }
+}
+
+/* ══ DEMO ESTUDIO ══ */
+function demoEstudio(){
+  const d=startDemo('btn-des','sp-des','out-des','act-des');
+  const mat=document.getElementById('des-mat').value||'Materia';
+  const anio=document.getElementById('des-anio').value||'Año';
+  const tema=document.getElementById('des-tema').value||'Tema';
+  const mod=document.getElementById('des-mod').value;
+  let txt='';
+  if(mod.includes('Fichas')){
+    txt=`FICHAS DE REPASO — ${mat.toUpperCase()}\nTema: ${tema} — ${anio}\n\nFICHA 01\nCONCEPTO: HACCP\nDEFINICION: Sistema de Analisis de Peligros y Puntos Criticos de Control. Enfoque preventivo para garantizar la inocuidad de los alimentos identificando, evaluando y controlando peligros en cada etapa del proceso productivo.\n\nFICHA 02\nCONCEPTO: Punto Critico de Control (PCC)\nDEFINICION: Etapa del proceso donde se puede aplicar una medida de control que prevenga, elimine o reduzca a nivel aceptable un peligro para la inocuidad. La perdida de control en un PCC implica riesgo real para el consumidor.\n\nFICHA 03\nCONCEPTO: Limite Critico\nDEFINICION: Valor maximo y/o minimo de un parametro biologico, quimico o fisico que debe controlarse en un PCC. No puede transgredirse. Ejemplo: temperatura de congelacion menor o igual a -18 grados C.\n\nFICHA 04\nCONCEPTO: Verificacion HACCP\nDEFINICION: Metodos y procedimientos para confirmar que el plan HACCP funciona eficazmente. Incluye auditorias, analisis de producto terminado y revision de registros.\n\nFICHA 05\nCONCEPTO: Peligro Biologico\nDEFINICION: Microorganismos capaces de causar enfermedad si se consumen en cantidad suficiente. En langostino: Listeria monocytogenes, Salmonella spp., Vibrio parahaemolyticus.\n\nFICHA 06\nCONCEPTO: SENASA Res. 530/2000\nDEFINICION: Resolucion argentina que establece la obligatoriedad del sistema HACCP en establecimientos elaboradores que exportan. Marco regulatorio de referencia para plantas pesqueras patagonicas.\n\nBORRADOR — REVISAR Y ADAPTAR ANTES DE USAR`;
+  } else {
+    txt=`RESUMEN DE ESTUDIO — ${mat.toUpperCase()}\nTema: ${tema} — ${anio}\n\n1. QUE ES EL SISTEMA HACCP\n\nEl HACCP (Hazard Analysis and Critical Control Points) es un sistema de gestion preventiva para garantizar la inocuidad de los alimentos. Fue desarrollado originalmente en los anos 60 para la NASA y hoy es el estandar internacional aplicado en la industria alimentaria, incluyendo la pesca y la acuicultura.\n\nEn Argentina es obligatorio para las plantas de procesamiento pesquero habilitadas por SENASA para exportacion, regulado por la Resolucion SENASA 530/2000.\n\n2. LOS 7 PRINCIPIOS DEL HACCP\n\nPRINCIPIO 1 — ANALISIS DE PELIGROS\nIdentificar todos los peligros biologicos, quimicos y fisicos que pueden afectar la inocuidad del langostino en cada etapa del proceso.\n\nPRINCIPIO 2 — IDENTIFICACION DE PCC\nDeterminar cuales etapas del proceso son Puntos Criticos de Control. En langostino: recepcion de materia prima, congelacion y deteccion de metales.\n\nPRINCIPIO 3 — LIMITES CRITICOS\nDefinir valores maximos y minimos para cada PCC. Ejemplo: temperatura de congelacion menor o igual a -18 grados C.\n\nPRINCIPIO 4 — VIGILANCIA\nEstablecer procedimientos de monitoreo continuo o periodico de cada PCC.\n\nPRINCIPIO 5 — MEDIDAS CORRECTORAS\nDefinir la accion a tomar cuando el monitoreo indica que un PCC esta fuera de control.\n\nPRINCIPIO 6 — VERIFICACION\nConfirmar que el sistema funciona eficazmente mediante auditorias y analisis de producto.\n\nPRINCIPIO 7 — DOCUMENTACION\nRegistrar todos los procedimientos, monitoreos, desviaciones y correcciones.\n\n3. APLICACION EN PLANTA DE LANGOSTINO PATAGONICO\n\nPCC tipicos en una planta de Puerto Madryn:\n- Recepcion: control de temperatura de llegada (maximo 4 grados C) y evaluacion sensorial.\n- Clasificacion: deteccion de ejemplares con signos de alteracion.\n- Congelacion: temperatura de camara y tiempo de alcance de -18 grados C en el centro del producto.\n- Deteccion de metales: paso obligatorio por detector antes del empaque.\n\nBORRADOR — REVISAR Y ADAPTAR ANTES DE USAR`;
+  }
+  setTimeout(()=>endDemo(d,txt),1900);
+}
+</script>
+</body>
+</html>
