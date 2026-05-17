@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocPed BRB — Generador de Documentación Pedagógica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<!-- GA4 — BRB Estrategia & Procesos -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TDVR1ZTS1R"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-TDVR1ZTS1R');
+</script>
+
+<style>
+:root {
+  --verde:     #1A3A2A;
+  --verde-med: #2A5A3E;
+  --verde-cl:  #3D7A55;
+  --oro:       #C8A84B;
+  --oro-cl:    #E8C96A;
+  --crema:     #F5F0E8;
+  --crema-osc: #E8E0CC;
+  --negro:     #0F1E18;
+  --gris-txt:  #4A5A50;
+  --gris-b:    #C0CCC4;
+  --rojo:      #8B2020;
+  --rojo-bg:   #FFF5F5;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--crema);color:var(--negro);min-height:100vh;font-size:14px;}
+.pantalla{display:none;}
+.pantalla.activa{display:block;}
+
+/* ── PANTALLA API ── */
+#p-api{min-height:100vh;background:var(--verde);display:flex;flex-direction:column;position:relative;overflow:hidden;}
+#p-api::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(200,168,75,.05) 59px,rgba(200,168,75,.05) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(200,168,75,.05) 59px,rgba(200,168,75,.05) 60px);pointer-events:none;}
+.api-hdr{position:relative;z-index:2;padding:36px 56px 28px;border-bottom:1px solid rgba(200,168,75,.2);}
+.marca-mono{font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(200,168,75,.6);letter-spacing:.3em;text-transform:uppercase;margin-bottom:6px;}
+.marca-titulo{font-family:'Playfair Display',serif;font-size:28px;color:var(--crema);}
+.marca-titulo em{font-style:italic;color:var(--oro);}
+.marca-sub{font-size:12px;color:rgba(245,240,232,.45);margin-top:6px;letter-spacing:.03em;}
+.api-body{position:relative;z-index:2;flex:1;display:flex;align-items:center;justify-content:center;padding:40px;}
+.api-card{background:rgba(0,0,0,.25);border:1px solid rgba(200,168,75,.2);padding:40px;max-width:500px;width:100%;}
+.card-tit{font-family:'Playfair Display',serif;font-size:20px;color:var(--oro);margin-bottom:6px;}
+.card-desc{font-size:12px;color:rgba(245,240,232,.5);line-height:1.7;margin-bottom:24px;}
+.prov-row{display:flex;gap:8px;margin-bottom:20px;}
+.prov-btn{flex:1;padding:10px 6px;background:transparent;border:1px solid rgba(200,168,75,.25);color:rgba(245,240,232,.55);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;cursor:pointer;transition:all .2s;text-transform:uppercase;text-align:center;}
+.prov-btn.on{background:rgba(200,168,75,.15);border-color:var(--oro);color:var(--oro);}
+.fl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--oro);letter-spacing:.2em;text-transform:uppercase;display:block;margin-bottom:7px;}
+.fi{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(200,168,75,.2);color:var(--crema);font-family:'IBM Plex Sans',sans-serif;font-size:13px;padding:11px 14px;outline:none;transition:border-color .2s;margin-bottom:20px;}
+.fi:focus{border-color:var(--oro);}
+.fi::placeholder{color:rgba(245,240,232,.25);}
+.btn-ppal{width:100%;background:var(--oro);color:var(--negro);border:none;font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:14px;cursor:pointer;transition:background .2s;}
+.btn-ppal:hover{background:var(--oro-cl);}
+.msg-error{color:#FF9999;font-size:11px;margin-top:10px;display:none;font-family:'IBM Plex Mono',monospace;}
+.api-ayuda{font-size:11px;color:rgba(245,240,232,.3);margin-top:14px;line-height:1.7;}
+.api-ayuda a{color:rgba(200,168,75,.5);text-decoration:none;}
+.api-ayuda a:hover{color:var(--oro);}
+
+/* ── PANTALLA PERFIL ── */
+#p-perfil{min-height:100vh;background:var(--verde);display:flex;flex-direction:column;position:relative;overflow:hidden;}
+#p-perfil::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(200,168,75,.05) 59px,rgba(200,168,75,.05) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(200,168,75,.05) 59px,rgba(200,168,75,.05) 60px);pointer-events:none;}
+.perf-hdr{position:relative;z-index:2;padding:26px 56px 20px;border-bottom:1px solid rgba(200,168,75,.2);display:flex;justify-content:space-between;align-items:center;}
+.btn-back{background:transparent;border:1px solid rgba(200,168,75,.25);color:rgba(245,240,232,.6);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:8px 16px;cursor:pointer;transition:all .2s;}
+.btn-back:hover{border-color:var(--oro);color:var(--oro);}
+.perf-body{position:relative;z-index:2;flex:1;overflow-y:auto;padding:40px;display:flex;justify-content:center;}
+.perf-card{background:rgba(0,0,0,.25);border:1px solid rgba(200,168,75,.2);padding:40px;max-width:620px;width:100%;height:fit-content;}
+.fg{margin-bottom:16px;}
+.fs{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(200,168,75,.2);color:var(--crema);font-family:'IBM Plex Sans',sans-serif;font-size:13px;padding:11px 14px;outline:none;transition:border-color .2s;appearance:none;}
+.fs:focus{border-color:var(--oro);}
+.fs option{background:#1A3A2A;}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.nivel-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.nivel-btn{padding:8px 14px;background:transparent;border:1px solid rgba(200,168,75,.25);color:rgba(245,240,232,.55);font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.nivel-btn.on{background:rgba(200,168,75,.15);border-color:var(--oro);color:var(--oro);}
+
+/* ── APP PRINCIPAL ── */
+#p-app{display:none;flex-direction:column;min-height:100vh;}
+#p-app.activa{display:flex;}
+.app-hdr{background:var(--verde);padding:0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--oro);min-height:54px;position:sticky;top:0;z-index:200;}
+.app-marca{font-family:'Playfair Display',serif;font-size:15px;color:var(--crema);}
+.app-marca em{font-style:italic;color:var(--oro);}
+.app-hdr-right{display:flex;align-items:center;gap:6px;}
+.hdr-info{font-size:11px;color:rgba(245,240,232,.45);text-align:right;line-height:1.4;}
+.hdr-info strong{color:var(--oro);display:block;font-size:11px;}
+.hdr-btn{background:transparent;border:1px solid rgba(200,168,75,.2);color:rgba(245,240,232,.55);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;cursor:pointer;transition:all .2s;}
+.hdr-btn:hover{border-color:var(--oro);color:var(--oro);}
+.app-body{display:grid;grid-template-columns:220px 1fr 210px;flex:1;min-height:0;overflow:hidden;}
+
+/* Sidebar izquierda */
+.sb-left{background:var(--verde);border-right:1px solid rgba(200,168,75,.1);padding:18px 0;overflow-y:auto;}
+.sb-sec{font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(200,168,75,.4);letter-spacing:.25em;text-transform:uppercase;padding:0 16px;margin:14px 0 6px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;border-left:3px solid transparent;transition:all .12s;}
+.sb-item:hover{background:rgba(200,168,75,.07);}
+.sb-item.on{background:rgba(200,168,75,.1);border-left-color:var(--oro);}
+.sb-item.on .sb-txt{color:var(--oro);font-weight:500;}
+.sb-ico{font-size:13px;width:18px;text-align:center;}
+.sb-txt{font-size:11px;color:rgba(245,240,232,.65);line-height:1.3;}
+
+/* Panel central */
+.main-panel{background:var(--crema);padding:28px 32px;overflow-y:auto;}
+
+/* Sidebar derecha */
+.sb-right{background:var(--negro);border-left:1px solid rgba(200,168,75,.1);padding:14px;overflow-y:auto;}
+.sr-tit{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--oro);letter-spacing:.22em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(200,168,75,.18);}
+.plat-btn{display:block;width:100%;text-align:left;padding:8px 10px;margin-bottom:5px;background:rgba(255,255,255,.03);border:1px solid rgba(200,168,75,.1);color:rgba(245,240,232,.65);font-family:'IBM Plex Sans',sans-serif;font-size:10px;cursor:pointer;transition:all .2s;text-decoration:none;line-height:1.4;}
+.plat-btn:hover{background:rgba(200,168,75,.1);border-color:var(--oro);color:var(--oro);}
+.plat-btn span{display:block;font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(200,168,75,.4);letter-spacing:.06em;text-transform:uppercase;margin-top:2px;}
+.sr-contact{margin-top:14px;padding-top:12px;border-top:1px solid rgba(200,168,75,.12);}
+.sr-c-lbl{font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(200,168,75,.4);letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px;}
+.sr-c-btn{display:block;width:100%;text-align:center;padding:7px;margin-bottom:5px;border:none;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:opacity .2s;}
+.sr-c-btn:hover{opacity:.82;}
+.btn-wa{background:#25D366;color:#fff;}
+.btn-em{background:#D44638;color:#fff;}
+.btn-manual{display:block;width:100%;text-align:center;padding:7px;margin-top:6px;border:1px solid rgba(200,168,75,.2);color:rgba(200,168,75,.6);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:all .2s;}
+.btn-manual:hover{border-color:var(--oro);color:var(--oro);}
+
+/* Contenido app */
+.ph{margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid var(--verde);}
+.ph-badge{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--verde-cl);letter-spacing:.25em;text-transform:uppercase;margin-bottom:7px;}
+.ph-titulo{font-family:'Playfair Display',serif;font-size:24px;color:var(--verde);line-height:1.1;margin-bottom:5px;}
+.ph-titulo em{font-style:italic;color:var(--oro);}
+.ph-desc{font-size:12px;color:var(--gris-txt);line-height:1.7;}
+.aviso{background:var(--rojo-bg);border-left:3px solid var(--rojo);padding:10px 14px;margin-bottom:20px;font-size:11px;color:var(--rojo);line-height:1.6;}
+.aviso strong{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;}
+.aviso-info{background:rgba(26,58,42,.06);border-left:3px solid var(--verde-cl);padding:10px 14px;margin-bottom:20px;font-size:11px;color:var(--verde);line-height:1.6;}
+
+/* Grid tipos */
+.tipos-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+.tipo-card{padding:14px;border:2px solid var(--crema-osc);background:#fff;cursor:pointer;transition:all .18s;position:relative;}
+.tipo-card:hover{border-color:var(--verde-cl);}
+.tipo-card.on{border-color:var(--verde);background:rgba(26,58,42,.04);}
+.tipo-card.on::after{content:'✓';position:absolute;top:10px;right:12px;color:var(--verde);font-weight:700;}
+.tipo-ico{font-size:18px;margin-bottom:7px;}
+.tipo-tit{font-family:'Playfair Display',serif;font-size:13px;color:var(--negro);margin-bottom:3px;}
+.tipo-desc{font-size:10px;color:var(--gris-txt);line-height:1.5;}
+.tipo-norm{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--oro);margin-top:5px;letter-spacing:.04em;}
+
+/* Formulario */
+.form-gen{background:#fff;border:1px solid var(--crema-osc);padding:22px;margin-bottom:18px;}
+.form-tit{font-family:'Playfair Display',serif;font-size:15px;color:var(--verde);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--crema-osc);}
+.fg-label{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--verde);letter-spacing:.2em;text-transform:uppercase;display:block;margin-bottom:5px;}
+.fg-input{width:100%;border:1px solid var(--crema-osc);background:var(--crema);color:var(--negro);font-family:'IBM Plex Sans',sans-serif;font-size:13px;padding:9px 11px;outline:none;transition:border-color .2s;margin-bottom:14px;}
+.fg-input:focus{border-color:var(--verde);}
+.fg-input::placeholder{color:var(--gris-b);}
+.fg-ta{width:100%;border:1px solid var(--crema-osc);background:var(--crema);color:var(--negro);font-family:'IBM Plex Sans',sans-serif;font-size:12px;padding:9px 11px;outline:none;resize:vertical;min-height:70px;transition:border-color .2s;margin-bottom:14px;line-height:1.6;}
+.fg-ta:focus{border-color:var(--verde);}
+.fg-ta::placeholder{color:var(--gris-b);}
+.fg-select{width:100%;border:1px solid var(--crema-osc);background:var(--crema);color:var(--negro);font-family:'IBM Plex Sans',sans-serif;font-size:13px;padding:9px 11px;outline:none;appearance:none;margin-bottom:14px;}
+.f2g{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* Perfil inline */
+.perfil-resumen{background:rgba(26,58,42,.06);border:1px solid rgba(26,58,42,.15);padding:11px 14px;margin-bottom:16px;}
+.perfil-resumen-lbl{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--verde);letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px;}
+.perfil-resumen-txt{font-size:11px;color:var(--negro);line-height:1.8;}
+.perfil-resumen-txt strong{color:var(--verde);}
+
+/* Adjunto */
+.adj-zona{border:2px dashed var(--gris-b);padding:14px;margin-bottom:14px;cursor:pointer;transition:border-color .2s;text-align:center;background:var(--crema);}
+.adj-zona:hover{border-color:var(--verde-cl);}
+.adj-zona.tiene{border-color:var(--verde);border-style:solid;background:rgba(26,58,42,.04);}
+.adj-ico{font-size:20px;margin-bottom:4px;}
+.adj-txt{font-size:11px;color:var(--gris-txt);}
+.adj-nom{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--verde);margin-top:3px;}
+.adj-clear{background:none;border:none;color:var(--rojo);cursor:pointer;font-size:10px;margin-top:4px;font-family:'IBM Plex Mono',monospace;}
+
+/* Opcionales */
+.opc-box{background:rgba(200,168,75,.06);border:1px solid rgba(200,168,75,.2);padding:12px 16px;margin-bottom:14px;}
+.opc-hdr{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--gris-txt);letter-spacing:.15em;text-transform:uppercase;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+.opc-body{display:none;padding-top:14px;}
+.opc-body.open{display:block;}
+
+/* Botón generar */
+.btn-gen{background:var(--verde);color:var(--crema);border:none;font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:13px 28px;cursor:pointer;transition:background .2s;width:100%;}
+.btn-gen:hover{background:var(--verde-med);}
+.btn-gen:disabled{background:var(--gris-b);cursor:not-allowed;}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid rgba(245,240,232,.3);border-top-color:var(--crema);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Resultado */
+.res-area{display:none;margin-top:18px;border:1px solid var(--crema-osc);}
+.res-area.vis{display:block;}
+.res-cab{background:var(--verde);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.res-cab-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--oro);letter-spacing:.18em;text-transform:uppercase;}
+.res-btns{display:flex;gap:5px;flex-wrap:wrap;}
+.rb{padding:5px 10px;border:none;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.rb-cop{background:rgba(200,168,75,.2);color:var(--oro);border:1px solid rgba(200,168,75,.3);}
+.rb-cop:hover{background:rgba(200,168,75,.35);}
+.rb-dl{background:rgba(245,240,232,.08);color:var(--crema);border:1px solid rgba(245,240,232,.18);}
+.rb-dl:hover{background:rgba(245,240,232,.18);}
+.rb-grd{background:var(--verde-cl);color:#fff;}
+.rb-grd:hover{background:var(--verde-med);}
+.rb-del{background:rgba(139,32,32,.18);color:#FF9999;border:1px solid rgba(139,32,32,.25);}
+.rb-del:hover{background:rgba(139,32,32,.3);}
+.res-aviso{background:var(--rojo);color:#fff;padding:7px 14px;font-size:10px;font-family:'IBM Plex Mono',monospace;letter-spacing:.05em;}
+.res-txt{padding:18px 20px;font-size:12px;line-height:1.9;color:var(--negro);white-space:pre-wrap;font-family:'IBM Plex Sans',sans-serif;background:#fff;}
+
+/* Expediente */
+.exp-item{background:#fff;border:1px solid var(--crema-osc);padding:13px 15px;margin-bottom:9px;transition:border-color .2s;}
+.exp-item:hover{border-color:var(--verde-cl);}
+.exp-item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.exp-item-tit{font-family:'Playfair Display',serif;font-size:13px;color:var(--negro);}
+.exp-item-meta{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--gris-txt);margin-top:3px;line-height:1.6;}
+.exp-badge{font-family:'IBM Plex Mono',monospace;font-size:8px;background:var(--verde);color:var(--crema);padding:2px 7px;white-space:nowrap;}
+.exp-btns{display:flex;gap:5px;margin-top:9px;}
+.eb{padding:5px 9px;border:none;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all .18s;}
+.eb-ver{background:var(--verde);color:var(--crema);}
+.eb-ver:hover{background:var(--verde-med);}
+.eb-dl{background:rgba(200,168,75,.15);color:var(--oro);border:1px solid rgba(200,168,75,.25);}
+.eb-dl:hover{background:rgba(200,168,75,.3);}
+.eb-del{background:var(--rojo-bg);color:var(--rojo);border:1px solid rgba(139,32,32,.18);}
+.eb-del:hover{background:#ffe0e0;}
+.exp-vacio{text-align:center;padding:40px;color:var(--gris-b);font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;}
+
+/* Inicio cards */
+.ini-free{display:inline-block;background:var(--verde);color:var(--crema);font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;}
+.ini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+.ini-card{background:#fff;border:1px solid var(--crema-osc);padding:14px;cursor:pointer;transition:all .18s;}
+.ini-card:hover{border-color:var(--verde-cl);transform:translateY(-1px);}
+.ini-ico{font-size:22px;margin-bottom:7px;}
+.ini-tit{font-family:'Playfair Display',serif;font-size:13px;color:var(--negro);margin-bottom:3px;}
+.ini-desc{font-size:10px;color:var(--gris-txt);line-height:1.5;}
+
+/* Modal */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:999;align-items:center;justify-content:center;}
+.modal-ov.vis{display:flex;}
+.modal{background:#fff;max-width:680px;width:95%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.modal-hdr{background:var(--verde);padding:13px 16px;display:flex;justify-content:space-between;align-items:center;}
+.modal-tit{font-family:'Playfair Display',serif;font-size:14px;color:var(--crema);}
+.modal-x{background:none;border:none;color:rgba(245,240,232,.55);font-size:17px;cursor:pointer;}
+.modal-x:hover{color:var(--crema);}
+.modal-body{padding:18px;overflow-y:auto;flex:1;white-space:pre-wrap;font-size:12px;line-height:1.9;font-family:'IBM Plex Sans',sans-serif;color:var(--negro);}
+.modal-foot{padding:10px 16px;border-top:1px solid var(--crema-osc);display:flex;gap:6px;flex-wrap:wrap;}
+
+/* Footer */
+.app-footer{background:var(--negro);border-top:1px solid rgba(200,168,75,.12);padding:12px 20px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(200,168,75,.35);letter-spacing:.06em;text-align:center;line-height:1.9;}
+.app-footer a{color:rgba(200,168,75,.45);text-decoration:none;}
+.app-footer a:hover{color:var(--oro);}
+
+/* Responsive */
+@media(max-width:860px){
+  .app-body{grid-template-columns:1fr;}
+  .sb-left,.sb-right{display:none;}
+  .tipos-grid,.ini-grid,.f2g{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ PANTALLA API ═══════════════ -->
+<div id="p-api" class="pantalla activa">
+  <div class="api-hdr">
+    <div class="marca-mono">BRB Estrategia &amp; Procesos · Soberanía Técnica Ediciones</div>
+    <div class="marca-titulo">DocPed <em>BRB</em></div>
+    <div class="marca-sub">Generador de Documentación Pedagógica · Sistema Educativo Argentino · Acceso Libre y Gratuito</div>
+  </div>
+  <div class="api-body">
+    <div class="api-card">
+      <div class="card-tit">Configuración de IA</div>
+      <div class="card-desc">Herramienta gratuita. Requiere tu propia API Key del proveedor elegido. Gemini tiene plan gratuito disponible en aistudio.google.com.</div>
+      <label class="fl">Proveedor de IA</label>
+      <div class="prov-row">
+        <button class="prov-btn on" onclick="selProv(this,'gemini')">Gemini<br><small style="font-size:8px;opacity:.5">(gratuito)</small></button>
+        <button class="prov-btn" onclick="selProv(this,'openai')">OpenAI<br><small style="font-size:8px;opacity:.5">GPT-4o</small></button>
+        <button class="prov-btn" onclick="selProv(this,'claude')">Claude<br><small style="font-size:8px;opacity:.5">Sonnet</small></button>
+      </div>
+      <label class="fl" for="inp-apikey">API Key</label>
+      <input class="fi" id="inp-apikey" type="password" placeholder="Pegá tu API Key aquí">
+      <button class="btn-ppal" onclick="irAPerfil()">Continuar →</button>
+      <div class="msg-error" id="err-api">Ingresá una API Key para continuar.</div>
+      <div class="api-ayuda">
+        Gemini gratis: <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a> → Get API Key<br>
+        OpenAI: <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> &nbsp;·&nbsp;
+        Claude: <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PANTALLA PERFIL ═══════════════ -->
+<div id="p-perfil" class="pantalla">
+  <div class="perf-hdr">
+    <div>
+      <div class="marca-mono" style="font-size:9px;">DocPed BRB</div>
+      <div class="marca-titulo" style="font-size:20px;color:var(--crema);">Perfil <em>Docente</em></div>
+    </div>
+    <button class="btn-back" onclick="irAPI()">← Volver</button>
+  </div>
+  <div class="perf-body">
+    <div class="perf-card">
+      <div class="card-tit">Datos del Profesional</div>
+      <div class="card-desc">Se guardan en este dispositivo y aparecen en todos los documentos generados. Podés actualizarlos en cualquier momento.</div>
+
+      <div class="fg">
+        <label class="fl" for="pf-nombre">Nombre y apellido completo</label>
+        <input class="fi" id="pf-nombre" type="text" placeholder="Ej: Prof. María González">
+      </div>
+      <div class="fg">
+        <label class="fl" for="pf-inst">Institución educativa</label>
+        <input class="fi" id="pf-inst" type="text" placeholder="Ej: Escuela Técnica N° 2701 Juan Demonte">
+      </div>
+      <div class="f2">
+        <div class="fg">
+          <label class="fl" for="pf-prov">Provincia</label>
+          <select class="fs" id="pf-prov">
+            <option value="">— Seleccioná —</option>
+            <option>Buenos Aires</option><option>CABA</option><option>Catamarca</option>
+            <option>Chaco</option><option>Chubut</option><option>Córdoba</option>
+            <option>Corrientes</option><option>Entre Ríos</option><option>Formosa</option>
+            <option>Jujuy</option><option>La Pampa</option><option>La Rioja</option>
+            <option>Mendoza</option><option>Misiones</option><option>Neuquén</option>
+            <option>Río Negro</option><option>Salta</option><option>San Juan</option>
+            <option>San Luis</option><option>Santa Cruz</option><option>Santa Fe</option>
+            <option>Santiago del Estero</option><option>Tierra del Fuego</option><option>Tucumán</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label class="fl" for="pf-cargo">Cargo / Rol institucional</label>
+          <select class="fs" id="pf-cargo">
+            <option>Docente de aula</option>
+            <option>Docente de taller</option>
+            <option>Preceptor/a</option>
+            <option>Tutor/a</option>
+            <option>Coordinador/a pedagógico/a</option>
+            <option>Jefe/a de Departamento</option>
+            <option>Otro</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Nivel educativo</label>
+        <div class="nivel-row">
+          <button class="nivel-btn on" onclick="selNivel(this,'Primario')">Primario</button>
+          <button class="nivel-btn" onclick="selNivel(this,'Secundario')">Secundario</button>
+          <button class="nivel-btn" onclick="selNivel(this,'Técnico/ETP')">Técnico / ETP</button>
+          <button class="nivel-btn" onclick="selNivel(this,'Superior')">Superior</button>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl" for="pf-espacio">Espacio curricular / Materia</label>
+        <input class="fi" id="pf-espacio" type="text" placeholder="Ej: Química Analítica · Operaciones Unitarias II">
+      </div>
+      <div class="f2">
+        <div class="fg">
+          <label class="fl" for="pf-curso">Curso(s) / Año(s) a cargo</label>
+          <input class="fi" id="pf-curso" type="text" placeholder="Ej: 5° 1a · 6° 2a · 7° 1a">
+        </div>
+        <div class="fg">
+          <label class="fl" for="pf-ciclo">Ciclo lectivo</label>
+          <input class="fi" id="pf-ciclo" type="text" placeholder="Ej: 2026">
+        </div>
+      </div>
+      <button class="btn-ppal" onclick="guardarPerfil()">Guardar y comenzar →</button>
+      <div class="msg-error" id="err-perf">Completá nombre, institución y provincia.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ APP PRINCIPAL ═══════════════ -->
+<div id="p-app" class="pantalla">
+  <div class="app-hdr">
+    <div class="app-marca">DocPed <em>BRB</em></div>
+    <div class="app-hdr-right">
+      <div class="hdr-info">
+        <strong id="hdr-nombre">—</strong>
+        <span id="hdr-sub">—</span>
+      </div>
+      <button class="hdr-btn" onclick="verExpediente()">📁 Expediente</button>
+      <button class="hdr-btn" onclick="irPerfil()">⚙ Perfil</button>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <!-- Sidebar izquierda -->
+    <div class="sb-left">
+      <div class="sb-sec">Navegación</div>
+      <div class="sb-item on" id="sbi-inicio" onclick="navegar('inicio',this)">
+        <span class="sb-ico">🏠</span><span class="sb-txt">Inicio</span>
+      </div>
+      <div class="sb-item" id="sbi-generar" onclick="navegar('generar',this)">
+        <span class="sb-ico">📄</span><span class="sb-txt">Generar documento</span>
+      </div>
+      <div class="sb-item" id="sbi-exp" onclick="navegar('expediente',this)">
+        <span class="sb-ico">📁</span><span class="sb-txt">Expediente docente</span>
+      </div>
+      <div class="sb-sec">Tipo de documento</div>
+      <div class="sb-item" onclick="irAGenerar('diagnostico')">
+        <span class="sb-ico">🔍</span><span class="sb-txt">Diagnóstico Áulico</span>
+      </div>
+      <div class="sb-item" onclick="irAGenerar('planificacion')">
+        <span class="sb-ico">📋</span><span class="sb-txt">Planificación Áulica</span>
+      </div>
+      <div class="sb-item" onclick="irAGenerar('contrato')">
+        <span class="sb-ico">✍</span><span class="sb-txt">Contrato Didáctico</span>
+      </div>
+      <div class="sb-item" onclick="irAGenerar('informe')">
+        <span class="sb-ico">📊</span><span class="sb-txt">Informe Cuatrimestral</span>
+      </div>
+    </div>
+
+    <!-- Panel central -->
+    <div class="main-panel" id="main-panel"></div>
+
+    <!-- Sidebar derecha -->
+    <div class="sb-right">
+      <div class="sr-tit">Sistema BRB-Educa</div>
+      <a class="plat-btn" href="https://bbbarrera1986-rgb.github.io/brb-generador/" target="_blank">Generador de Clases BRB<span>Docentes secundario/técnico</span></a>
+      <a class="plat-btn" href="https://bbbarrera1986-rgb.github.io/brb-generador/" target="_blank">Generador de Estudio BRB<span>Docentes y estudiantes</span></a>
+      <a class="plat-btn" href="https://bbbarrera1986-rgb.github.io/brb-generador/" target="_blank">EvaluAR BRB<span>Instrumentos de evaluación</span></a>
+      <a class="plat-btn" href="https://bbbarrera1986-rgb.github.io/brb-generador/" target="_blank">Plataforma de Tutoría BRB<span>Tutores y orientadores</span></a>
+      <a class="plat-btn" href="https://bbbarrera1986-rgb.github.io/brb-generador/" target="_blank">Asesor de Dirección BRB<span>Directivos y coordinadores</span></a>
+      <a class="plat-btn" href="https://bbbarrera1986-rgb.github.io/brb-inclusion/" target="_blank">Inclusión &amp; Neuro-Estrategias<span>MAI · Psicopedagogos</span></a>
+      <a class="plat-btn" href="https://bbbarrera1986-rgb.github.io/brb-generador/aulaViva_BRB_v1.html" target="_blank">Aula Viva BRB<span>Docentes de primaria</span></a>
+      <a class="plat-btn" href="https://bbbarrera1986-rgb.github.io/brb-universitario/" target="_blank">Generador Universitario BRB<span>Nivel superior</span></a>
+      <a class="plat-btn" href="https://bbbarrera1986-rgb.github.io/generador-tesis-brb/" target="_blank">Generador de Tesis BRB<span>Investigación académica</span></a>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(200,168,75,.15);">
+        <div style="font-family:IBM Plex Mono,monospace;font-size:8px;color:rgba(200,168,75,.4);letter-spacing:.2em;text-transform:uppercase;margin-bottom:7px;">Libros &amp; Cursos BRB</div>
+        <a class="plat-btn" href="https://sites.google.com/view/borisrodriguezbarrera" target="_blank" style="background:rgba(200,168,75,.1);border-color:rgba(200,168,75,.3);">🛒 Catálogo BRB — Hotmart<span>Libros · Cursos · Kits técnicos</span></a>
+      </div>
+      <div class="sr-contact">
+        <div class="sr-c-lbl">Acceso con licencia</div>
+        <a class="sr-c-btn btn-wa" href="https://wa.me/542975176351?text=Consulta%20sobre%20BRB-Educa%3A" target="_blank">💬 WhatsApp</a>
+        <a class="sr-c-btn btn-em" href="mailto:bbbarrera1986@gmail.com?subject=Consulta%20BRB-Educa" target="_blank">✉ Email</a>
+        <a class="btn-manual" href="https://bbbarrera1986-rgb.github.io/brb-generador/manual_BRB_Educa_v2.html" target="_blank">📖 Manual del sistema</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-footer">
+    DocPed BRB · Herramienta de uso libre y gratuito &nbsp;|&nbsp;
+    Boris Rodríguez Barrera · ORCID: <a href="https://orcid.org/0009-0004-6583-6439" target="_blank">0009-0004-6583-6439</a><br>
+    BRB Estrategia &amp; Procesos &nbsp;·&nbsp; Soberanía Técnica Ediciones &nbsp;·&nbsp; Puerto Madryn, Chubut, Argentina<br>
+    <a href="mailto:bbbarrera1986@gmail.com">bbbarrera1986@gmail.com</a> &nbsp;·&nbsp; <a href="https://wa.me/542975176351">+54 297 517-6351</a>
+  </div>
+</div>
+
+<!-- Modal ver documento -->
+<div class="modal-ov" id="modal-ov">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-tit" id="modal-tit">Documento</div>
+      <button class="modal-x" onclick="cerrarModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot">
+      <button class="rb rb-cop" onclick="copiarModal()">📋 Copiar</button>
+      <button class="rb rb-dl" onclick="dlModal()">⬇ .txt</button>
+      <button class="rb rb-del" onclick="cerrarModal()">✕ Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// ESTADO GLOBAL
+// ═══════════════════════════════════
+const S = {
+  apikey: '', prov: 'gemini', perfil: null,
+  tipoSel: 'diagnostico', textoGen: '',
+  adjTexto: '', adjNombre: '', docModal: null
+};
+
+// Google Forms tracking silencioso
+const GFORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfn0TZ-nH_HvvYJQh0R9IHvYb9F6u88u81c1mZTAcyt597QYw/formResponse';
+const GFORM_E = {
+  tipo:      'entry.862452251',
+  nivel:     'entry.985623144',
+  cargo:     'entry.740986689',
+  provincia: 'entry.1025085657',
+  ts:        'entry.1034624102'
+};
+
+function trackGen(tipoId) {
+  try {
+    const p = S.perfil || {};
+    const params = new URLSearchParams();
+    params.append(GFORM_E.tipo,      tipoId);
+    params.append(GFORM_E.nivel,     p.nivel||'—');
+    params.append(GFORM_E.cargo,     p.cargo||'—');
+    params.append(GFORM_E.provincia, p.provincia||'—');
+    params.append(GFORM_E.ts,        new Date().toISOString());
+    fetch(GFORM_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params.toString()}).catch(()=>{});
+    if(typeof gtag==='function') gtag('event','generar_doc',{tipo: tipoId, nivel: p.nivel||'—', provincia: p.provincia||'—'});
+  } catch(e){}
+}
+
+// ═══════════════════════════════════
+// NAVEGACIÓN PANTALLAS
+// ═══════════════════════════════════
+let _provSel = 'gemini', _nivelSel = 'Primario';
+
+function selProv(btn, p) {
+  document.querySelectorAll('.prov-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on'); _provSel = p;
+}
+function selNivel(btn, n) {
+  document.querySelectorAll('.nivel-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on'); _nivelSel = n;
+}
+function mostrar(id) {
+  document.querySelectorAll('.pantalla').forEach(p=>p.classList.remove('activa'));
+  document.getElementById(id).classList.add('activa');
+}
+function irAPI() { mostrar('p-api'); }
+
+function irAPerfil() {
+  const k = document.getElementById('inp-apikey').value.trim();
+  const err = document.getElementById('err-api');
+  if (!k) { err.style.display='block'; return; }
+  err.style.display='none';
+  S.apikey = k; S.prov = _provSel;
+  sessionStorage.setItem('dp_api', k);
+  sessionStorage.setItem('dp_prov', _provSel);
+  const p = cargarPerfilLocal();
+  if (p) { S.perfil = p; lanzarApp(); }
+  else mostrar('p-perfil');
+}
+
+function irPerfil() {
+  const p = S.perfil;
+  if (p) {
+    document.getElementById('pf-nombre').value = p.nombre||'';
+    document.getElementById('pf-inst').value   = p.institucion||'';
+    document.getElementById('pf-prov').value   = p.provincia||'';
+    document.getElementById('pf-cargo').value  = p.cargo||'';
+    document.getElementById('pf-espacio').value= p.espacio||'';
+    document.getElementById('pf-curso').value  = p.curso||'';
+    document.getElementById('pf-ciclo').value  = p.ciclo||'';
+    _nivelSel = p.nivel||'Primario';
+    document.querySelectorAll('.nivel-btn').forEach(b=>{
+      const matches = b.getAttribute('onclick')?.includes(`'${_nivelSel}'`);
+      b.classList.toggle('on', !!matches);
+    });
+  }
+  mostrar('p-perfil');
+}
+
+function guardarPerfil() {
+  const nombre = document.getElementById('pf-nombre').value.trim();
+  const inst   = document.getElementById('pf-inst').value.trim();
+  const prov   = document.getElementById('pf-prov').value;
+  const err = document.getElementById('err-perf');
+  if (!nombre || !inst || !prov) { err.style.display='block'; return; }
+  err.style.display='none';
+  S.perfil = {
+    nombre, institucion: inst, provincia: prov,
+    cargo:   document.getElementById('pf-cargo').value,
+    nivel:   _nivelSel,
+    espacio: document.getElementById('pf-espacio').value.trim(),
+    curso:   document.getElementById('pf-curso').value.trim(),
+    ciclo:   document.getElementById('pf-ciclo').value.trim() || '2026'
+  };
+  localStorage.setItem('dp_perfil', JSON.stringify(S.perfil));
+  lanzarApp();
+}
+
+function cargarPerfilLocal() {
+  try { return JSON.parse(localStorage.getItem('dp_perfil')); } catch(e){ return null; }
+}
+
+function lanzarApp() {
+  const p = S.perfil;
+  document.getElementById('hdr-nombre').textContent = p.nombre;
+  document.getElementById('hdr-sub').textContent = `${p.institucion} · ${p.nivel} · ${p.provincia}`;
+  mostrar('p-app');
+  navegar('inicio', document.getElementById('sbi-inicio'));
+}
+
+// ═══════════════════════════════════
+// NAVEGACIÓN INTERNA
+// ═══════════════════════════════════
+function navegar(sec, item) {
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('on'));
+  if(item) item.classList.add('on');
+  const mp = document.getElementById('main-panel');
+  if(sec==='inicio') renderInicio(mp);
+  else if(sec==='generar') renderGenerar(mp);
+  else if(sec==='expediente') renderExpediente(mp);
+}
+
+function verExpediente() { navegar('expediente', document.getElementById('sbi-exp')); }
+
+function irAGenerar(tipo) {
+  S.tipoSel = tipo;
+  navegar('generar', document.getElementById('sbi-generar'));
+}
+
+function fechaHoy() {
+  const d = new Date();
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+
+// ═══════════════════════════════════
+// DATOS TIPOS DE DOCUMENTO
+// ═══════════════════════════════════
+const TIPOS = {
+  diagnostico: {
+    ico:'🔍', tit:'Diagnóstico Áulico',
+    norm:'Res. CFE 174/12 · Res. CFE 93/09',
+    desc:'Evaluación del grupo al inicio del ciclo. Primeras 2–4 semanas.',
+    campos:[
+      {id:'cant',       l:'Cantidad de estudiantes',    t:'text', ph:'Ej: 28'},
+      {id:'edades',     l:'Rango etario del grupo',     t:'text', ph:'Ej: 16–18 años'},
+      {id:'clima',      l:'Clima grupal observado',     t:'ta',   ph:'Participación, vínculos, actitudes generales del grupo...'},
+      {id:'motivacion', l:'Motivación y expectativas',  t:'ta',   ph:'Interés en la materia, expectativas vocacionales, disposición...'},
+      {id:'necesidades',l:'Necesidades detectadas',     t:'ta',   ph:'Dificultades de aprendizaje, ausentismo, diversidad, requerimientos especiales...'},
+      {id:'fortalezas', l:'Fortalezas del grupo',       t:'ta',   ph:'Liderazgos positivos, experiencias previas, disposición al trabajo...'},
+      {id:'mod_g',      l:'Modalidad de trabajo',       t:'select', opts:['Aula','Taller','Mixto (aula + taller)']}
+    ]
+  },
+  planificacion: {
+    ico:'📋', tit:'Planificación Áulica Cuatrimestral',
+    norm:'Res. CFE 93/09 · Res. CFE 390/21',
+    desc:'Marco de contenidos, actividades y evaluaciones por período.',
+    campos:[
+      {id:'cuatri',    l:'Período',                    t:'select', opts:['1° Cuatrimestre','2° Cuatrimestre','Anual','Trimestral']},
+      {id:'mod_p',     l:'Modalidad',                  t:'select', opts:['Aula','Taller','Mixto']},
+      {id:'unidad',    l:'Unidad / Módulo / Eje temático',t:'text', ph:'Ej: Unidad 3 — Reacciones de oxidación-reducción'},
+      {id:'horas',     l:'Cantidad de clases / horas', t:'text', ph:'Ej: 18 clases de 80 minutos'},
+      {id:'contenidos',l:'Contenidos a desarrollar',   t:'ta', ph:'Conceptuales, procedimentales y actitudinales...'},
+      {id:'inicio',    l:'Actividades de INICIO',      t:'ta', ph:'Apertura, diagnóstico, recuperación de saberes previos...'},
+      {id:'desarrollo',l:'Actividades de DESARROLLO',  t:'ta', ph:'Actividades clase por clase, metodología, recursos...'},
+      {id:'cierre',    l:'Actividades de CIERRE',      t:'ta', ph:'Síntesis, integración, evaluación sumativa parcial...'},
+      {id:'evaluacion',l:'Criterios e instrumentos de evaluación',t:'ta', ph:'Objetivos, instrumentos, nota mínima, ponderaciones...'},
+      {id:'recursos',  l:'Recursos y bibliografía',    t:'ta', ph:'Libros, materiales, equipamiento, TIC...'}
+    ]
+  },
+  contrato: {
+    ico:'✍', tit:'Contrato Didáctico',
+    norm:'Res. CFE 330/17 · Res. CFE 84/09',
+    desc:'Acuerdo formal docente-grupo. Compromisos, normas y evaluación.',
+    campos:[
+      {id:'mod_c',     l:'Modalidad',                  t:'select', opts:['Aula','Taller']},
+      {id:'comp_doc',  l:'Compromisos del docente',    t:'ta', ph:'Listá los compromisos que asumís como profesional...'},
+      {id:'comp_est',  l:'Compromisos del estudiante', t:'ta', ph:'Asistencia mínima, participación, entrega de trabajos, uso del celular...'},
+      {id:'normas',    l:'Normas de convivencia',      t:'ta', ph:'Reglas del aula/taller, EPP si aplica, uso de dispositivos...'},
+      {id:'evaluacion_c',l:'Sistema de evaluación completo',t:'ta',ph:'Instancias, modalidad (escrito+oral / informe de práctica), criterios, nota de aprobación, recuperatorios...'},
+      {id:'asistencia',l:'Política de asistencia',    t:'text',ph:'Ej: Mínimo 80% de asistencia para regularizar'},
+      {id:'acuerdos',  l:'Acuerdos adicionales',       t:'ta', ph:'Entregas fuera de término, reintegros, condiciones de revisión del contrato...'}
+    ]
+  },
+  informe: {
+    ico:'📊', tit:'Informe Cuatrimestral Docente a Dirección',
+    norm:'Res. CFE 93/09 · Res. CFE 330/17',
+    desc:'Rendición pedagógica al equipo directivo al cierre del período.',
+    campos:[
+      {id:'cuatri_i',  l:'Período informado',          t:'select', opts:['1° Cuatrimestre','2° Cuatrimestre','1° Trimestre','2° Trimestre','3° Trimestre']},
+      {id:'cont_des',  l:'Contenidos desarrollados',   t:'ta', ph:'Listá los contenidos efectivamente trabajados...'},
+      {id:'cont_nd',   l:'Contenidos no desarrollados (si los hay)',t:'ta', ph:'Justificá brevemente por qué no se alcanzaron...'},
+      {id:'aprobados', l:'N° de estudiantes aprobados',   t:'text', ph:'Ej: 18'},
+      {id:'desap',     l:'N° de estudiantes desaprobados',t:'text', ph:'Ej: 4'},
+      {id:'ausent',    l:'Situaciones de ausentismo crítico',t:'ta',ph:'Sin nombre de estudiante, describí el patrón general...'},
+      {id:'instancias',l:'Instancias de evaluación realizadas',t:'ta',ph:'Tipo, fecha e instrumento de cada evaluación realizada...'},
+      {id:'dific',     l:'Dificultades pedagógicas encontradas',t:'ta',ph:'Obstáculos en el proceso de enseñanza-aprendizaje...'},
+      {id:'logros',    l:'Logros destacados del período',t:'ta',ph:'Avances del grupo, hitos positivos, resultados superadores...'},
+      {id:'ajustes',   l:'Ajustes propuestos para el próximo período',t:'ta',ph:'Cambios en estrategias, tiempos, recursos o evaluación...'}
+    ]
+  }
+};
+
+// ═══════════════════════════════════
+// RENDER INICIO
+// ═══════════════════════════════════
+function renderInicio(mp) {
+  const p = S.perfil;
+  const exp = cargarExp();
+  mp.innerHTML = `
+    <div class="ph">
+      <div class="ph-badge">DocPed BRB · Herramienta Gratuita</div>
+      <div class="ph-titulo">Documentación pedagógica <em>lista en minutos</em></div>
+      <div class="ph-desc">${p.nombre} &nbsp;·&nbsp; ${p.institucion}<br>${p.cargo} &nbsp;·&nbsp; Nivel ${p.nivel} &nbsp;·&nbsp; ${p.provincia} &nbsp;·&nbsp; Ciclo ${p.ciclo}</div>
+    </div>
+    <span class="ini-free">✓ Acceso Libre y Gratuito</span>
+    <div class="aviso"><strong>⚠ RESPONSABILIDAD PROFESIONAL:</strong> Todo documento generado es un borrador orientativo producido con IA. El/la profesional docente es el/la ÚNICO/A responsable de revisar, corregir, adaptar a su contexto y FIRMAR todo lo generado antes de cualquier uso institucional.</div>
+    ${exp.length > 0 ? `<div class="aviso-info">📁 Tenés <strong>${exp.length} documento${exp.length>1?'s':''}</strong> guardado${exp.length>1?'s':''} en tu expediente local.</div>` : ''}
+    <div class="ini-grid">
+      <div class="ini-card" onclick="irAGenerar('diagnostico')">
+        <div class="ini-ico">🔍</div><div class="ini-tit">Diagnóstico Áulico</div>
+        <div class="ini-desc">Evaluación del grupo al inicio del ciclo. Primeras 2–4 semanas. Res. CFE 174/12.</div>
+      </div>
+      <div class="ini-card" onclick="irAGenerar('planificacion')">
+        <div class="ini-ico">📋</div><div class="ini-tit">Planificación Áulica</div>
+        <div class="ini-desc">Contenidos, actividades y evaluaciones por cuatrimestre. Res. CFE 93/09.</div>
+      </div>
+      <div class="ini-card" onclick="irAGenerar('contrato')">
+        <div class="ini-ico">✍</div><div class="ini-tit">Contrato Didáctico</div>
+        <div class="ini-desc">Acuerdo docente-grupo. Compromisos, normas y sistema de evaluación. Res. CFE 330/17.</div>
+      </div>
+      <div class="ini-card" onclick="irAGenerar('informe')">
+        <div class="ini-ico">📊</div><div class="ini-tit">Informe Cuatrimestral</div>
+        <div class="ini-desc">Rendición pedagógica a la conducción. Contenidos, resultados y ajustes. Res. CFE 93/09.</div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════
+// RENDER GENERAR
+// ═══════════════════════════════════
+function renderGenerar(mp) {
+  const tipo = TIPOS[S.tipoSel];
+  let tiposCards = Object.keys(TIPOS).map(k=>{
+    const t = TIPOS[k];
+    return `<div class="tipo-card${S.tipoSel===k?' on':''}" onclick="selTipo('${k}')">
+      <div class="tipo-ico">${t.ico}</div>
+      <div class="tipo-tit">${t.tit}</div>
+      <div class="tipo-desc">${t.desc}</div>
+      <div class="tipo-norm">${t.norm}</div>
+    </div>`;
+  }).join('');
+
+  let camposHTML = tipo.campos.map(c=>{
+    if(c.t==='select'){
+      return `<div class="fg"><label class="fg-label" for="c-${c.id}">${c.l}</label>
+        <select class="fg-select" id="c-${c.id}">${c.opts.map(o=>`<option>${o}</option>`).join('')}</select></div>`;
+    } else if(c.t==='ta'){
+      return `<div class="fg"><label class="fg-label" for="c-${c.id}">${c.l}</label>
+        <textarea class="fg-ta" id="c-${c.id}" placeholder="${c.ph||''}"></textarea></div>`;
+    } else {
+      return `<div class="fg"><label class="fg-label" for="c-${c.id}">${c.l}</label>
+        <input class="fg-input" id="c-${c.id}" type="text" placeholder="${c.ph||''}"></div>`;
+    }
+  }).join('');
+
+  const p = S.perfil;
+  mp.innerHTML = `
+    <div class="ph">
+      <div class="ph-badge">Generador · ${tipo.tit}</div>
+      <div class="ph-titulo">${tipo.ico} <em>${tipo.tit}</em></div>
+      <div class="ph-desc">${tipo.norm}</div>
+    </div>
+    <div class="aviso"><strong>⚠ RESPONSABILIDAD PROFESIONAL:</strong> Borrador orientativo. El/la docente es el/la único/a responsable de revisar, corregir y firmar antes del uso institucional.</div>
+    <div class="tipos-grid">${tiposCards}</div>
+    <div class="form-gen">
+      <div class="form-tit">📝 Completá los datos del documento</div>
+      <div class="perfil-resumen">
+        <div class="perfil-resumen-lbl">Datos del profesional (desde tu perfil)</div>
+        <div class="perfil-resumen-txt"><strong>${p.nombre}</strong> &nbsp;·&nbsp; ${p.cargo}<br>${p.institucion} &nbsp;·&nbsp; ${p.provincia}<br>${p.espacio?p.espacio+' &nbsp;·&nbsp; ':''}Nivel ${p.nivel} &nbsp;·&nbsp; Ciclo ${p.ciclo}</div>
+      </div>
+      <div class="f2g">
+        <div class="fg">
+          <label class="fg-label" for="c-fecha">Fecha de creación</label>
+          <input class="fg-input" id="c-fecha" type="text" value="${fechaHoy()}" placeholder="DD/MM/AAAA">
+        </div>
+        <div class="fg">
+          <label class="fg-label" for="c-grupo-doc">Grupo / Curso / División</label>
+          <input class="fg-input" id="c-grupo-doc" type="text" placeholder="Ej: 6° 2a División" value="${p.curso||''}">
+        </div>
+      </div>
+      ${camposHTML}
+
+      <!-- DATOS OPCIONALES -->
+      <div class="opc-box">
+        <div class="opc-hdr" onclick="toggleOpc()">
+          Datos adicionales opcionales (estudiantes y otros)
+          <span id="opc-arr">▼</span>
+        </div>
+        <div class="opc-body" id="opc-body">
+          <div class="fg" style="margin-top:12px;">
+            <label class="fg-label" for="c-estudiantes">Nombres de estudiantes (a elección del profesional)</label>
+            <textarea class="fg-ta" id="c-estudiantes" placeholder="Si el documento lo requiere, listá los nombres relevantes. Para anonimizar, dejá vacío o usá referencias genéricas (Estudiante A, B...)."></textarea>
+          </div>
+          <div class="fg">
+            <label class="fg-label" for="c-extra">Otros datos específicos del documento</label>
+            <textarea class="fg-ta" id="c-extra" placeholder="Cualquier dato adicional relevante para este documento en particular..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADJUNTO -->
+      <div class="fg">
+        <label class="fg-label">Documento de apoyo (opcional)</label>
+        <div class="adj-zona${S.adjTexto?' tiene':''}" id="adj-zona" onclick="document.getElementById('adj-inp').click()">
+          <div class="adj-ico">📎</div>
+          <div class="adj-txt">${S.adjTexto?'Documento cargado como contexto':'Hacé clic para adjuntar un documento de apoyo (.txt, .docx, .pdf)'}</div>
+          <div class="adj-nom">${S.adjNombre||''}</div>
+          ${S.adjTexto?'<button class="adj-clear" onclick="event.stopPropagation();limpiarAdj()">✕ Quitar adjunto</button>':''}
+        </div>
+        <input type="file" id="adj-inp" accept=".txt,.docx,.doc,.pdf,.md,.rtf" style="display:none" onchange="cargarAdj(this)">
+        <div style="font-size:10px;color:var(--gris-b);margin-top:4px;">El texto del archivo se usa como contexto adicional para la IA. Formatos: .txt · .docx · .pdf · .md</div>
+      </div>
+
+      <button class="btn-gen" id="btn-gen" onclick="generarDoc()">✦ Generar ${tipo.tit}</button>
+    </div>
+    <div class="res-area" id="res-area"></div>`;
+}
+
+function selTipo(k) {
+  S.tipoSel = k;
+  renderGenerar(document.getElementById('main-panel'));
+}
+
+function toggleOpc() {
+  const body = document.getElementById('opc-body');
+  const arr  = document.getElementById('opc-arr');
+  body.classList.toggle('open');
+  if(arr) arr.textContent = body.classList.contains('open') ? '▲' : '▼';
+}
+
+// ═══════════════════════════════════
+// ADJUNTO DE ARCHIVO
+// ═══════════════════════════════════
+async function cargarAdj(input) {
+  const file = input.files[0];
+  if(!file) return;
+  S.adjNombre = file.name;
+  const ext = file.name.split('.').pop().toLowerCase();
+  try {
+    if(ext==='txt'||ext==='md'||ext==='rtf') {
+      S.adjTexto = await file.text();
+    } else {
+      const ab = await file.arrayBuffer();
+      const bytes = new Uint8Array(ab);
+      let raw = '';
+      for(let i=0;i<bytes.length;i++){
+        const c = bytes[i];
+        if((c>=32&&c<=126)||c===10||c===13) raw += String.fromCharCode(c);
+      }
+      S.adjTexto = raw.replace(/[^\wáéíóúñÁÉÍÓÚÑ\s.,;:!?()\-]/g,' ').replace(/\s{3,}/g,' ').substring(0,5000);
+      if(S.adjTexto.length < 80) S.adjTexto = `[Archivo: ${file.name} — describí su contenido en el campo de datos adicionales.]`;
+    }
+    const z = document.getElementById('adj-zona');
+    if(z){
+      z.classList.add('tiene');
+      z.innerHTML = `<div class="adj-ico">📎</div>
+        <div class="adj-txt">Documento cargado como contexto</div>
+        <div class="adj-nom">${file.name} (${Math.round(S.adjTexto.length/100)/10} KB leídos)</div>
+        <button class="adj-clear" onclick="event.stopPropagation();limpiarAdj()">✕ Quitar adjunto</button>`;
+    }
+  } catch(e) { S.adjTexto = `[Error al leer ${file.name}]`; }
+}
+
+function limpiarAdj() {
+  S.adjTexto = ''; S.adjNombre = '';
+  const z = document.getElementById('adj-zona');
+  if(z){
+    z.classList.remove('tiene');
+    z.innerHTML = `<div class="adj-ico">📎</div>
+      <div class="adj-txt">Hacé clic para adjuntar un documento de apoyo (.txt, .docx, .pdf)</div>
+      <div class="adj-nom"></div>`;
+  }
+}
+
+// ═══════════════════════════════════
+// CONSTRUCCIÓN PROMPT
+// ═══════════════════════════════════
+function construirPrompt(tipoId, vals) {
+  const p = S.perfil;
+  const tipo = TIPOS[tipoId];
+  const fecha   = document.getElementById('c-fecha')?.value || fechaHoy();
+  const grupodoc= document.getElementById('c-grupo-doc')?.value || p.curso || '';
+  const estud   = document.getElementById('c-estudiantes')?.value?.trim() || '';
+  const extra   = document.getElementById('c-extra')?.value?.trim() || '';
+  const adjunto = S.adjTexto ? `\n\nDOCUMENTO DE APOYO ADJUNTO:\n${S.adjTexto.substring(0,4500)}` : '';
+  const estBloque = estud ? `\n\nESTUDIANTES MENCIONADOS:\n${estud}` : '';
+  const exBloque  = extra ? `\n\nDATOS ADICIONALES:\n${extra}` : '';
+
+  const inst = {
+    diagnostico: `Redactá un DIAGNÓSTICO ÁULICO completo y formal para el sistema educativo argentino. Incluí: encabezado institucional completo, objetivo del diagnóstico, metodología utilizada (observación directa), análisis del grupo en cuatro dimensiones (composición, clima grupal, motivación y expectativas, necesidades detectadas), conclusión pedagógica y orientaciones para la planificación. Firmado por el profesional con fecha.`,
+    planificacion:`Redactá una PLANIFICACIÓN ÁULICA CUATRIMESTRAL formal para nivel ${p.nivel} del sistema educativo argentino. Incluí: encabezado completo, tabla de momentos pedagógicos (INICIO / DESARROLLO / CIERRE) con actividades detalladas, criterios de evaluación con instrumentos y nota mínima, recursos y bibliografía. Formato profesional con secciones claramente diferenciadas.`,
+    contrato:     `Redactá un CONTRATO DIDÁCTICO formal para el sistema educativo argentino. Incluí: encabezado, fundamentación pedagógica, compromisos del docente, compromisos del estudiante, normas de convivencia, sistema de evaluación completo, acuerdos adicionales. Al final incluí una TABLA DE FIRMA con columnas: Nombre del estudiante | DNI | Firma | Fecha. Firmado por el docente.`,
+    informe:      `Redactá un INFORME CUATRIMESTRAL DOCENTE A LA CONDUCCIÓN INSTITUCIONAL formal para el sistema educativo argentino. Incluí: encabezado completo, período informado, contenidos desarrollados, contenidos no desarrollados (con justificación), resultados cuantitativos de evaluación, análisis de ausentismo, instancias evaluativas realizadas, dificultades pedagógicas del período, logros destacados y ajustes propuestos para el período siguiente. Firmado con cargo y fecha.`
+  };
+
+  const piePagina = `\n\n---\nDocumento generado con DocPed BRB — Herramienta de uso libre y gratuito\nBoris Rodríguez Barrera · BRB Estrategia & Procesos / Soberanía Técnica Ediciones\nORCID: 0009-0004-6583-6439 · Puerto Madryn, Chubut, Argentina\nbbbarrera1986@gmail.com · +54 297 517-6351\n⚠ BORRADOR ORIENTATIVO: El/la profesional docente es el/la único/a responsable de revisar, corregir, adaptar a su contexto y firmar este documento antes de su uso institucional.`;
+
+  return `Sos un especialista en documentación pedagógica formal para el sistema educativo argentino. Generá el siguiente documento con exactitud normativa.
+
+DATOS DEL PROFESIONAL:
+Docente: ${p.nombre}
+Cargo: ${p.cargo}
+Institución: ${p.institucion}
+Provincia: ${p.provincia}
+Nivel: ${p.nivel}
+Espacio curricular: ${p.espacio||'No especificado'}
+Grupo/Curso: ${grupodoc}
+Ciclo lectivo: ${p.ciclo}
+Fecha: ${fecha}
+
+TIPO DE DOCUMENTO: ${tipo.tit}
+NORMATIVA BASE: ${tipo.norm}
+
+DATOS DEL FORMULARIO:
+${vals}${adjunto}${estBloque}${exBloque}
+
+INSTRUCCIÓN: ${inst[tipoId]}
+
+REGLAS DE FORMATO — CUMPLIMIENTO OBLIGATORIO:
+1. Texto plano únicamente — PROHIBIDO usar asteriscos, #, **, markdown de cualquier tipo
+2. Encabezado institucional completo al inicio del documento
+3. Secciones separadas por líneas de guiones (---) o líneas en blanco
+4. Incluir al pie del documento el siguiente texto exacto: "${piePagina.trim()}"
+5. Incluir espacio para firma del docente: Firma: ______________ | Aclaración: ${p.nombre} | Cargo: ${p.cargo} | Fecha: ___/___/______
+6. Longitud apropiada: documento completo y utilizable institucionalmente`;
+}
+
+// ═══════════════════════════════════
+// LLAMADA IA
+// ═══════════════════════════════════
+async function generarDoc() {
+  const tipoId = S.tipoSel;
+  const tipo   = TIPOS[tipoId];
+  const vals   = tipo.campos.map(c=>{
+    const el = document.getElementById('c-'+c.id);
+    return `${c.l}: ${el?el.value.trim()||'(no especificado)':'(no especificado)'}`;
+  }).join('\n');
+
+  const prompt = construirPrompt(tipoId, vals);
+  const btn = document.getElementById('btn-gen');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Generando con IA...';
+
+  const ra = document.getElementById('res-area');
+  ra.classList.add('vis');
+  ra.innerHTML = `<div class="res-cab"><span class="res-cab-lbl">GENERANDO BORRADOR...</span></div><div class="res-txt" style="color:var(--gris-txt);font-size:12px;">Conectando con ${S.prov}...</div>`;
+
+  try {
+    let texto = '';
+    if(!S.apikey) throw new Error('No hay API Key configurada. Volvé al inicio.');
+
+    if(S.prov==='gemini'){
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${S.apikey}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+      });
+      if(!r.ok){const e=await r.json();throw new Error(`Gemini ${r.status}: ${e?.error?.message||'Error de API'}`);}
+      const d = await r.json();
+      texto = d.candidates?.[0]?.content?.parts?.[0]?.text||'';
+    } else if(S.prov==='openai'){
+      const r = await fetch('https://api.openai.com/v1/chat/completions',{
+        method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${S.apikey}`},
+        body:JSON.stringify({model:'gpt-4o-mini',messages:[{role:'user',content:prompt}],max_tokens:3500})
+      });
+      if(!r.ok){const e=await r.json();throw new Error(`OpenAI ${r.status}: ${e?.error?.message||'Error de API'}`);}
+      const d = await r.json();
+      texto = d.choices?.[0]?.message?.content||'';
+    } else if(S.prov==='claude'){
+      const r = await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':S.apikey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:3500,messages:[{role:'user',content:prompt}]})
+      });
+      if(!r.ok){const e=await r.json();throw new Error(`Claude ${r.status}: ${e?.error?.message||'Error de API'}`);}
+      const d = await r.json();
+      texto = d.content?.[0]?.text||'';
+    }
+
+    // Limpiar markdown residual
+    texto = texto.replace(/\*\*/g,'').replace(/\*/g,'').replace(/^#{1,6}\s/gm,'').replace(/_{2,}/g,'').replace(/`/g,'');
+    S.textoGen = texto;
+
+    trackGen(tipoId);
+
+    const fecha = fechaHoy().replace(/\//g,'');
+    const nomDl = `DocPed_BRB_${tipoId.toUpperCase()}_${(S.perfil.institucion||'').replace(/[^a-zA-Z0-9]/g,'_').substring(0,18)}_${fecha}.txt`;
+
+    ra.innerHTML = `
+      <div class="res-cab">
+        <span class="res-cab-lbl">BORRADOR GENERADO · ${tipo.tit.toUpperCase()}</span>
+        <div class="res-btns">
+          <button class="rb rb-cop" id="btn-cop" onclick="copiarTexto()">📋 Copiar</button>
+          <button class="rb rb-dl" onclick="dlDoc(S.textoGen,'${nomDl}')">⬇ Exportar .txt</button>
+          <button class="rb rb-grd" id="btn-grd" onclick="guardarExp('${tipoId}')">💾 Guardar en expediente</button>
+          <button class="rb rb-del" onclick="limpiarRes()">✕ Limpiar</button>
+        </div>
+      </div>
+      <div class="res-aviso">⚠ BORRADOR — El/la profesional docente es el/la único/a responsable de revisar, corregir y FIRMAR antes del uso institucional.</div>
+      <div class="res-txt" id="res-txt">${escHtml(texto)}</div>`;
+
+  } catch(e) {
+    ra.innerHTML = `<div class="res-cab"><span class="res-cab-lbl" style="color:#FF9999;">ERROR</span></div><div class="res-txt" style="color:var(--rojo);padding:18px;">${e.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `✦ Generar ${tipo.tit}`;
+  }
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function copiarTexto(){
+  navigator.clipboard?.writeText(S.textoGen).then(()=>{
+    const b=document.getElementById('btn-cop');
+    if(b){b.textContent='✓ Copiado';setTimeout(()=>{b.textContent='📋 Copiar';},2000);}
+  }).catch(()=>{
+    const t=document.createElement('textarea');t.value=S.textoGen;
+    document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);
+  });
+}
+
+function dlDoc(texto, nombre){
+  const blob=new Blob([texto],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=nombre;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+function limpiarRes(){
+  const ra=document.getElementById('res-area');
+  if(ra){ra.classList.remove('vis');ra.innerHTML='';}
+  S.textoGen='';
+}
+
+// ═══════════════════════════════════
+// EXPEDIENTE LOCAL
+// ═══════════════════════════════════
+function guardarExp(tipoId){
+  const tipo=TIPOS[tipoId];
+  const p=S.perfil;
+  const item={
+    id: Date.now(),
+    tipoId, tipoNombre: tipo.tit, icono: tipo.ico,
+    docente: p.nombre, institucion: p.institucion,
+    grupo: document.getElementById('c-grupo-doc')?.value||p.curso||'',
+    fecha: fechaHoy(), ciclo: p.ciclo,
+    texto: S.textoGen
+  };
+  let exp=cargarExp();
+  exp.unshift(item);
+  if(exp.length>200) exp=exp.slice(0,200);
+  localStorage.setItem('dp_exp', JSON.stringify(exp));
+  const b=document.getElementById('btn-grd');
+  if(b){b.textContent='✓ Guardado';b.disabled=true;setTimeout(()=>{b.textContent='💾 Guardar en expediente';b.disabled=false;},2500);}
+}
+
+function cargarExp(){
+  try{return JSON.parse(localStorage.getItem('dp_exp'))||[];}catch(e){return [];}
+}
+
+function renderExpediente(mp){
+  const exp=cargarExp();
+  const total = exp.reduce((acc,d)=>{
+    acc[d.tipoId]=(acc[d.tipoId]||0)+1; return acc;
+  },{});
+  mp.innerHTML=`
+    <div class="ph">
+      <div class="ph-badge">Almacenamiento Local · Este dispositivo</div>
+      <div class="ph-titulo">📁 Expediente <em>Docente</em></div>
+      <div class="ph-desc">${exp.length} documento${exp.length!==1?'s':''} guardado${exp.length!==1?'s':''} en este dispositivo.</div>
+    </div>
+    <div class="aviso-info"><strong>ℹ ALMACENAMIENTO LOCAL:</strong> Los documentos se guardan únicamente en este navegador y dispositivo. No se envían a ningún servidor. Exportá los importantes como .txt para resguardarlos.</div>
+    ${exp.length===0
+      ? '<div class="exp-vacio">NO HAY DOCUMENTOS GUARDADOS<br><br><small>Generá y guardá tu primer documento</small></div>'
+      : exp.map(d=>`
+        <div class="exp-item">
+          <div class="exp-item-top">
+            <div>
+              <div class="exp-item-tit">${d.icono} ${d.tipoNombre}</div>
+              <div class="exp-item-meta">${d.docente} &nbsp;·&nbsp; ${d.institucion}<br>${d.grupo} &nbsp;·&nbsp; ${d.fecha} &nbsp;·&nbsp; Ciclo ${d.ciclo}</div>
+            </div>
+            <div class="exp-badge">${d.tipoId.toUpperCase()}</div>
+          </div>
+          <div class="exp-btns">
+            <button class="eb eb-ver" onclick="verDoc(${d.id})">👁 Ver</button>
+            <button class="eb eb-dl"  onclick="dlDocExp(${d.id})">⬇ .txt</button>
+            <button class="eb eb-del" onclick="elimDoc(${d.id})">🗑 Eliminar</button>
+          </div>
+        </div>`).join('')
+    }`;
+}
+
+function verDoc(id){
+  const doc=cargarExp().find(d=>d.id===id);
+  if(!doc) return;
+  S.docModal=doc;
+  document.getElementById('modal-tit').textContent=`${doc.icono} ${doc.tipoNombre} — ${doc.fecha}`;
+  document.getElementById('modal-body').textContent=doc.texto;
+  document.getElementById('modal-ov').classList.add('vis');
+}
+
+function dlDocExp(id){
+  const doc=cargarExp().find(d=>d.id===id);
+  if(!doc) return;
+  const nom=`DocPed_BRB_${doc.tipoId.toUpperCase()}_${(doc.institucion||'').replace(/[^a-zA-Z0-9]/g,'_').substring(0,18)}_${doc.fecha.replace(/\//g,'')}.txt`;
+  dlDoc(doc.texto, nom);
+}
+
+function elimDoc(id){
+  if(!confirm('¿Eliminar este documento del expediente? No se puede deshacer.')) return;
+  let exp=cargarExp().filter(d=>d.id!==id);
+  localStorage.setItem('dp_exp', JSON.stringify(exp));
+  renderExpediente(document.getElementById('main-panel'));
+}
+
+function cerrarModal(){
+  document.getElementById('modal-ov').classList.remove('vis');
+  S.docModal=null;
+}
+function copiarModal(){
+  const t=document.getElementById('modal-body').textContent;
+  navigator.clipboard?.writeText(t).catch(()=>{});
+}
+function dlModal(){
+  if(S.docModal) dlDocExp(S.docModal.id);
+}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')cerrarModal();});
+document.getElementById('modal-ov').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modal-ov'))cerrarModal();
+});
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+(function init(){
+  const ak=sessionStorage.getItem('dp_api');
+  const pk=sessionStorage.getItem('dp_prov');
+  if(ak){ document.getElementById('inp-apikey').value=ak; S.apikey=ak; }
+  if(pk){
+    S.prov=pk; _provSel=pk;
+    document.querySelectorAll('.prov-btn').forEach(b=>{
+      b.classList.toggle('on', b.getAttribute('onclick')?.includes(`'${pk}'`));
+    });
+  }
+})();
+
+document.getElementById('inp-apikey').addEventListener('input',function(){
+  sessionStorage.setItem('dp_api',this.value.trim());
+});
+</script>
+</body>
+</html>
