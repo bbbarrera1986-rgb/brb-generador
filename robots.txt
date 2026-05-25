@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bbbarrera1986-rgb.github.io/brb-generador/sitemap.txt
