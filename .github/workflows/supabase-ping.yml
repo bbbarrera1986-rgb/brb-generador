@@ -1,0 +1,26 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    - cron: '0 10 */5 * *'  # cada 5 días a las 10:00 UTC
+  workflow_dispatch:          # permite ejecutarlo manualmente también
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping BRB-Generador
+        run: |
+          curl -s \
+            "https://mjxtbtkhdsgzgvakgdrw.supabase.co/rest/v1/licencias?limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_GENERADOR_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_GENERADOR_KEY }}" \
+            -o /dev/null -w "Generador status: %{http_code}\n"
+
+      - name: Ping BRB-Inclusión
+        run: |
+          curl -s \
+            "https://blhwmrxzldymasnwbeaq.supabase.co/rest/v1/licencias_inclusion?limit=1" \
+            -H "apikey: ${{ secrets.SUPABASE_INCLUSION_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_INCLUSION_KEY }}" \
+            -o /dev/null -w "Inclusión status: %{http_code}\n"
